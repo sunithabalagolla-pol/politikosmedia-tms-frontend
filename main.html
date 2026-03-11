@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      window.FontAwesomeConfig = { autoReplaceSvg: 'nest' };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors: {
+              primary: '#b23a48',
+              'primary-hover': '#8f2e3a',
+              'sidebar-bg': '#d4737f',
+              'sidebar-header': '#8f2e3a',
+              'sidebar-active': '#6b1f28',
+              dark: '#050415',
+              gray: {
+                50: '#F9FAFB',
+                100: '#F3F4F6',
+                200: '#E5E7EB',
+                300: '#D1D5DB',
+                400: '#9CA3AF',
+                500: '#6B7280',
+                600: '#4B5563',
+                700: '#374151',
+                800: '#1F2937',
+                900: '#111827',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+      .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+      }
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex">
+    <main class="flex-1 bg-gradient-to-br from-gray-50 via-red-50 to-rose-50 flex items-center justify-center p-4">
+      <div id="login-container" class="w-full max-w-5xl h-[700px] bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-0">
+        <section id="branding-section" class="hidden lg:flex flex-col items-center justify-center bg-gradient-to-br from-[#b23a48] via-[#b23a48] to-[#c75563] p-16 relative overflow-hidden">
+          <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+          </div>
+          <div class="relative z-10 text-center">
+            <img alt="block-textarea.svg" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/Tz9cPupLGdQZn3kBi3w1sWlGp1K2%2F947fe713-f4b6-4c0e-bf88-0bd8016b5013.png" class="w-48 h-48 object-contain mb-8 mx-auto drop-shadow-2xl">
+            <h1 class="text-6xl font-bold text-white mb-6 uppercase tracking-tight">Politikos</h1>
+            <p class="text-xl text-red-100 max-w-md mx-auto leading-relaxed">Secure access to your political engagement platform</p>
+            <div class="mt-12 flex items-center justify-center gap-8">
+              <div class="text-center">
+                <div class="text-4xl font-bold text-white">10K+</div>
+                <div class="text-sm text-red-200 mt-1">Active Users</div>
+              </div>
+              <div class="w-px h-16 bg-red-300"></div>
+              <div class="text-center">
+                <div class="text-4xl font-bold text-white">99.9%</div>
+                <div class="text-sm text-red-200 mt-1">Uptime</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="login-form-area" class="flex flex-col items-center justify-center p-8 sm:p-12 lg:p-16">
+          <div class="lg:hidden flex flex-col items-center gap-4 mb-8">
+            <img alt="block-textarea.svg" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/Tz9cPupLGdQZn3kBi3w1sWlGp1K2%2F947fe713-f4b6-4c0e-bf88-0bd8016b5013.png" class="w-24 h-24 object-contain">
+            <h2 class="text-3xl font-bold text-dark uppercase">Politikos</h2>
+          </div>
+          <div class="w-full max-w-md">
+            <div class="mb-10">
+              <h2 class="text-3xl lg:text-4xl font-bold text-dark mb-3">Welcome Back</h2>
+              <p class="text-gray-600 text-lg">Sign in to continue to your account</p>
+            </div>
+            <button type="button" class="w-full mb-6 flex items-center justify-center gap-3 px-6 py-4 bg-[#b23a48] rounded-xl hover:bg-[#8f2e3a] transition-all text-base font-bold text-white shadow-lg shadow-[#b23a48]/30 min-h-[56px]">
+              <i class="fa-solid fa-key text-lg"></i>
+              Single Sign-On (SSO)
+            </button>
+            <div class="relative mb-8">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-200"></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-4 bg-white text-gray-500 font-medium">Or sign in with email</span>
+              </div>
+            </div>
+            <form id="auth-form" class="space-y-5">
+              <div class="space-y-2">
+                <label for="email" class="block text-sm font-semibold text-dark">Email Address</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-envelope text-gray-400"></i>
+                  </div>
+                  <input type="email" id="email" name="email" placeholder="designer@example.com" required class="w-full pl-12 pr-12 py-3.5 rounded-xl border border-gray-200 focus:border-[#b23a48] focus:ring-2 focus:ring-[#b23a48]/20 outline-none transition-all text-dark placeholder-gray-400 bg-white">
+                  <div id="email-check" class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none hidden">
+                    <i class="fa-solid fa-circle-check text-[#b23a48]"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <label for="password" class="block text-sm font-semibold text-dark">Password</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-lock text-gray-400"></i>
+                  </div>
+                  <input type="password" id="password" name="password" placeholder="Enter your password" required class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 focus:border-[#b23a48] focus:ring-2 focus:ring-[#b23a48]/20 outline-none transition-all text-dark placeholder-gray-400 bg-white">
+                  <p id="password-error" class="text-red-500 text-xs mt-1 hidden">Password must be at least 8 characters</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <div class="flex items-center">
+                  <input type="checkbox" id="remember" name="remember" class="w-4 h-4 rounded border-gray-300 text-[#b23a48] focus:ring-[#b23a48] cursor-pointer">
+                  <label for="remember" class="ml-2 block text-sm text-gray-600 cursor-pointer select-none">Remember me</label>
+                </div>
+                <a href="#" class="text-sm font-semibold text-[#b23a48] hover:text-[#8f2e3a] transition-colors">Forgot Password?</a>
+              </div>
+              <button type="submit" id="login-btn" class="w-full bg-[#b23a48] hover:bg-[#8f2e3a] text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-[#b23a48]/30 mt-6 relative overflow-hidden flex items-center justify-center group disabled:opacity-70 disabled:cursor-not-allowed">
+                <span id="btn-text" class="flex items-center">
+                  Sign In
+                  <i id="btn-icon" class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </span>
+                <div id="btn-loader" class="hidden absolute inset-0 bg-[#b23a48] flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="animate-spin h-6 w-6 text-white">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
+                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75"></path>
+                  </svg>
+                </div>
+              </button>
+              <div id="form-skeleton" class="hidden space-y-5 w-full">
+                <div class="space-y-2">
+                  <div class="h-4 w-24 bg-gray-200 rounded skeleton"></div>
+                  <div class="h-12 w-full bg-gray-200 rounded-xl skeleton"></div>
+                </div>
+                <div class="space-y-2">
+                  <div class="h-4 w-20 bg-gray-200 rounded skeleton"></div>
+                  <div class="h-12 w-full bg-gray-200 rounded-xl skeleton"></div>
+                </div>
+                <div class="h-14 w-full bg-gray-200 rounded-xl skeleton mt-6"></div>
+              </div>
+            </form>
+            <p class="mt-8 text-center text-xs text-gray-500">
+              By logging in, you agree to our <a href="#" class="text-[#b23a48] hover:underline">Terms of Service</a> and
+              <a href="#" class="text-[#b23a48] hover:underline">Privacy Policy</a>. Access level will be determined automatically.
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script>
+      function simulateLogin() {
+        const btn = document.getElementById('login-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        const btnLoader = document.getElementById('btn-loader');
+        const emailInput = document.getElementById('email');
+
+        if (!emailInput.value) {
+          emailInput.classList.add('border-red-500', 'focus:ring-red-500/20');
+          return;
+        }
+        emailInput.classList.remove('border-red-500', 'focus:ring-red-500/20');
+        document.getElementById('email-check').classList.remove('hidden');
+
+        btnText.classList.add('opacity-0');
+        btnIcon.classList.add('opacity-0');
+        btnLoader.classList.remove('hidden');
+        btn.classList.add('pointer-events-none');
+
+        setTimeout(() => {
+          btnText.classList.remove('opacity-0');
+          btnIcon.classList.remove('opacity-0');
+          btnLoader.classList.add('hidden');
+          btn.classList.remove('pointer-events-none');
+
+          btnText.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Success!';
+          btn.classList.remove('bg-[#b23a48]', 'hover:bg-[#8f2e3a]');
+          btn.classList.add('bg-green-500', 'hover:bg-green-600');
+
+          setTimeout(() => {
+            btnText.innerHTML = 'Sign In<i id="btn-icon" class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>';
+            btn.classList.add('bg-[#b23a48]', 'hover:bg-[#8f2e3a]');
+            btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+          }, 2000);
+        }, 1500);
+      }
+
+      document.getElementById('auth-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        simulateLogin();
+      });
+
+      document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function() {
+          if (this.value.length > 0) {
+            this.classList.add('border-[#b23a48]');
+          } else {
+            this.classList.remove('border-[#b23a48]');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
