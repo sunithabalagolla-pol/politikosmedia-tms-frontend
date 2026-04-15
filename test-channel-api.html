@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel API Tester</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #b23a48;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            border-left: 4px solid #b23a48;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background: #b23a48;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #8e2e39;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Channel API Tester</h1>
+        <p class="subtitle">Test if the backend Channel & Platform endpoints are working</p>
+
+        <div class="note">
+            <strong>⚠️ Note:</strong> You need to be logged in to the app first. Open your app in another tab, log in, then come back here to test.
+        </div>
+
+        <!-- Test 1: Get Channels -->
+        <div class="test-section">
+            <h3>1. Get All Channels</h3>
+            <p>Tests: <code>GET /api/v1/channels</code></p>
+            <button onclick="testGetChannels()">Test Get Channels</button>
+            <div id="result-channels"></div>
+        </div>
+
+        <!-- Test 2: Create Channel -->
+        <div class="test-section">
+            <h3>2. Create Channel</h3>
+            <p>Tests: <code>POST /api/v1/channels</code></p>
+            <label>Channel Name:</label>
+            <input type="text" id="channel-name" value="Test YouTube Channel" placeholder="Enter channel name">
+            <label>Description:</label>
+            <input type="text" id="channel-desc" value="Test channel for YouTube content" placeholder="Enter description">
+            <button onclick="testCreateChannel()">Test Create Channel</button>
+            <div id="result-create"></div>
+        </div>
+
+        <!-- Test 3: Get Subcategories -->
+        <div class="test-section">
+            <h3>3. Get Subcategories</h3>
+            <p>Tests: <code>GET /api/v1/channels/:channelId/subcategories</code></p>
+            <label>Channel ID:</label>
+            <input type="text" id="subcategory-channel-id" placeholder="Paste channel ID from test 1 or 2">
+            <button onclick="testGetSubcategories()">Test Get Subcategories</button>
+            <div id="result-subcategories"></div>
+        </div>
+
+        <!-- Test 4: Backend Status -->
+        <div class="test-section">
+            <h3>4. Backend Status</h3>
+            <p>Check if backend is running</p>
+            <button onclick="testBackendStatus()">Test Backend Connection</button>
+            <div id="result-status"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = message;
+        }
+
+        async function testGetChannels() {
+            showResult('result-channels', 'Testing...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/channels`, {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('result-channels', 
+                        `✅ SUCCESS!\n\nStatus: ${response.status}\n\nResponse:\n${JSON.stringify(data, null, 2)}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('result-channels', 
+                        `❌ FAILED\n\nStatus: ${response.status}\n\nResponse:\n${JSON.stringify(data, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('result-channels', 
+                    `❌ ERROR\n\n${error.message}\n\nMake sure:\n1. Backend is running on port 5000\n2. You're logged in to the app\n3. CORS is configured`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testCreateChannel() {
+            const name = document.getElementById('channel-name').value;
+            const description = document.getElementById('channel-desc').value;
+            
+            if (!name) {
+                showResult('result-create', '❌ Please enter a channel name', 'error');
+                return;
+            }
+
+            showResult('result-create', 'Creating channel...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/channels`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        description,
+                        sort_order: 1
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('result-create', 
+                        `✅ SUCCESS! Channel created!\n\nChannel ID: ${data.data?.id}\n\nFull Response:\n${JSON.stringify(data, null, 2)}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('result-create', 
+                        `❌ FAILED\n\nStatus: ${response.status}\n\nResponse:\n${JSON.stringify(data, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('result-create', 
+                    `❌ ERROR\n\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testGetSubcategories() {
+            const channelId = document.getElementById('subcategory-channel-id').value;
+            
+            if (!channelId) {
+                showResult('result-subcategories', '❌ Please enter a channel ID', 'error');
+                return;
+            }
+
+            showResult('result-subcategories', 'Testing...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/channels/${channelId}/subcategories`, {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('result-subcategories', 
+                        `✅ SUCCESS!\n\nStatus: ${response.status}\n\nResponse:\n${JSON.stringify(data, null, 2)}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('result-subcategories', 
+                        `❌ FAILED\n\nStatus: ${response.status}\n\nResponse:\n${JSON.stringify(data, null, 2)}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('result-subcategories', 
+                    `❌ ERROR\n\n${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testBackendStatus() {
+            showResult('result-status', 'Checking backend...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/me`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('result-status', 
+                        `✅ Backend is running!\n\nYou are logged in as: ${data.data?.user?.name}\nRole: ${data.data?.user?.role}\n\nYou can now test the channel endpoints above.`, 
+                        'success'
+                    );
+                } else {
+                    showResult('result-status', 
+                        `⚠️ Backend is running but you're not logged in.\n\nPlease log in to the app first, then come back here.`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('result-status', 
+                    `❌ Cannot connect to backend\n\n${error.message}\n\nMake sure the backend is running on http://localhost:5000`, 
+                    'error'
+                );
+            }
+        }
+
+        // Auto-test backend status on load
+        window.addEventListener('load', () => {
+            setTimeout(testBackendStatus, 500);
+        });
+    </script>
+</body>
+</html>

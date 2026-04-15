@@ -1,0 +1,445 @@
+<!DOCTYPE html><html lang="en"><head>
+    <script>
+      window.FontAwesomeConfig = {
+        autoReplaceSvg: 'nest'
+      };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - AdminPanel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js">
+    </script>
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme:
+        {
+          extend:
+          {
+            fontFamily:
+            {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors:
+            {
+              background: '#F8FAFC',
+              sidebar: '#FFFFFF',
+              panel: '#FFFFFF',
+              'panel-hover': '#F1F5F9',
+              primary: '#b23a48',
+              'primary-hover': '#8f2e3a',
+              'sidebar-bg': '#d4737f',
+              'sidebar-header': '#8f2e3a',
+              'sidebar-active': '#6b1f28',
+              secondary: '#E2E8F0',
+              text:
+              {
+                main: '#0F172A',
+                muted: '#64748B',
+                dark: '#94A3B8'
+              },
+              border: '#E2E8F0',
+              success: '#22C55E',
+              warning: '#F97316',
+              danger: '#F43F5E',
+              info: '#3B82F6',
+              tech: '#3B82F6',
+              media: '#A855F7',
+              video: '#F97316',
+              seo: '#22C55E'
+            },
+            boxShadow:
+            {
+              'glow': '0 0 20px rgba(178, 58, 72, 0.1)',
+              'panel': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+              'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body
+      {
+        font-family: 'Inter', sans-serif;
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+
+      ::-webkit-scrollbar
+      {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track
+      {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb
+      {
+        background: #E2E8F0;
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover
+      {
+        background: #CBD5E1;
+      }
+
+      .hide-scroll::-webkit-scrollbar
+      {
+        display: none;
+      }
+
+      .hide-scroll
+      {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      @keyframes fadeIn
+      {
+        from
+        {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to
+        {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fade-in
+      {
+        animation: fadeIn 0.3s ease-out forwards;
+      }
+
+      @keyframes pulse-slow
+      {
+
+        0%,
+        100%
+        {
+          opacity: 1;
+        }
+
+        50%
+        {
+          opacity: .5;
+        }
+      }
+
+      .animate-pulse-slow
+      {
+        animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+    </style>
+    <style data-grapesjs-styles="true">* { box-sizing: border-box; } body {margin: 0;}body{font-family:Inter, sans-serif;background-color:rgb(248, 250, 252);color:rgb(15, 23, 42);}::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background-image:initial;background-position-x:initial;background-position-y:initial;background-size:initial;background-repeat:initial;background-attachment:initial;background-origin:initial;background-clip:initial;background-color:transparent;}::-webkit-scrollbar-thumb{background-image:initial;background-position-x:initial;background-position-y:initial;background-size:initial;background-repeat:initial;background-attachment:initial;background-origin:initial;background-clip:initial;background-color:rgb(226, 232, 240);border-top-left-radius:10px;border-top-right-radius:10px;border-bottom-right-radius:10px;border-bottom-left-radius:10px;}::-webkit-scrollbar-thumb:hover{background-image:initial;background-position-x:initial;background-position-y:initial;background-size:initial;background-repeat:initial;background-attachment:initial;background-origin:initial;background-clip:initial;background-color:rgb(203, 213, 225);}.hide-scroll::-webkit-scrollbar{display:none;}.hide-scroll{scrollbar-width:none;}.animate-fade-in{animation-duration:0.3s;animation-timing-function:ease-out;animation-delay:0s;animation-iteration-count:1;animation-direction:normal;animation-fill-mode:forwards;animation-play-state:running;animation-name:fadeIn;animation-timeline:auto;animation-range-start:normal;animation-range-end:normal;}.animate-pulse-slow{animation-duration:2s;animation-timing-function:cubic-bezier(0.4, 0, 0.6, 1);animation-delay:0s;animation-iteration-count:infinite;animation-direction:normal;animation-fill-mode:none;animation-play-state:running;animation-name:pulse-slow;animation-timeline:auto;animation-range-start:normal;animation-range-end:normal;}#imhblu{animation-delay:0.1s;}#i2d3o9{animation-delay:0.2s;}#ibkdlh{animation-delay:0.3s;}#iywqki{animation-delay:0.4s;}#idoy4b{animation-delay:0.5s;}#ibf2p2{animation-delay:0.6s;}#i2rqep{animation-delay:0.7s;}@keyframes fadeIn{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0px);}}@keyframes pulse-slow{0%, 100%{opacity:1;}50%{opacity:0.5;}}</style>
+  </head>
+
+  <body class="h-screen flex overflow-hidden selection:bg-primary/20"><div id="sidebar-backdrop" class="fixed inset-0 bg-black/20 z-40 hidden lg:hidden backdrop-blur-sm">
+    </div><aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-sidebar-bg text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-50 h-full"><div class="bg-sidebar-header px-6 py-5 flex items-center justify-between"><div class="flex items-center gap-2"><i class="fa-solid fa-grip text-white text-lg"></i><span class="font-mono font-bold text-sm tracking-wide">AdminPanel</span></div></div><nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6 hide-scroll"><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+            OVERVIEW</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-chart-line w-4"></i><span>Overview</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-list-check w-4"></i><span>Tasks</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-table-columns w-4"></i><span>Kanban
+                  Board</span></a></li></ul></div><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+            MANAGEMENT</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-users w-4"></i><span>Team
+                  Members</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-building w-4"></i><span>Departments</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-active transition-colors text-sm"><i class="fa-solid fa-file-lines w-4"></i><span>Reports</span></a></li></ul></div><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+            PERSONAL</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-clipboard-check w-4"></i><span>My
+                  Tasks</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-bell w-4"></i><span>Notifications</span></a></li></ul></div><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+            SYSTEM</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-gear w-4"></i><span>Settings</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-circle-question w-4"></i><span>Help</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-user w-4"></i><span>Profile</span></a></li></ul></div></nav><div class="px-4 py-4 border-t border-white/10 space-y-2"><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-right-from-bracket w-4"></i><span>Logout</span></a><button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm w-full"><i class="fa-solid fa-angles-left w-4"></i><span>Collapse</span></button></div></aside><main class="flex-1 flex flex-col h-full overflow-hidden relative bg-background"><header class="h-20 bg-sidebar/80 backdrop-blur-md border-b border-border flex items-center justify-between px-6 z-10 shrink-0 shadow-sm"><div class="flex items-center gap-4"><button class="lg:hidden text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-bars text-xl"></i></button><div><h1 class="text-xl font-bold text-text-main tracking-tight">Reports
+              &amp; Analytics</h1><p class="text-[13px] text-text-muted mt-0.5">Track project
+              performance and team productivity</p></div></div><div class="flex items-center gap-3 md:gap-4"><button class="flex items-center gap-2 bg-panel border border-border rounded-lg px-3 py-1.5 hover:bg-panel-hover transition-colors shadow-sm"><i class="fa-regular fa-bell text-text-muted text-[14px]"></i><span class="bg-danger/10 text-danger text-[10px] px-2 py-0.5 rounded-full font-bold border border-danger/20">2
+              New</span></button></div></header><div class="px-4 md:px-6 py-4 md:py-5 border-b border-border flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center bg-sidebar shrink-0"><div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto"><div class="relative"><button class="w-full sm:w-auto flex items-center justify-center gap-2 bg-panel border border-border rounded-lg px-4 py-2 text-[13px] text-text-main hover:bg-panel-hover hover:border-primary/30 transition-all shadow-sm"><i class="fa-regular fa-calendar text-text-muted text-[12px]"></i>
+              Last 30 Days
+              <i class="fa-solid fa-chevron-down text-text-muted text-[10px] ml-1"></i></button></div><div class="relative"><button class="w-full sm:w-auto flex items-center justify-center gap-2 bg-panel border border-border rounded-lg px-4 py-2 text-[13px] text-text-main hover:bg-panel-hover hover:border-primary/30 transition-all shadow-sm"><i class="fa-solid fa-building text-text-muted text-[12px]"></i>
+              All Departments
+              <i class="fa-solid fa-chevron-down text-text-muted text-[10px] ml-1"></i></button></div></div><div class="flex items-center gap-3 w-full lg:w-auto justify-between sm:justify-end"><button class="flex items-center justify-center gap-2 bg-panel border border-border rounded-lg px-4 py-2 text-[13px] text-text-main hover:bg-panel-hover hover:border-danger/30 transition-all shadow-sm"><i class="fa-solid fa-file-pdf text-danger text-[12px]"></i>
+            Export PDF
+          </button><button class="flex items-center justify-center gap-2 bg-panel border border-border rounded-lg px-4 py-2 text-[13px] text-text-main hover:bg-panel-hover hover:border-success/30 transition-all shadow-sm"><i class="fa-solid fa-file-csv text-success text-[12px]"></i>
+            Export CSV
+          </button></div></div><div id="content-area" class="flex-1 overflow-auto p-6 hide-scroll relative"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"><div class="bg-panel border border-border rounded-xl p-5 animate-fade-in shadow-card hover:shadow-lg transition-all"><div class="flex items-center justify-between mb-4"><h3 class="text-[13px] font-semibold text-text-muted">Total Tasks
+              </h3><div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><i class="fa-solid fa-list-check text-[16px]"></i></div></div><div class="flex items-end gap-3"><h2 class="text-3xl font-bold text-text-main">1,248</h2></div></div><div id="imhblu" class="bg-panel border border-border rounded-xl p-5 animate-fade-in shadow-card hover:shadow-lg transition-all"><div class="flex items-center justify-between mb-4"><h3 class="text-[13px] font-semibold text-text-muted">Completed
+                Tasks</h3><div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center text-success"><i class="fa-solid fa-check-double text-[16px]"></i></div></div><div class="flex items-end gap-3"><h2 class="text-3xl font-bold text-text-main">892</h2></div></div><div id="i2d3o9" class="bg-panel border border-border rounded-xl p-5 animate-fade-in shadow-card hover:shadow-lg transition-all"><div class="flex items-center justify-between mb-4"><h3 class="text-[13px] font-semibold text-text-muted">Overdue
+                Tasks</h3><div class="w-10 h-10 rounded-lg bg-danger/10 flex items-center justify-center text-danger"><i class="fa-solid fa-clock-rotate-left text-[16px]"></i></div></div><div class="flex items-end gap-3"><h2 class="text-3xl font-bold text-text-main">45</h2></div></div><div id="ibkdlh" class="bg-panel border border-border rounded-xl p-5 animate-fade-in shadow-card hover:shadow-lg transition-all"><div class="flex items-center justify-between mb-4"><h3 class="text-[13px] font-semibold text-text-muted">Avg.
+                Completion Time</h3><div class="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center text-info"><i class="fa-solid fa-stopwatch text-[16px]"></i></div></div><div class="flex items-end gap-3"><h2 class="text-3xl font-bold text-text-main">3.2d</h2></div></div></div><div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6"><div id="iywqki" class="bg-panel border border-border rounded-xl p-4 md:p-6 lg:col-span-1 flex flex-col animate-fade-in shadow-card hover:shadow-lg transition-all"><div class="flex items-center justify-between mb-4"><h3 class="text-sm md:text-[15px] font-semibold text-text-main">
+                Tasks by Status</h3><button class="text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-ellipsis"></i></button></div><div id="statusChart" class="flex-1 min-h-[200px] sm:min-h-[250px] md:min-h-[280px] w-full relative"><div class="absolute inset-0 flex items-center justify-center skeleton-loader"><div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-8 border-secondary border-t-primary animate-spin">
+                </div></div></div></div><div id="idoy4b" class="bg-panel border border-border rounded-xl p-4 md:p-6 lg:col-span-2 flex flex-col animate-fade-in shadow-card hover:shadow-lg transition-all"><div class="flex items-center justify-between mb-4"><h3 class="text-sm md:text-[15px] font-semibold text-text-main">
+                Department Throughput</h3><button class="text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-ellipsis"></i></button></div><div id="throughputChart" class="flex-1 min-h-[200px] sm:min-h-[250px] md:min-h-[280px] w-full relative overflow-hidden"><div class="absolute inset-0 flex items-end justify-around pb-4 px-2 sm:px-4 skeleton-loader gap-1 sm:gap-2"><div class="w-1/6 bg-secondary h-1/2 rounded-t animate-pulse-slow">
+                </div><div class="w-1/6 bg-secondary h-3/4 rounded-t animate-pulse-slow">
+                </div><div class="w-1/6 bg-secondary h-1/4 rounded-t animate-pulse-slow">
+                </div><div class="w-1/6 bg-secondary h-2/3 rounded-t animate-pulse-slow">
+                </div><div class="w-1/6 bg-secondary h-full rounded-t animate-pulse-slow">
+                </div></div></div></div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6"><div id="ibf2p2" class="bg-panel border border-border rounded-xl p-4 md:p-6 flex flex-col animate-fade-in shadow-card hover:shadow-lg transition-all"><div class="flex items-center justify-between mb-4"><h3 class="text-sm md:text-[15px] font-semibold text-text-main">
+                Overdue Trends</h3><button class="text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-ellipsis"></i></button></div><div id="overdueChart" class="flex-1 min-h-[200px] sm:min-h-[250px] md:min-h-[280px] w-full relative overflow-hidden"><div class="absolute inset-0 flex flex-col justify-between py-4 px-2 sm:px-4 skeleton-loader"><div class="w-full h-0.5 bg-secondary/50"></div><div class="w-full h-0.5 bg-secondary/50"></div><div class="w-full h-0.5 bg-secondary/50"></div><div class="w-full h-0.5 bg-secondary/50"></div><div class="w-full h-[2px] bg-secondary/80 mt-2"></div></div></div></div><div id="i2rqep" class="bg-panel border border-border rounded-xl overflow-hidden flex flex-col animate-fade-in shadow-card hover:shadow-lg transition-all"><div class="p-4 md:p-6 border-b border-border flex items-center justify-between"><h3 class="text-sm md:text-[15px] font-semibold text-text-main">
+                Team Workloads</h3><a href="#" class="text-[11px] md:text-[12px] text-primary hover:text-primary-hover font-semibold transition-colors">View
+                All</a></div><div class="overflow-x-auto flex-1"><table class="w-full text-left border-collapse min-w-[500px]"><thead><tr class="border-b border-border bg-background/50"><th class="px-6 py-3 text-[11px] font-bold text-text-dark uppercase tracking-wider">
+                      Member</th><th class="px-6 py-3 text-[11px] font-bold text-text-dark uppercase tracking-wider">
+                      Active Tasks</th><th class="px-6 py-3 text-[11px] font-bold text-text-dark uppercase tracking-wider">
+                      Capacity</th></tr></thead><tbody class="divide-y divide-border"><tr class="hover:bg-panel-hover transition-colors"><td class="px-6 py-3"><div class="flex items-center gap-3"><img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="Avatar" class="w-8 h-8 rounded-lg object-cover border border-border"><p class="text-[13px] font-medium text-text-main">Sarah
+                          Jenkins</p></div></td><td class="px-6 py-3 text-[13px] text-text-main font-medium">
+                      12</td><td class="px-6 py-3"><div class="flex items-center gap-2"><div class="flex-1 h-2 bg-background rounded-full overflow-hidden w-24 border border-border"><div class="h-full bg-warning w-[85%] rounded-full">
+                          </div></div><span class="text-[12px] text-warning font-bold">85%</span></div></td></tr><tr class="hover:bg-panel-hover transition-colors"><td class="px-6 py-3"><div class="flex items-center gap-3"><img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="Avatar" class="w-8 h-8 rounded-lg object-cover border border-border"><p class="text-[13px] font-medium text-text-main">Marcus
+                          Torres</p></div></td><td class="px-6 py-3 text-[13px] text-text-main font-medium">4
+                    </td><td class="px-6 py-3"><div class="flex items-center gap-2"><div class="flex-1 h-2 bg-background rounded-full overflow-hidden w-24 border border-border"><div class="h-full bg-success w-[45%] rounded-full">
+                          </div></div><span class="text-[12px] text-success font-bold">45%</span></div></td></tr><tr class="hover:bg-panel-hover transition-colors"><td class="px-6 py-3"><div class="flex items-center gap-3"><img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" alt="Avatar" class="w-8 h-8 rounded-lg object-cover border border-border"><p class="text-[13px] font-medium text-text-main">David
+                          Chen</p></div></td><td class="px-6 py-3 text-[13px] text-text-main font-medium">
+                      18</td><td class="px-6 py-3"><div class="flex items-center gap-2"><div class="flex-1 h-2 bg-background rounded-full overflow-hidden w-24 border border-border"><div class="h-full bg-danger w-[95%] rounded-full">
+                          </div></div><span class="text-[12px] text-danger font-bold">95%</span></div></td></tr><tr class="hover:bg-panel-hover transition-colors"><td class="px-6 py-3"><div class="flex items-center gap-3"><img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg" alt="Avatar" class="w-8 h-8 rounded-lg object-cover border border-border"><p class="text-[13px] font-medium text-text-main">Emily
+                          Davis</p></div></td><td class="px-6 py-3 text-[13px] text-text-main font-medium">8
+                    </td><td class="px-6 py-3"><div class="flex items-center gap-2"><div class="flex-1 h-2 bg-background rounded-full overflow-hidden w-24 border border-border"><div class="h-full bg-success w-[60%] rounded-full">
+                          </div></div><span class="text-[12px] text-success font-bold">60%</span></div></td></tr></tbody></table></div></div></div><div id="no-data-state" class="hidden h-64 flex flex-col items-center justify-center py-16 text-center bg-panel border border-border rounded-xl shadow-card"><div class="w-16 h-16 bg-background rounded-full flex items-center justify-center text-text-dark mb-4 border border-border shadow-sm"><i class="fa-solid fa-chart-bar text-xl"></i></div><h3 class="text-[15px] font-semibold text-text-main mb-2">No Data
+            Available</h3><p class="text-[12px] text-text-muted max-w-sm mb-4">There is not
+            enough data to generate reports for the selected time range or
+            filters.</p><button class="px-4 py-2 bg-secondary hover:bg-border text-text-main text-[12px] font-medium rounded-lg border border-border transition-all">Clear
+            Filters</button></div></div></main><script>
+      function toggleSidebar()
+      {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        sidebar.classList.toggle('-translate-x-full');
+        backdrop.classList.toggle('hidden');
+      }
+
+      window.addEventListener('load', function()
+      {
+        setTimeout(() =>
+        {
+          document.querySelectorAll('.skeleton-loader').forEach(el => el
+            .style.display = 'none');
+
+          const commonLayout = {
+            plot_bgcolor: 'transparent',
+            paper_bgcolor: 'transparent',
+            font:
+            {
+              color: '#64748B',
+              family: 'Inter, sans-serif',
+              size: 11
+            },
+            margin:
+            {
+              t: 10,
+              r: 10,
+              b: 30,
+              l: 30
+            },
+            showlegend: false
+          };
+
+          const commonConfig = {
+            responsive: true,
+            displayModeBar: false
+          };
+
+          try
+          {
+            const statusData = [
+            {
+              values: [45, 25, 20, 10],
+              labels: ['Completed', 'In Progress', 'To Do',
+                'Blocked'
+              ],
+              type: 'pie',
+              hole: .6,
+              marker:
+              {
+                colors: ['#22C55E', '#3B82F6', '#b23a48',
+                  '#F43F5E'],
+                line:
+                {
+                  color: '#FFFFFF',
+                  width: 2
+                }
+              },
+              textinfo: 'none',
+              hoverinfo: 'label+percent'
+            }];
+
+            const statusLayout = {
+              ...commonLayout,
+              margin:
+              {
+                t: 10,
+                r: 10,
+                b: 10,
+                l: 10
+              },
+              showlegend: true,
+              legend:
+              {
+                orientation: 'h',
+                y: -0.1,
+                x: 0.5,
+                xanchor: 'center',
+                font:
+                {
+                  color: '#0F172A'
+                }
+              }
+            };
+
+            Plotly.newPlot('statusChart', statusData, statusLayout,
+              commonConfig);
+          }
+          catch (e)
+          {
+            console.error('Error rendering Status Chart', e);
+          }
+
+          try
+          {
+            const throughputData = [
+            {
+              type: 'bar',
+              x: ['Design', 'Engineering', 'Marketing', 'Sales',
+                'HR'
+              ],
+              y: [120, 250, 180, 150, 90],
+              marker:
+              {
+                color: '#b23a48',
+                cornerRadius: 6
+              },
+              hoverinfo: 'y'
+            }];
+
+            const throughputLayout = {
+              ...commonLayout,
+              xaxis:
+              {
+                showgrid: false,
+                zeroline: false,
+                tickangle: 0,
+                color: '#0F172A'
+              },
+              yaxis:
+              {
+                showgrid: true,
+                gridcolor: '#E2E8F0',
+                zeroline: false
+              }
+            };
+
+            Plotly.newPlot('throughputChart', throughputData,
+              throughputLayout, commonConfig);
+          }
+          catch (e)
+          {
+            console.error('Error rendering Throughput Chart', e);
+          }
+
+          try
+          {
+            const overdueData = [
+            {
+              type: 'scatter',
+              mode: 'lines+markers',
+              x: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'],
+              y: [15, 22, 18, 25, 12, 8],
+              line:
+              {
+                color: '#F43F5E',
+                width: 3,
+                shape: 'spline'
+              },
+              marker:
+              {
+                size: 6,
+                color: '#FFFFFF',
+                line:
+                {
+                  color: '#F43F5E',
+                  width: 2
+                }
+              },
+              fill: 'tozeroy',
+              fillcolor: 'rgba(244, 63, 94, 0.1)'
+            }];
+
+            const overdueLayout = {
+              ...commonLayout,
+              xaxis:
+              {
+                showgrid: false,
+                zeroline: false,
+                color: '#0F172A'
+              },
+              yaxis:
+              {
+                showgrid: true,
+                gridcolor: '#E2E8F0',
+                zeroline: false
+              }
+            };
+
+            Plotly.newPlot('overdueChart', overdueData, overdueLayout,
+              commonConfig);
+          }
+          catch (e)
+          {
+            console.error('Error rendering Overdue Chart', e);
+          }
+
+        }, 1000);
+      });
+    </script><script>
+      window.FontAwesomeConfig = {
+        autoReplaceSvg: 'nest'
+      };
+    </script><script>
+      tailwind.config = {
+        theme:
+        {
+          extend:
+          {
+            fontFamily:
+            {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors:
+            {
+              background: '#F8FAFC',
+              sidebar: '#FFFFFF',
+              panel: '#FFFFFF',
+              'panel-hover': '#F1F5F9',
+              primary: '#b23a48',
+              'primary-hover': '#8f2e3a',
+              'sidebar-bg': '#d4737f',
+              'sidebar-header': '#8f2e3a',
+              'sidebar-active': '#6b1f28',
+              secondary: '#E2E8F0',
+              text:
+              {
+                main: '#0F172A',
+                muted: '#64748B',
+                dark: '#94A3B8'
+              },
+              border: '#E2E8F0',
+              success: '#22C55E',
+              warning: '#F97316',
+              danger: '#F43F5E',
+              info: '#3B82F6',
+              tech: '#3B82F6',
+              media: '#A855F7',
+              video: '#F97316',
+              seo: '#22C55E'
+            },
+            boxShadow:
+            {
+              'glow': '0 0 20px rgba(178, 58, 72, 0.1)',
+              'panel': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+              'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+            }
+          }
+        }
+      }
+    </script></body></html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      window.FontAwesomeConfig = { autoReplaceSvg: 'nest' };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors: {
+              background: '#F8FAFC',
+              sidebar: '#FFFFFF',
+              panel: '#FFFFFF',
+              'panel-hover': '#F8FAFC',
+              primary: '#b23a48',
+              'primary-hover': '#8f2e3a',
+              'sidebar-bg': '#d4737f',
+              'sidebar-header': '#8f2e3a',
+              'sidebar-active': '#6b1f28',
+              secondary: '#F1F5F9',
+              text: {
+                main: '#0F172A',
+                muted: '#64748B',
+                dark: '#94A3B8'
+              },
+              border: '#E2E8F0',
+              success: '#22C55E',
+              warning: '#F97316',
+              danger: '#F43F5E',
+              info: '#3B82F6',
+              'accent-purple': '#A855F7',
+              'accent-orange': '#F97316',
+              'accent-blue': '#3B82F6'
+            },
+            boxShadow: {
+              'glow': '0 0 20px rgba(178, 58, 72, 0.1)',
+              'panel': '0 1px 3px rgba(0, 0, 0, 0.05)',
+              'soft': '0 1px 2px rgba(0, 0, 0, 0.05)',
+            },
+            borderRadius: {
+              'card': '12px',
+              'btn': '8px',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; color: #0F172A; }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+      .hide-scroll::-webkit-scrollbar { display: none; }
+      .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+      @keyframes slideInRight {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+      }
+      .animate-slide-in-right { animation: slideInRight 0.3s ease-out forwards; }
+      #iobo3c { animation-delay: 0.1s; }
+      #iz5t91 { animation-delay: 0.2s; }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden selection:bg-primary/20 text-text-main bg-background">
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/20 z-40 hidden lg:hidden backdrop-blur-sm"></div>
+    
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-sidebar-bg text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-50 h-screen">
+      <div class="bg-sidebar-header px-6 py-5 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-grip text-white text-lg"></i>
+          <span class="font-mono font-bold text-sm tracking-wide">AdminPanel</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6 hide-scroll">
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">OVERVIEW</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-chart-line w-4"></i><span>Overview</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-list-check w-4"></i><span>Tasks</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-table-columns w-4"></i><span>Kanban Board</span></a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">MANAGEMENT</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-users w-4"></i><span>Team Members</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-building w-4"></i><span>Departments</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-file-lines w-4"></i><span>Reports</span></a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">PERSONAL</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-clipboard-check w-4"></i><span>My Tasks</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-active transition-colors text-sm"><i class="fa-solid fa-bell w-4"></i><span>Notifications</span></a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">SYSTEM</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-gear w-4"></i><span>Settings</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-circle-question w-4"></i><span>Help</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-user w-4"></i><span>Profile</span></a></li>
+          </ul>
+        </div>
+      </nav>
+      
+      <div class="px-4 py-4 border-t border-white/10 space-y-2 shrink-0">
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-right-from-bracket w-4"></i><span>Logout</span></a>
+        <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm w-full"><i class="fa-solid fa-angles-left w-4"></i><span>Collapse</span></button>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-background w-full">
+      <header class="h-20 bg-white/80 backdrop-blur-md border-b border-border flex items-center justify-between px-6 z-10 shrink-0 shadow-sm">
+        <div class="flex items-center gap-4">
+          <button class="lg:hidden text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-bars text-xl"></i></button>
+          <div>
+            <h1 class="text-xl font-bold text-text-main tracking-tight">Notifications</h1>
+            <p class="text-[13px] text-text-muted mt-0.5">Stay updated with your team's activities</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 md:gap-4">
+          <button class="flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-3 py-1.5 transition-colors hover:bg-primary/15">
+            <i class="fa-solid fa-bell text-primary text-[14px]"></i>
+            <span class="bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">3</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-hidden flex flex-col lg:flex-row relative">
+        <div class="flex-1 flex flex-col h-full overflow-hidden border-r border-border bg-background">
+          <div class="px-6 py-4 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0 bg-white/50 backdrop-blur z-10">
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto hide-scroll">
+              <button class="whitespace-nowrap px-4 py-2 rounded-btn bg-primary text-white text-[13px] font-medium shadow-sm">All <span class="ml-1 bg-white/20 text-white px-1.5 py-0.5 rounded text-[10px]">12</span></button>
+              <button class="whitespace-nowrap px-4 py-2 rounded-btn bg-white border border-border text-text-muted hover:text-text-main hover:bg-secondary transition-colors text-[13px] font-medium">Unread <span class="ml-1 bg-secondary text-text-muted px-1.5 py-0.5 rounded text-[10px]">3</span></button>
+              <div class="w-px h-6 bg-border mx-2 hidden sm:block"></div>
+              <button class="whitespace-nowrap px-3 py-2 rounded-btn bg-transparent border border-transparent text-text-muted hover:text-text-main hover:bg-secondary transition-colors text-[13px] flex items-center gap-2"><i class="fa-solid fa-at text-[12px]"></i> Mentions</button>
+              <button class="whitespace-nowrap px-3 py-2 rounded-btn bg-transparent border border-transparent text-text-muted hover:text-text-main hover:bg-secondary transition-colors text-[13px] flex items-center gap-2"><i class="fa-solid fa-list-check text-[12px]"></i> Assignments</button>
+            </div>
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+              <button class="text-[13px] text-text-muted hover:text-text-main transition-colors flex items-center gap-2"><i class="fa-solid fa-check-double text-[12px]"></i> Mark all read</button>
+              <button class="w-8 h-8 rounded-btn border border-border flex items-center justify-center text-text-muted hover:text-text-main hover:bg-secondary transition-colors bg-white"><i class="fa-solid fa-filter text-[12px]"></i></button>
+            </div>
+          </div>
+
+          <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 hide-scroll">
+            <h3 class="text-[12px] font-semibold text-text-dark uppercase tracking-wider mb-3 mt-2 px-2">Today</h3>
+            
+            <div class="group relative bg-white hover:bg-secondary/50 border border-primary/30 rounded-card p-4 transition-all cursor-pointer animate-fade-in shadow-soft hover:shadow-md">
+              <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"></div>
+              <div class="flex gap-4">
+                <div class="relative shrink-0">
+                  <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="User" class="w-10 h-10 rounded-full object-cover border-2 border-border">
+                  <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-info rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                    <i class="fa-solid fa-comment text-white text-[9px]"></i>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <p class="text-[14px] text-text-main leading-snug"><span class="font-semibold">Sarah Jenkins</span> mentioned you in a comment on <span class="font-medium text-primary hover:underline">Website Redesign Homepage</span></p>
+                    <span class="text-[11px] text-text-muted whitespace-nowrap shrink-0">10m ago</span>
+                  </div>
+                  <p class="text-[13px] text-text-muted line-clamp-2 mb-3 bg-secondary/50 p-2.5 rounded-btn border border-border/50">"@Ronald R. Can you review the latest mockup for the hero section? I've updated the CTA buttons as discussed."</p>
+                  <div class="flex items-center gap-3"><button class="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-btn text-[12px] font-medium transition-colors">Reply</button><button class="px-3 py-1.5 bg-transparent hover:bg-secondary text-text-muted hover:text-text-main rounded-btn text-[12px] font-medium transition-colors">Mark Read</button></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="iobo3c" class="group relative bg-white hover:bg-secondary/50 border border-primary/30 rounded-card p-4 transition-all cursor-pointer animate-fade-in shadow-soft hover:shadow-md">
+              <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"></div>
+              <div class="flex gap-4">
+                <div class="relative shrink-0">
+                  <div class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center border-2 border-success/20">
+                    <i class="fa-solid fa-check text-success"></i>
+                  </div>
+                  <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                    <i class="fa-solid fa-clipboard-check text-white text-[9px]"></i>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <p class="text-[14px] text-text-main leading-snug">Task <span class="font-medium text-primary hover:underline">API Integration Testing</span> was approved by <span class="font-semibold">Marcus Torres</span></p>
+                    <span class="text-[11px] text-text-muted whitespace-nowrap shrink-0">1h ago</span>
+                  </div>
+                  <div class="flex items-center gap-2 mt-2"><span class="px-2 py-1 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 rounded text-[11px] font-medium">Tech</span><span class="px-2 py-1 bg-secondary rounded text-[11px] text-text-muted font-medium border border-border">Backend V2</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="iz5t91" class="group relative bg-white hover:bg-secondary/50 border border-primary/30 rounded-card p-4 transition-all cursor-pointer animate-fade-in shadow-soft hover:shadow-md">
+              <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full"></div>
+              <div class="flex gap-4">
+                <div class="relative shrink-0">
+                  <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" alt="User" class="w-10 h-10 rounded-full object-cover border-2 border-border">
+                  <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-warning rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                    <i class="fa-solid fa-user-plus text-white text-[9px]"></i>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <p class="text-[14px] text-text-main leading-snug"><span class="font-semibold">David Chen</span> assigned you a new task: <span class="font-medium text-text-main">Update User Documentation</span></p>
+                    <span class="text-[11px] text-text-muted whitespace-nowrap shrink-0">3h ago</span>
+                  </div>
+                  <div class="flex items-center gap-3 mt-3"><span class="flex items-center gap-1.5 text-[12px] text-warning font-medium"><i class="fa-regular fa-calendar"></i> Due Oct 24</span><span class="w-1 h-1 rounded-full bg-border"></span><span class="px-2 py-0.5 bg-danger/10 text-danger border border-danger/20 rounded text-[11px] font-medium">High Priority</span></div>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-[12px] font-semibold text-text-dark uppercase tracking-wider mb-3 mt-6 px-2">Yesterday</h3>
+            
+            <div class="group relative bg-white hover:bg-secondary/50 border border-border rounded-card p-4 transition-all cursor-pointer opacity-60 hover:opacity-100 shadow-soft">
+              <div class="flex gap-4">
+                <div class="relative shrink-0">
+                  <div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center border border-border">
+                    <i class="fa-solid fa-file-arrow-up text-text-muted"></i>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <p class="text-[14px] text-text-muted leading-snug"><span class="font-medium text-text-main">Emily Davis</span> uploaded 3 new files to <span class="font-medium text-text-main hover:underline">Marketing Assets</span></p>
+                    <span class="text-[11px] text-text-dark whitespace-nowrap shrink-0">Yesterday, 2:45 PM</span>
+                  </div>
+                  <div class="flex gap-2 mt-2">
+                    <div class="flex items-center gap-1.5 px-2 py-1 bg-secondary rounded border border-border">
+                      <i class="fa-solid fa-image text-info text-[10px]"></i><span class="text-[11px] text-text-muted">hero-bg-v2.png</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 px-2 py-1 bg-secondary rounded border border-border">
+                      <span class="text-[11px] text-text-muted">+2 more</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="group relative bg-white hover:bg-secondary/50 border border-border rounded-card p-4 transition-all cursor-pointer opacity-60 hover:opacity-100 shadow-soft">
+              <div class="flex gap-4">
+                <div class="relative shrink-0">
+                  <div class="w-10 h-10 rounded-full bg-danger/10 flex items-center justify-center border-2 border-danger/20">
+                    <i class="fa-solid fa-clock-rotate-left text-danger"></i>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <p class="text-[14px] text-text-muted leading-snug">Task <span class="font-medium text-text-main hover:underline">Quarterly Report Draft</span> is overdue by 2 days</p>
+                    <span class="text-[11px] text-text-dark whitespace-nowrap shrink-0">Yesterday, 9:00 AM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="slide-over-backdrop" class="fixed inset-0 bg-black/20 z-20 hidden backdrop-blur-sm lg:hidden"></div>
+
+        <div id="slide-over-panel" class="fixed lg:static inset-y-0 right-0 w-full sm:w-[400px] md:w-[450px] lg:w-[450px] bg-white border-l border-border transform translate-x-full lg:translate-x-0 transition-transform duration-300 z-30 flex flex-col shadow-[-10px_0_30px_rgba(0,0,0,0.1)] lg:shadow-none">
+          <div class="h-[72px] px-6 border-b border-border flex items-center justify-between bg-white shrink-0">
+            <div class="flex items-center gap-3">
+              <h2 class="text-[16px] font-semibold text-text-main">Notification Details</h2>
+            </div>
+            <div class="flex items-center gap-2"><button class="w-8 h-8 rounded-btn hover:bg-secondary flex items-center justify-center text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-ellipsis-vertical"></i></button><button class="md:hidden w-8 h-8 rounded-btn hover:bg-secondary flex items-center justify-center text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-xmark"></i></button></div>
+          </div>
+
+          <div class="flex-1 overflow-y-auto p-6 hide-scroll bg-background">
+            <div class="flex items-start gap-4 mb-6 pb-6 border-b border-border">
+              <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="User" class="w-12 h-12 rounded-full object-cover border-2 border-primary/30 shadow-sm">
+              <div>
+                <h3 class="text-[15px] font-medium text-text-main mb-1">Sarah Jenkins</h3>
+                <p class="text-[13px] text-text-muted">Mentioned you in a comment</p>
+                <p class="text-[11px] text-text-dark mt-1">Oct 24, 2023 at 10:45 AM</p>
+              </div>
+            </div>
+
+            <div class="bg-white border border-border rounded-card p-5 mb-6 shadow-soft">
+              <div class="flex items-center gap-2 mb-4"><i class="fa-solid fa-layer-group text-primary text-[14px]"></i><span class="text-[13px] font-medium text-text-main">Website Redesign Homepage</span><span class="px-2 py-0.5 bg-warning/10 text-warning border border-warning/20 rounded text-[10px] font-bold ml-auto">In Progress</span></div>
+              <div class="bg-secondary/50 rounded-btn p-4 border border-border mb-4 relative">
+                <div class="absolute -left-2 top-4 w-4 h-4 bg-secondary/50 border-t border-l border-border transform -rotate-45"></div>
+                <p class="text-[14px] text-text-main leading-relaxed relative z-10">"Ronald R. Can you review the latest mockup for the hero section? I've updated the CTA buttons as discussed in yesterday's sync."</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="rounded-btn border border-border overflow-hidden group cursor-pointer relative bg-white shadow-soft hover:shadow-md transition-shadow">
+                  <div class="h-20 bg-secondary flex items-center justify-center">
+                    <i class="fa-solid fa-image text-text-muted text-xl group-hover:scale-110 transition-transform"></i>
+                  </div>
+                  <div class="p-2 bg-white border-t border-border">
+                    <p class="text-[11px] text-text-main truncate">hero-v2-dark.png</p>
+                  </div>
+                </div>
+              </div>
+              <button class="w-full py-2.5 bg-primary hover:bg-primary-hover text-white text-[13px] font-medium rounded-btn transition-colors flex items-center justify-center gap-2 shadow-sm"><i class="fa-solid fa-arrow-up-right-from-square text-[12px]"></i> Open Task</button>
+            </div>
+
+            <div>
+              <h4 class="text-[12px] font-semibold text-text-dark uppercase tracking-wider mb-3">Quick Reply</h4>
+              <div class="bg-white border border-border rounded-card overflow-hidden focus-within:border-primary transition-colors shadow-soft">
+                <textarea rows="3" placeholder="Write a reply..." class="w-full bg-transparent p-4 text-[13px] text-text-main placeholder-text-muted focus:outline-none resize-none"></textarea>
+                <div class="px-4 py-3 bg-secondary/30 border-t border-border flex items-center justify-between">
+                  <div class="flex items-center gap-2"><button class="w-8 h-8 rounded hover:bg-secondary flex items-center justify-center text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-paperclip text-[13px]"></i></button><button class="w-8 h-8 rounded hover:bg-secondary flex items-center justify-center text-text-muted hover:text-text-main transition-colors"><i class="fa-regular fa-face-smile text-[13px]"></i></button></div>
+                  <button class="px-4 py-1.5 bg-primary hover:bg-primary-hover text-white text-[12px] font-medium rounded-btn transition-colors shadow-sm">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        sidebar.classList.toggle('-translate-x-full');
+        backdrop.classList.toggle('hidden');
+      }
+
+      function toggleSlideOver() {
+        const panel = document.getElementById('slide-over-panel');
+        const backdrop = document.getElementById('slide-over-backdrop');
+        panel.classList.toggle('translate-x-full');
+        backdrop.classList.toggle('hidden');
+      }
+    </script>
+</body>
+</html>

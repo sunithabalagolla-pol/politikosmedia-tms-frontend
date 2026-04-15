@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Multiple Tasks - Taskly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#40916c',
+                        'primary-hover': '#2d6a4f',
+                        'primary-light': '#d8f3dc',
+                        gray: {
+                            50: '#F8FAFC',
+                            100: '#F1F5F9',
+                            200: '#E2E8F0',
+                            300: '#CBD5E1',
+                            400: '#94A3B8',
+                            500: '#64748B',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1E293B',
+                            900: '#0F172A',
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #64748B; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-gray-900 h-screen flex items-center justify-center p-4">
+
+    <!-- Modal Container -->
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[90vh] overflow-hidden">
+        
+        <!-- Header -->
+        <div class="px-6 py-5 border-b border-gray-100 flex items-start justify-between shrink-0">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-1">Create Tasks</h2>
+                <div class="flex items-center text-sm">
+                    <span class="text-gray-500">Website Redesign</span>
+                    <span class="mx-2 text-gray-300">•</span>
+                    <span class="text-primary font-medium">5 tasks</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 px-3 py-1.5 bg-primary-light text-primary rounded-full text-sm font-medium">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <span>5 Tasks</span>
+                </div>
+                <button class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-4 pr-4 custom-scrollbar">
+            
+            <!-- Collapsed Task 1 -->
+            <div class="border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:border-gray-300 transition-colors cursor-pointer bg-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-500">1</div>
+                    <span class="text-gray-400 italic text-sm">Task 1 — click to fill in details</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                    <button class="text-red-400 hover:text-red-600 transition-colors"><i class="fa-solid fa-xmark text-sm"></i></button>
+                    <i class="fa-solid fa-caret-down text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Collapsed Task 2 -->
+            <div class="border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:border-gray-300 transition-colors cursor-pointer bg-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-500">2</div>
+                    <span class="text-gray-400 italic text-sm">Task 2 — click to fill in details</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                    <button class="text-red-400 hover:text-red-600 transition-colors"><i class="fa-solid fa-xmark text-sm"></i></button>
+                    <i class="fa-solid fa-caret-down text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Collapsed Task 3 -->
+            <div class="border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:border-gray-300 transition-colors cursor-pointer bg-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-500">3</div>
+                    <span class="text-gray-400 italic text-sm">Task 3 — click to fill in details</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                    <button class="text-red-400 hover:text-red-600 transition-colors"><i class="fa-solid fa-xmark text-sm"></i></button>
+                    <i class="fa-solid fa-caret-down text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Collapsed Task 4 -->
+            <div class="border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:border-gray-300 transition-colors cursor-pointer bg-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-500">4</div>
+                    <span class="text-gray-400 italic text-sm">Task 4 — click to fill in details</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                    <button class="text-red-400 hover:text-red-600 transition-colors"><i class="fa-solid fa-xmark text-sm"></i></button>
+                    <i class="fa-solid fa-caret-down text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Expanded Task 5 -->
+            <div class="border-2 border-primary rounded-xl bg-primary-light/10 overflow-hidden">
+                <!-- Expanded Header -->
+                <div class="p-4 flex items-center justify-between cursor-pointer border-b border-primary/20 bg-white/50">
+                    <div class="flex items-center gap-4">
+                        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-white shadow-sm">5</div>
+                        <span class="text-primary/60 italic text-sm font-medium">Task 5 — click to fill in details</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                        <button class="text-red-400 hover:text-red-600 transition-colors"><i class="fa-solid fa-xmark text-sm"></i></button>
+                        <i class="fa-solid fa-caret-up text-primary"></i>
+                    </div>
+                </div>
+                
+                <!-- Expanded Form -->
+                <div class="p-5 space-y-5 bg-white">
+                    <!-- Task Title -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Task Title <span class="text-red-500">*</span></label>
+                        <input type="text" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors" placeholder="What needs to be done?">
+                    </div>
+
+                    <!-- Row 1: Dept, Priority, Assignee -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Department</label>
+                            <div class="relative">
+                                <select class="w-full pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 appearance-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors cursor-pointer">
+                                    <option>Media</option>
+                                    <option>Tech</option>
+                                    <option>Design</option>
+                                    <option>SEO</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Priority</label>
+                            <div class="relative">
+                                <select class="w-full pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 appearance-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors cursor-pointer">
+                                    <option>Medium</option>
+                                    <option>Low</option>
+                                    <option>High</option>
+                                    <option>Urgent</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Assignee</label>
+                            <div class="relative">
+                                <select class="w-full pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 appearance-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors cursor-pointer">
+                                    <option>Alex Morgan</option>
+                                    <option>Sarah J.</option>
+                                    <option>Unassigned</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Due Date, Status -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Due Date</label>
+                            <div class="relative">
+                                <input type="date" class="w-full pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors cursor-pointer text-gray-400">
+                                <i class="fa-regular fa-calendar absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Initial Status</label>
+                            <div class="relative">
+                                <select class="w-full pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 appearance-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors cursor-pointer">
+                                    <option>Backlog</option>
+                                    <option>To Do</option>
+                                    <option>In Progress</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Another Task Button -->
+            <button class="w-full py-4 border-2 border-dashed border-primary/30 rounded-xl text-sm font-medium text-primary hover:bg-primary-light/50 hover:border-primary/50 transition-all flex items-center justify-center gap-2 bg-white">
+                <i class="fa-solid fa-plus"></i> Add Another Task
+            </button>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between shrink-0">
+            <div class="text-sm">
+                <span class="font-bold text-orange-500">0/5</span>
+                <span class="text-gray-500 ml-1">tasks filled in</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+                <button class="px-5 py-2.5 text-sm font-medium text-white bg-slate-400 rounded-lg cursor-not-allowed flex items-center gap-2">
+                    Create 5 Tasks <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

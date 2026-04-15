@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      window.FontAwesomeConfig = { autoReplaceSvg: 'nest' };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Members</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors: {
+              background: '#F8FAFC',
+              sidebar: '#FFFFFF',
+              panel: '#FFFFFF',
+              'panel-hover': '#F8FAFC',
+              primary: '#b23a48',
+              'primary-hover': '#8f2e3a',
+              'sidebar-bg': '#d4737f',
+              'sidebar-header': '#8f2e3a',
+              'sidebar-active': '#6b1f28',
+              secondary: '#F1F5F9',
+              text: {
+                main: '#0F172A',
+                muted: '#64748B',
+                dark: '#94A3B8'
+              },
+              border: '#E2E8F0',
+              success: '#22C55E',
+              warning: '#F97316',
+              danger: '#F43F5E',
+              info: '#3B82F6',
+              tech: '#3B82F6',
+              media: '#A855F7',
+              video: '#F97316',
+              seo: '#22C55E',
+            },
+            boxShadow: {
+              'glow': '0 0 0 3px rgba(178, 58, 72, 0.1)',
+              'panel': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+              'modal': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+            },
+            borderRadius: {
+              'card': '12px',
+              'button': '8px',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+      .hide-scroll::-webkit-scrollbar { display: none; }
+      .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+      @keyframes pulse-slow {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+      }
+      .animate-pulse-slow { animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden selection:bg-primary/20">
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/20 z-40 hidden lg:hidden backdrop-blur-sm"></div>
+    
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-sidebar-bg text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-50 h-full">
+      <div class="bg-sidebar-header px-6 py-5 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-grip text-white text-lg"></i>
+          <span class="font-mono font-bold text-sm tracking-wide">AdminPanel</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6 hide-scroll">
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">OVERVIEW</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-chart-line w-4"></i><span>Overview</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-list-check w-4"></i><span>Tasks</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-table-columns w-4"></i><span>Kanban Board</span></a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">MANAGEMENT</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-active transition-colors text-sm"><i class="fa-solid fa-users w-4"></i><span>Team Members</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-building w-4"></i><span>Departments</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-file-lines w-4"></i><span>Reports</span></a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">PERSONAL</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-clipboard-check w-4"></i><span>My Tasks</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-bell w-4"></i><span>Notifications</span></a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">SYSTEM</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-gear w-4"></i><span>Settings</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-circle-question w-4"></i><span>Help</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-user w-4"></i><span>Profile</span></a></li>
+          </ul>
+        </div>
+      </nav>
+      
+      <div class="px-4 py-4 border-t border-white/10 space-y-2">
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-right-from-bracket w-4"></i><span>Logout</span></a>
+        <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm w-full"><i class="fa-solid fa-angles-left w-4"></i><span>Collapse</span></button>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-background">
+      <header class="h-20 bg-white border-b border-border flex items-center justify-between px-6 z-10 shrink-0 shadow-sm">
+        <div class="flex items-center gap-4">
+          <button class="lg:hidden text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-bars text-xl"></i></button>
+          <div>
+            <h1 class="text-xl font-bold text-text-main tracking-tight">Team Directory</h1>
+            <p class="text-[13px] text-text-muted mt-0.5">Manage members, roles, and access</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 md:gap-4">
+          <div class="hidden sm:flex items-center bg-secondary rounded-full p-1 border border-border"></div>
+          <button class="flex items-center gap-2 bg-white border border-border rounded-full px-3 py-1.5 hover:bg-secondary transition-colors shadow-sm">
+            <i class="fa-regular fa-bell text-text-muted text-[14px]"></i>
+            <span class="bg-danger/10 text-danger text-[10px] px-2 py-0.5 rounded-full font-bold border border-danger/20">2 New</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="px-4 md:px-6 py-4 md:py-5 border-b border-border flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center bg-white shrink-0">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+          <div class="relative flex-1 sm:w-64">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted text-[13px]"></i>
+            <input type="text" placeholder="Search members..." class="w-full bg-background border border-border rounded-button py-2 pl-9 pr-4 text-[13px] text-text-main placeholder-text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+          </div>
+          <div class="relative">
+            <button class="w-full sm:w-auto flex items-center justify-center gap-2 bg-white border border-border rounded-button px-4 py-2 text-[13px] text-text-main hover:bg-secondary transition-colors">
+              <i class="fa-solid fa-filter text-text-muted text-[12px]"></i> Filters <i class="fa-solid fa-chevron-down text-text-muted text-[10px] ml-1"></i>
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 w-full lg:w-auto justify-between sm:justify-end">
+          <div class="flex items-center bg-secondary rounded-button p-1 border border-border">
+            <button class="w-10 h-8 sm:w-8 rounded-md bg-white flex items-center justify-center text-text-main shadow-sm border border-border"><i class="fa-solid fa-list text-[13px]"></i></button>
+            <button class="w-10 h-8 sm:w-8 rounded-md flex items-center justify-center text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-border-all text-[13px]"></i></button>
+          </div>
+          <button class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-button text-[13px] font-semibold transition-all shadow-sm">
+            <i class="fa-solid fa-user-plus text-[12px]"></i><span class="whitespace-nowrap">Invite Member</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="content-area" class="flex-1 overflow-auto p-6 hide-scroll relative">
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-button bg-white border border-border text-[12px] font-medium text-text-main shadow-sm">
+            Role: All <button class="hover:text-danger"><i class="fa-solid fa-xmark text-[10px]"></i></button>
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-button bg-white border border-border text-[12px] font-medium text-text-main shadow-sm">
+            Status: Active <button class="hover:text-danger"><i class="fa-solid fa-xmark text-[10px]"></i></button>
+          </span>
+          <button class="text-[12px] text-primary hover:text-primary-hover transition-colors ml-2 font-semibold">Clear All</button>
+        </div>
+
+        <div id="table-view" class="bg-white border border-border rounded-card overflow-hidden animate-fade-in shadow-panel">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-border bg-slate-50">
+                  <th class="px-6 py-4 text-[12px] font-semibold text-text-muted uppercase tracking-wider w-1/3">Member</th>
+                  <th class="px-6 py-4 text-[12px] font-semibold text-text-muted uppercase tracking-wider">Department / Role</th>
+                  <th class="px-6 py-4 text-[12px] font-semibold text-text-muted uppercase tracking-wider">Status</th>
+                  <th class="px-6 py-4 text-[12px] font-semibold text-text-muted uppercase tracking-wider">Workload</th>
+                  <th class="px-6 py-4 text-[12px] font-semibold text-text-muted uppercase tracking-wider text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border">
+                <tr class="hover:bg-slate-50 transition-colors group">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="relative"><img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-border">
+                        <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-success border-2 border-white rounded-full"></div>
+                      </div>
+                      <div>
+                        <p class="text-[14px] font-semibold text-text-main mb-0.5">Sarah Jenkins</p>
+                        <p class="text-[12px] text-text-muted">sarah.j@pathwounded.com</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="text-[13px] text-text-main font-medium mb-1">Design Team</p><span class="inline-block px-2 py-0.5 bg-media/10 text-media text-[11px] rounded-md font-semibold border border-media/20">Lead Designer</span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 text-success text-[12px] font-semibold border border-success/20"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> Active </span></td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden w-24"><div class="h-full bg-warning w-[85%] rounded-full"></div></div><span class="text-[12px] text-warning font-semibold">85%</span>
+                    </div>
+                    <p class="text-[11px] text-text-muted mt-1">12 Active Tasks</p>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button title="Edit Member" class="w-8 h-8 rounded-button bg-background border border-border flex items-center justify-center text-text-muted hover:text-text-main hover:border-text-main transition-colors"><i class="fa-solid fa-pen text-[12px]"></i></button><button title="Deactivate" class="w-8 h-8 rounded-button bg-background border border-border flex items-center justify-center text-text-muted hover:text-danger hover:border-danger/50 transition-colors"><i class="fa-solid fa-user-slash text-[12px]"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-50 transition-colors group">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="relative"><img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-border">
+                        <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-warning border-2 border-white rounded-full"></div>
+                      </div>
+                      <div>
+                        <p class="text-[14px] font-semibold text-text-main mb-0.5">Marcus Torres</p>
+                        <p class="text-[12px] text-text-muted">marcus.t@pathwounded.com</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="text-[13px] text-text-main font-medium mb-1">Engineering</p><span class="inline-block px-2 py-0.5 bg-tech/10 text-tech text-[11px] rounded-md font-semibold border border-tech/20">Frontend Dev</span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 text-success text-[12px] font-semibold border border-success/20"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> Active </span></td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden w-24"><div class="h-full bg-success w-[45%] rounded-full"></div></div><span class="text-[12px] text-success font-semibold">45%</span>
+                    </div>
+                    <p class="text-[11px] text-text-muted mt-1">4 Active Tasks</p>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button title="Edit Member" class="w-8 h-8 rounded-button bg-background border border-border flex items-center justify-center text-text-muted hover:text-text-main hover:border-text-main transition-colors"><i class="fa-solid fa-pen text-[12px]"></i></button><button title="Deactivate" class="w-8 h-8 rounded-button bg-background border border-border flex items-center justify-center text-text-muted hover:text-danger hover:border-danger/50 transition-colors"><i class="fa-solid fa-user-slash text-[12px]"></i></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-50 transition-colors group opacity-50">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="relative">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-text-muted font-semibold border-2 border-border">EL</div>
+                        <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-slate-300 border-2 border-white rounded-full"></div>
+                      </div>
+                      <div>
+                        <p class="text-[14px] font-semibold text-text-muted mb-0.5">Elena Rostova</p>
+                        <p class="text-[12px] text-text-dark">elena.r@pathwounded.com</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="text-[13px] text-text-muted font-medium mb-1">Marketing</p><span class="inline-block px-2 py-0.5 bg-slate-100 text-text-muted text-[11px] rounded-md font-semibold border border-slate-200">Content Writer</span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-text-muted text-[12px] font-semibold border border-slate-200"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Deactivated </span></td>
+                  <td class="px-6 py-4"><span class="text-[12px] text-text-dark">-</span></td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button class="px-3 py-1.5 rounded-button bg-white border border-border text-text-main hover:bg-success hover:text-white hover:border-success transition-colors text-[12px] font-semibold shadow-sm">Reactivate</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="px-6 py-4 border-t border-border flex items-center justify-between bg-slate-50">
+            <p class="text-[12px] text-text-muted">Showing 1 to 3 of 24 entries</p>
+            <div class="flex gap-1"><button class="w-8 h-8 flex items-center justify-center rounded-button border border-border bg-white text-text-muted hover:text-text-main disabled:opacity-50 shadow-sm"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><button class="w-8 h-8 flex items-center justify-center rounded-button border border-primary bg-primary text-white font-semibold text-[12px] shadow-sm">1</button><button class="w-8 h-8 flex items-center justify-center rounded-button border border-border bg-white text-text-muted hover:text-text-main font-semibold text-[12px] shadow-sm">2</button><button class="w-8 h-8 flex items-center justify-center rounded-button border border-border bg-white text-text-muted hover:text-text-main font-semibold text-[12px] shadow-sm">3</button><button class="w-8 h-8 flex items-center justify-center rounded-button border border-border bg-white text-text-muted hover:text-text-main shadow-sm"><i class="fa-solid fa-chevron-right text-[10px]"></i></button></div>
+          </div>
+        </div>
+
+        <div id="skeleton-state" class="hidden bg-white border border-border rounded-card overflow-hidden shadow-panel">
+          <div class="p-6 border-b border-border flex gap-4">
+            <div class="h-4 w-1/4 bg-slate-100 rounded animate-pulse-slow"></div>
+            <div class="h-4 w-1/4 bg-slate-100 rounded animate-pulse-slow"></div>
+            <div class="h-4 w-1/4 bg-slate-100 rounded animate-pulse-slow"></div>
+          </div>
+          <div class="divide-y divide-border">
+            <div class="p-6 flex items-center justify-between">
+              <div class="flex items-center gap-4 w-1/3">
+                <div class="w-10 h-10 rounded-full bg-slate-100 animate-pulse-slow"></div>
+                <div class="space-y-2 flex-1">
+                  <div class="h-3 w-24 bg-slate-100 rounded animate-pulse-slow"></div>
+                  <div class="h-2 w-32 bg-slate-100 rounded animate-pulse-slow"></div>
+                </div>
+              </div>
+              <div class="space-y-2 w-1/4">
+                <div class="h-3 w-20 bg-slate-100 rounded animate-pulse-slow"></div>
+                <div class="h-5 w-16 bg-slate-100 rounded animate-pulse-slow"></div>
+              </div>
+              <div class="w-1/6">
+                <div class="h-6 w-20 bg-slate-100 rounded-full animate-pulse-slow"></div>
+              </div>
+              <div class="w-1/6">
+                <div class="h-2 w-full bg-slate-100 rounded-full animate-pulse-slow mb-2"></div>
+                <div class="h-2 w-16 bg-slate-100 rounded animate-pulse-slow"></div>
+              </div>
+            </div>
+            <div class="p-6 flex items-center justify-between">
+              <div class="flex items-center gap-4 w-1/3">
+                <div class="w-10 h-10 rounded-full bg-slate-100 animate-pulse-slow"></div>
+                <div class="space-y-2 flex-1">
+                  <div class="h-3 w-28 bg-slate-100 rounded animate-pulse-slow"></div>
+                  <div class="h-2 w-36 bg-slate-100 rounded animate-pulse-slow"></div>
+                </div>
+              </div>
+              <div class="space-y-2 w-1/4">
+                <div class="h-3 w-24 bg-slate-100 rounded animate-pulse-slow"></div>
+                <div class="h-5 w-20 bg-slate-100 rounded animate-pulse-slow"></div>
+              </div>
+              <div class="w-1/6">
+                <div class="h-6 w-20 bg-slate-100 rounded-full animate-pulse-slow"></div>
+              </div>
+              <div class="w-1/6">
+                <div class="h-2 w-full bg-slate-100 rounded-full animate-pulse-slow mb-2"></div>
+                <div class="h-2 w-12 bg-slate-100 rounded animate-pulse-slow"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="empty-state" class="hidden h-full flex flex-col items-center justify-center py-16 text-center">
+          <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-text-dark mb-4 border border-border shadow-sm"><i class="fa-solid fa-users-slash text-2xl"></i></div>
+          <h3 class="text-[16px] font-bold text-text-main mb-2">No members found</h3>
+          <p class="text-[13px] text-text-muted max-w-sm mb-6">Try adjusting your search or filters to find what you're looking for, or invite a new member to the team.</p>
+          <div class="flex gap-3"><button class="px-4 py-2 bg-white border border-border hover:bg-secondary text-text-main text-[13px] font-semibold rounded-button transition-colors shadow-sm">Clear Filters</button><button class="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-[13px] font-semibold rounded-button transition-colors shadow-sm">Invite Member</button></div>
+        </div>
+      </div>
+    </main>
+
+    <div id="invite-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 hidden">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+      <div class="relative w-full max-w-md bg-white border border-border rounded-card shadow-modal flex flex-col animate-fade-in">
+        <div class="px-6 py-5 border-b border-border flex items-center justify-between">
+          <div>
+            <h2 class="text-[16px] font-bold text-text-main">Invite New Member</h2>
+            <p class="text-[12px] text-text-muted mt-1">Send an invitation link via email</p>
+          </div>
+          <button class="w-8 h-8 rounded-button flex items-center justify-center text-text-muted hover:bg-secondary hover:text-text-main transition-colors"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="p-6 space-y-5">
+          <div><label class="block text-[13px] font-semibold text-text-main mb-1.5">Email Address <span class="text-danger">*</span></label><input type="email" placeholder="colleague@company.com" class="w-full bg-white border border-border rounded-button px-4 py-2.5 text-[13px] text-text-main placeholder-text-dark focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"></div>
+          <div class="grid grid-cols-2 gap-4">
+            <div><label class="block text-[13px] font-semibold text-text-main mb-1.5">Department</label>
+              <div class="relative"><select class="w-full bg-white border border-border rounded-button px-4 py-2.5 text-[13px] text-text-main appearance-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"><option value="" disabled="" selected="">Select...</option><option value="design">Design</option><option value="engineering">Engineering</option><option value="marketing">Marketing</option></select><i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-text-muted text-[10px] pointer-events-none"></i></div>
+            </div>
+            <div><label class="block text-[13px] font-semibold text-text-main mb-1.5">Role <span class="text-danger">*</span></label>
+              <div class="relative"><select class="w-full bg-white border border-border rounded-button px-4 py-2.5 text-[13px] text-text-main appearance-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"><option value="member" selected="">Member</option><option value="admin">Admin</option><option value="viewer">Viewer</option></select><i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-text-muted text-[10px] pointer-events-none"></i></div>
+            </div>
+          </div>
+          <div><label class="block text-[13px] font-semibold text-text-main mb-1.5">Personal Message (Optional)</label><textarea placeholder="Welcome to the team workspace!" class="w-full bg-white border border-border rounded-button px-4 py-3 text-[13px] text-text-main placeholder-text-dark focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none h-20"></textarea></div>
+        </div>
+        <div class="px-6 py-4 border-t border-border bg-slate-50 rounded-b-card flex items-center justify-end gap-3">
+          <button class="px-4 py-2 text-[13px] font-semibold text-text-muted hover:text-text-main transition-colors">Cancel</button><button class="px-5 py-2 bg-primary hover:bg-primary-hover text-white text-[13px] font-semibold rounded-button transition-all shadow-sm flex items-center gap-2">Send Invite <i class="fa-regular fa-paper-plane text-[11px]"></i></button></div>
+      </div>
+    </div>
+
+    <div id="edit-modal" class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-6 hidden">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+      <div class="relative w-full max-w-lg bg-white border-t sm:border border-border rounded-t-card sm:rounded-card shadow-modal flex flex-col max-h-[95vh] sm:max-h-[90vh] animate-fade-in">
+        <div class="px-6 py-5 border-b border-border flex items-center justify-between shrink-0">
+          <div>
+            <h2 class="text-[16px] font-bold text-text-main">Edit Member Profile</h2>
+            <p class="text-[12px] text-text-muted mt-1">Update role, department, and access settings</p>
+          </div>
+          <button class="w-8 h-8 rounded-button flex items-center justify-center text-text-muted hover:bg-secondary hover:text-text-main transition-colors"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="p-6 overflow-y-auto hide-scroll space-y-6">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+            <div class="relative"><img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/1f052e9a5a-52337bbce4e5f7186ad8.png" alt="Sarah Jenkins, professional image" class="w-16 h-16 rounded-full object-cover border-2 border-border shadow-sm"><button class="absolute bottom-0 right-0 w-6 h-6 bg-white border border-border rounded-full flex items-center justify-center text-text-main hover:bg-primary hover:border-primary hover:text-white transition-colors shadow-sm"><i class="fa-solid fa-camera text-[10px]"></i></button></div>
+            <div>
+              <h3 class="text-[15px] font-bold text-text-main">Sarah Jenkins</h3>
+              <p class="text-[13px] text-text-muted">sarah.j@pathwounded.com</p>
+              <span class="inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-md bg-success/10 text-success text-[10px] font-bold uppercase tracking-wider border border-success/20">Active</span>
+            </div>
+          </div>
+          <hr class="border-border">
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div><label class="block text-[13px] font-semibold text-text-main mb-1.5">First Name</label><input type="text" value="Sarah" class="w-full bg-white border border-border rounded-button px-4 py-2.5 text-[13px] text-text-main focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"></div>
+              <div><label class="block text-[13px] font-semibold text-text-main mb-1.5">Last Name</label><input type="text" value="Jenkins" class="w-full bg-white border border-border rounded-button px-4 py-2.5 text-[13px] text-text-main focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div><label class="block text-[13px] font-semibold text-text-main mb-1.5">Department</label>
+                <div class="relative"><select class="w-full bg-white border border-border rounded-button px-4 py-2.5 text-[13px] text-text-main appearance-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"><option value="design" selected="">Design Team</option><option value="engineering">Engineering</option><option value="marketing">Marketing</option></select><i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-text-muted text-[10px] pointer-events-none"></i></div>
+              </div>
+              <div><label class="block text-[13px] font-semibold text-text-main mb-1.5">Job Title</label><input type="text" value="Lead Designer" class="w-full bg-white border border-border rounded-button px-4 py-2.5 text-[13px] text-text-main focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"></div>
+            </div>
+            <div><label class="block text-[13px] font-semibold text-text-main mb-1.5">System Role</label>
+              <div class="space-y-2"><label class="flex items-start gap-3 p-3 border border-primary/50 bg-primary/5 rounded-button cursor-pointer"><input type="radio" name="sys_role" checked="" class="mt-1 accent-primary"><div><p class="text-[13px] font-semibold text-text-main mb-0.5">Admin</p><p class="text-[11px] text-text-muted">Full access to all projects, team members, and billing settings.</p></div></label><label class="flex items-start gap-3 p-3 border border-border bg-white rounded-button cursor-pointer hover:border-text-main transition-colors"><input type="radio" name="sys_role" class="mt-1 accent-primary"><div><p class="text-[13px] font-semibold text-text-main mb-0.5">Member</p><p class="text-[11px] text-text-muted">Can view and edit assigned projects and tasks.</p></div></label></div>
+            </div>
+          </div>
+          <div class="mt-6 p-4 border border-danger/30 bg-danger/5 rounded-button">
+            <h4 class="text-[13px] font-semibold text-danger mb-1">Danger Zone</h4>
+            <p class="text-[11px] text-text-muted mb-3">Deactivating a member will revoke their access immediately. Their past work will be preserved.</p><button class="px-3 py-1.5 bg-danger/10 text-danger border border-danger/20 hover:bg-danger hover:text-white text-[12px] font-semibold rounded-button transition-colors">Deactivate Member</button>
+          </div>
+        </div>
+        <div class="px-6 py-4 border-t border-border bg-slate-50 rounded-b-card flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 shrink-0">
+          <button class="text-[13px] text-text-muted hover:text-primary flex items-center justify-center sm:justify-start gap-1.5 transition-colors font-semibold"><i class="fa-solid fa-key text-[10px]"></i> Reset Password</button>
+          <div class="flex flex-col sm:flex-row gap-3"><button class="order-2 sm:order-1 px-4 py-2 text-[13px] font-semibold text-text-muted hover:text-text-main transition-colors">Cancel</button><button class="order-1 sm:order-2 px-5 py-2 bg-primary hover:bg-primary-hover text-white text-[13px] font-semibold rounded-button transition-all shadow-sm">Save Changes</button></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        sidebar.classList.toggle('-translate-x-full');
+        backdrop.classList.toggle('hidden');
+      }
+
+      function openModal(id) {
+        document.getElementById(id).classList.remove('hidden');
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+      }
+
+      // Simple demo function to switch views (in a real app this would hide/show different containers)
+      function toggleView(type) {
+        const buttons = document.querySelectorAll('.bg-white > button');
+        buttons.forEach(btn => {
+          btn.classList.remove('bg-white', 'text-text-main', 'shadow-sm');
+          btn.classList.add('text-text-muted');
+        });
+
+        if (type === 'table') {
+          buttons[0].classList.add('bg-white', 'text-text-main', 'shadow-sm');
+          buttons[0].classList.remove('text-text-muted');
+        } else {
+          buttons[1].classList.add('bg-white', 'text-text-main', 'shadow-sm');
+          buttons[1].classList.remove('text-text-muted');
+
+          // For demo purposes, trigger skeleton loader to show interactivity
+          document.getElementById('table-view').classList.add('hidden');
+          document.getElementById('skeleton-state').classList.remove('hidden');
+
+          setTimeout(() => {
+            document.getElementById('skeleton-state').classList.add('hidden');
+            document.getElementById('table-view').classList.remove('hidden');
+            // Reset button state
+            buttons[1].classList.remove('bg-white', 'text-text-main', 'shadow-sm');
+            buttons[1].classList.add('text-text-muted');
+            buttons[0].classList.add('bg-white', 'text-text-main', 'shadow-sm');
+            buttons[0].classList.remove('text-text-muted');
+          }, 1500);
+        }
+      }
+    </script>
+  </body>
+</html>

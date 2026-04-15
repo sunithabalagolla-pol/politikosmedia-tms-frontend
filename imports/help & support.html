@@ -1,0 +1,388 @@
+<html lang="en">
+
+  <head>
+    <script>
+      window.FontAwesomeConfig = {
+        autoReplaceSvg: 'nest'
+      };
+    </script>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - AdminPanel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"
+      rel="stylesheet">
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js">
+    </script>
+    <script>
+      tailwind.config = {
+        theme:
+        {
+          extend:
+          {
+            fontFamily:
+            {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors:
+            {
+              background: '#F8FAFC',
+              sidebar: '#FFFFFF',
+              panel: '#FFFFFF',
+              'panel-hover': '#F1F5F9',
+              primary: '#40916c',
+              'primary-hover': '#357a5a',
+              'sidebar-bg': '#52b788',
+              'sidebar-header': '#2d6a4f',
+              'sidebar-active': '#1b4332',
+              secondary: '#E2E8F0',
+              text:
+              {
+                main: '#0F172A',
+                muted: '#64748B',
+                dark: '#94A3B8'
+              },
+              border: '#E2E8F0',
+              success: '#22C55E',
+              warning: '#F97316',
+              danger: '#F43F5E',
+              info: '#3B82F6',
+            },
+            boxShadow:
+            {
+              'glow': '0 0 20px rgba(64, 145, 108, 0.1)',
+              'panel': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+              'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body
+      {
+        font-family: 'Inter', sans-serif;
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+
+      ::-webkit-scrollbar
+      {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track
+      {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb
+      {
+        background: #E2E8F0;
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover
+      {
+        background: #CBD5E1;
+      }
+
+      .hide-scroll::-webkit-scrollbar
+      {
+        display: none;
+      }
+
+      .hide-scroll
+      {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      .accordion-content
+      {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+      }
+
+      .accordion-item.active .accordion-content
+      {
+        max-height: 200px;
+      }
+
+      .accordion-item.active .fa-chevron-down
+      {
+        transform: rotate(180deg);
+      }
+    </style>
+  </head>
+
+  <body class="h-screen flex overflow-hidden selection:bg-primary/20">
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebar-backdrop"
+      class="fixed inset-0 bg-black/20 z-40 hidden lg:hidden backdrop-blur-sm">
+    </div><!-- Sidebar -->
+    <aside id="sidebar"
+      class="fixed inset-y-0 left-0 w-64 bg-sidebar-bg text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-50 h-full shadow-lg">
+      <div
+        class="bg-sidebar-header px-6 py-5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-6 h-6 border border-white/30 rounded flex items-center justify-center">
+            <i class="fa-solid fa-grip-vertical text-white text-xs"></i></div>
+          <span
+            class="font-mono font-bold text-sm tracking-wide">AdminPanel</span>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6 hide-scroll">
+        <div>
+          <h3
+            class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+            OVERVIEW</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-border-all w-4 opacity-70"></i><span>Overview</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-list-check w-4 opacity-70"></i><span>Tasks</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-table-columns w-4 opacity-70"></i><span>Kanban
+                  Board</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h3
+            class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+            MANAGEMENT</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-user-group w-4 opacity-70"></i><span>Team
+                  Members</span></a></li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-building w-4 opacity-70"></i><span>Departments</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-chart-simple w-4 opacity-70"></i><span>Reports</span></a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3
+            class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+            PERSONAL</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-list w-4 opacity-70"></i><span>My
+                  Tasks</span></a></li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-regular fa-bell w-4 opacity-70"></i><span>Notifications</span></a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3
+            class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+            SYSTEM</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-gear w-4 opacity-70"></i><span>Settings</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg bg-sidebar-active transition-colors text-sm font-medium"><i
+                  class="fa-regular fa-circle-question w-4"></i><span>Help</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-regular fa-user w-4 opacity-70"></i><span>Profile</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-arrow-right-from-bracket w-4 opacity-70"></i><span>Logout</span></a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside><!-- Main Content -->
+    <main
+      class="flex-1 flex flex-col h-full overflow-hidden relative bg-background">
+      <!-- Header -->
+      <header id="header"
+        class="h-16 bg-white border-b border-border flex items-center px-6 z-10 shrink-0">
+        <div class="flex items-center gap-3"><button
+            class="lg:hidden text-text-muted hover:text-text-main transition-colors"><i
+              class="fa-solid fa-bars text-xl"></i></button>
+          <div class="flex items-center gap-2 text-text-main"><i
+              class="fa-regular fa-window-maximize text-sm"></i>
+            <h1 class="text-[15px] font-semibold tracking-tight">Help &amp;
+              Support</h1>
+          </div>
+        </div>
+      </header><!-- Content Area -->
+      <div id="content-area"
+        class="flex-1 overflow-auto p-6 lg:p-8 hide-scroll">
+        <div class="max-w-4xl mx-auto space-y-6">
+          <!-- FAQ Section -->
+          <div id="faq-section"
+            class="bg-white border border-border rounded-xl shadow-sm p-6">
+            <div class="flex items-start gap-3 mb-6"><i
+                class="fa-solid fa-book-open text-text-muted mt-1"></i>
+              <div>
+                <h2 class="text-xl font-semibold text-text-main mb-1">Frequently
+                  Asked Questions</h2>
+                <p class="text-sm text-text-muted">Quick answers to common
+                  questions</p>
+              </div>
+            </div>
+            <div class="space-y-0 divide-y divide-border">
+              <!-- FAQ Item 1 -->
+              <div class="accordion-item py-4"><button
+                  class="w-full flex items-center justify-between text-left focus:outline-none"><span
+                    class="text-sm font-medium text-text-main">How do I add a
+                    new team member?</span><i
+                    class="fa-solid fa-chevron-down text-text-muted text-xs transition-transform duration-300"></i></button>
+                <div class="accordion-content">
+                  <p class="text-sm text-text-muted pt-3 pb-1">To add a new team
+                    member, navigate to the "Team Members" section under
+                    MANAGEMENT in the sidebar. Click the "Add Member" button in
+                    the top right, fill out their details, and assign them to a
+                    department.</p>
+                </div>
+              </div><!-- FAQ Item 2 -->
+              <div class="accordion-item py-4"><button
+                  class="w-full flex items-center justify-between text-left focus:outline-none"><span
+                    class="text-sm font-medium text-text-main">How do I create a
+                    new task?</span><i
+                    class="fa-solid fa-chevron-down text-text-muted text-xs transition-transform duration-300"></i></button>
+                <div class="accordion-content">
+                  <p class="text-sm text-text-muted pt-3 pb-1">You can create a
+                    new task by clicking the "New Task" button from the Overview
+                    or Tasks page. Fill in the title, description, assignees,
+                    and set a due date before saving.</p>
+                </div>
+              </div><!-- FAQ Item 3 -->
+              <div class="accordion-item py-4"><button
+                  class="w-full flex items-center justify-between text-left focus:outline-none"><span
+                    class="text-sm font-medium text-text-main">How do I use the
+                    Kanban board?</span><i
+                    class="fa-solid fa-chevron-down text-text-muted text-xs transition-transform duration-300"></i></button>
+                <div class="accordion-content">
+                  <p class="text-sm text-text-muted pt-3 pb-1">The Kanban board
+                    allows you to drag and drop tasks between different status
+                    columns (e.g., To Do, In Progress, Done). Access it from the
+                    OVERVIEW section in the sidebar.</p>
+                </div>
+              </div><!-- FAQ Item 4 -->
+              <div class="accordion-item py-4"><button
+                  class="w-full flex items-center justify-between text-left focus:outline-none"><span
+                    class="text-sm font-medium text-text-main">How do I generate
+                    reports?</span><i
+                    class="fa-solid fa-chevron-down text-text-muted text-xs transition-transform duration-300"></i></button>
+                <div class="accordion-content">
+                  <p class="text-sm text-text-muted pt-3 pb-1">Go to the
+                    "Reports" section under MANAGEMENT. Select the date range
+                    and type of report you need, then click "Generate". You can
+                    export the results as PDF or CSV.</p>
+                </div>
+              </div><!-- FAQ Item 5 -->
+              <div class="accordion-item py-4"><button
+                  class="w-full flex items-center justify-between text-left focus:outline-none"><span
+                    class="text-sm font-medium text-text-main">How do I change
+                    my password?</span><i
+                    class="fa-solid fa-chevron-down text-text-muted text-xs transition-transform duration-300"></i></button>
+                <div class="accordion-content">
+                  <p class="text-sm text-text-muted pt-3 pb-1">Navigate to your
+                    "Profile" under the SYSTEM section. Click on "Security" and
+                    follow the prompts to change your password.</p>
+                </div>
+              </div><!-- FAQ Item 6 -->
+              <div class="accordion-item py-4"><button
+                  class="w-full flex items-center justify-between text-left focus:outline-none"><span
+                    class="text-sm font-medium text-text-main">How do I manage
+                    notifications?</span><i
+                    class="fa-solid fa-chevron-down text-text-muted text-xs transition-transform duration-300"></i></button>
+                <div class="accordion-content">
+                  <p class="text-sm text-text-muted pt-3 pb-1">Go to "Settings"
+                    under the SYSTEM section, then select the "Notifications"
+                    tab to customize your email and in-app notification
+                    preferences.</p>
+                </div>
+              </div>
+            </div>
+          </div><!-- Contact Support Section -->
+          <div id="contact-support"
+            class="bg-white border border-border rounded-xl shadow-sm p-6">
+            <div class="flex items-start gap-3 mb-6"><i
+                class="fa-regular fa-comment-dots text-text-muted mt-1"></i>
+              <div>
+                <h2 class="text-xl font-semibold text-text-main mb-1">Contact
+                  Support</h2>
+                <p class="text-sm text-text-muted">Submit a ticket and we'll
+                  respond within 24 hours</p>
+              </div>
+            </div>
+            <form class="space-y-5">
+              <div class="space-y-2"><label
+                  class="block text-sm font-medium text-text-main">Subject <span
+                    class="text-danger">*</span></label><input type="text"
+                  placeholder="Brief description of your issue" required=""
+                  class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow placeholder-text-muted/50">
+              </div>
+              <div class="space-y-2"><label
+                  class="block text-sm font-medium text-text-main">Category</label>
+                <div class="relative"><select
+                    class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow">
+                    <option value="" disabled="" selected="">Select a category
+                    </option>
+                    <option value="technical">Technical Issue</option>
+                    <option value="billing">Billing</option>
+                    <option value="account">Account Management</option>
+                    <option value="feature">Feature Request</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <div
+                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-text-muted">
+                    <i class="fa-solid fa-chevron-down text-xs"></i></div>
+                </div>
+              </div>
+              <div class="space-y-2"><label
+                  class="block text-sm font-medium text-text-main">Message <span
+                    class="text-danger">*</span></label><textarea rows="5" placeholder="Describe your issue in detail..." required="" class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow placeholder-text-muted/50 resize-y"></textarea>
+              </div>
+              <div class="flex justify-end pt-2"><button type="submit"
+                  class="hover:bg-gray-800 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm bg-[#40916C]"
+                  id="i0nagh">
+                  Submit Ticket
+                </button></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      function toggleSidebar()
+      {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        sidebar.classList.toggle('-translate-x-full');
+        backdrop.classList.toggle('hidden');
+      }
+    </script>
+  </body>
+
+</html>

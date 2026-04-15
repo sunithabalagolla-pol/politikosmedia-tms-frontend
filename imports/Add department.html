@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Departments - AdminPanel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          },
+          colors: {
+            background: '#F8FAFC',
+            sidebar: '#52b788',
+            'sidebar-header': '#2d6a4f',
+            'sidebar-active': '#1b4332',
+            primary: '#40916c',
+            'primary-hover': '#357a5a',
+            text: {
+              main: '#0F172A',
+              muted: '#64748B',
+              dark: '#1e293b'
+            },
+            border: '#e2e8f0',
+            card: '#ffffff'
+          },
+          borderRadius: {
+            'card': '8px',
+            'button': '6px',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F8FAFC;
+    }
+    .hide-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="h-screen flex overflow-hidden selection:bg-primary/20">
+
+  <!-- Mobile Sidebar Backdrop -->
+  <div id="sidebar-backdrop" class="fixed inset-0 bg-black/20 z-40 hidden lg:hidden backdrop-blur-sm" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-sidebar text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-50 h-full">
+    <div class="bg-sidebar-header px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-grip text-white text-lg"></i>
+        <span class="font-mono font-bold text-sm tracking-wide">AdminPanel</span>
+      </div>
+    </div>
+    
+    <nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6 hide-scroll">
+      <div>
+        <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80 uppercase">Overview</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-chart-line w-4"></i><span>Overview</span></a></li>
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-list-check w-4"></i><span>Tasks</span></a></li>
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-table-columns w-4"></i><span>Kanban Board</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80 uppercase">Management</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-users w-4"></i><span>Team Members</span></a></li>
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-active transition-colors text-sm"><i class="fa-solid fa-building w-4"></i><span>Departments</span></a></li>
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-file-lines w-4"></i><span>Reports</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80 uppercase">Personal</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-clipboard-check w-4"></i><span>My Tasks</span></a></li>
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-bell w-4"></i><span>Notifications</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80 uppercase">System</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-gear w-4"></i><span>Settings</span></a></li>
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-circle-question w-4"></i><span>Help</span></a></li>
+          <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-user w-4"></i><span>Profile</span></a></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="px-4 py-4 border-t border-white/10 space-y-2">
+      <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-right-from-bracket w-4"></i><span>Logout</span></a>
+      <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm w-full"><i class="fa-solid fa-angles-left w-4"></i><span>Collapse</span></button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col h-full overflow-y-auto bg-background relative">
+    <div class="p-8 md:p-12 max-w-7xl mx-auto w-full">
+      
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <button onclick="toggleSidebar()" class="lg:hidden text-text-muted hover:text-text-main"><i class="fa-solid fa-bars text-xl"></i></button>
+            <h1 class="text-3xl font-extrabold text-text-dark tracking-tight" style="color: #1a362d;">Departments</h1>
+          </div>
+          <p class="text-text-muted text-[15px]">Manage departments, team members, and assigned tasks.</p>
+        </div>
+        <button onclick="toggleModal()" class="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-button text-[14px] font-medium transition-colors flex items-center gap-2 shadow-sm">
+          <i class="fa-solid fa-plus"></i> Add Department
+        </button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-card border border-[#b2d8c5] rounded-xl p-6 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-[#eef7f2] flex items-center justify-center text-primary">
+            <i class="fa-solid fa-users text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-text-dark">0</h3>
+            <p class="text-text-muted text-sm">Departments</p>
+          </div>
+        </div>
+        <div class="bg-card border border-[#b2d8c5] rounded-xl p-6 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-[#eef7f2] flex items-center justify-center text-primary">
+            <i class="fa-regular fa-clipboard text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-text-dark">0</h3>
+            <p class="text-text-muted text-sm">Total Tasks</p>
+          </div>
+        </div>
+        <div class="bg-card border border-[#b2d8c5] rounded-xl p-6 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-[#eef7f2] flex items-center justify-center text-primary">
+            <i class="fa-solid fa-user-group text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-text-dark">0</h3>
+            <p class="text-text-muted text-sm">Team Members</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="bg-white border border-[#b2d8c5] rounded-xl p-16 flex flex-col items-center justify-center text-center shadow-sm h-[400px]">
+        <div class="text-[#a0c4b2] mb-6">
+          <i class="fa-solid fa-users text-6xl opacity-80"></i>
+        </div>
+        <h2 class="text-xl font-medium text-text-muted mb-3">No departments yet</h2>
+        <p class="text-text-muted text-[15px]">Click "Add Department" to create your first department.</p>
+      </div>
+
+    </div>
+
+    <!-- Add Department Modal (Hidden by default, shown for this state) -->
+    <div id="add-dept-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden flex flex-col">
+        <div class="flex justify-between items-center p-6 pb-4">
+          <h2 class="text-xl font-bold text-[#1a362d]">New Department</h2>
+          <button onclick="toggleModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+        
+        <form class="p-6 pt-2 space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-[#1a362d] mb-1.5">Department Name</label>
+            <input type="text" placeholder="e.g. Engineering" class="w-full px-4 py-2.5 rounded-lg border-2 border-primary outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-[#1a362d] mb-1.5">Description</label>
+            <textarea placeholder="Brief description of the department" rows="3" class="w-full px-4 py-2.5 rounded-lg border border-[#b2d8c5] outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400 resize-none"></textarea>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-[#1a362d] mb-1.5">Department Head</label>
+            <input type="text" placeholder="Name of department lead" class="w-full px-4 py-2.5 rounded-lg border border-[#b2d8c5] outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-[#1a362d] mb-1.5">Team Members (comma-separated)</label>
+            <input type="text" placeholder="Alice, Bob, Carol" class="w-full px-4 py-2.5 rounded-lg border border-[#b2d8c5] outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm placeholder:text-gray-400">
+          </div>
+          
+          <div class="pt-2">
+            <button type="button" class="w-full bg-primary hover:bg-primary-hover text-white py-3 rounded-lg text-sm font-medium transition-colors shadow-sm">
+              Create Department
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      sidebar.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+
+    function toggleModal() {
+      const modal = document.getElementById('add-dept-modal');
+      modal.classList.toggle('hidden');
+    }
+  </script>
+</body>
+</html>

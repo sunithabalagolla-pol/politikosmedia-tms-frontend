@@ -1,0 +1,765 @@
+<html lang="en">
+
+  <head>
+    <script>
+      window.FontAwesomeConfig = {
+        autoReplaceSvg: 'nest'
+      };
+    </script>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"
+      rel="stylesheet">
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js">
+    </script>
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme:
+        {
+          extend:
+          {
+            fontFamily:
+            {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors:
+            {
+              primary: '#b23a48',
+              'primary-hover': '#8f2e3a',
+              'sidebar-bg': '#b23a48',
+              'sidebar-header': '#8e2e39',
+              'sidebar-active': '#d4515f',
+              dark: '#050415',
+              gray:
+              {
+                50: '#F9FAFB',
+                100: '#F3F4F6',
+                200: '#E5E7EB',
+                300: '#D1D5DB',
+                400: '#9CA3AF',
+                500: '#6B7280',
+                600: '#4B5563',
+                700: '#374151',
+                800: '#1F2937',
+                900: '#111827',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body
+      {
+        font-family: 'Inter', sans-serif;
+      }
+
+      ::-webkit-scrollbar
+      {
+        display: none;
+      }
+
+      @keyframes pulse
+      {
+
+        0%,
+        100%
+        {
+          opacity: 1;
+        }
+
+        50%
+        {
+          opacity: .5;
+        }
+      }
+
+      .skeleton
+      {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-50 text-gray-900 h-screen flex overflow-hidden">
+    <div id="sidebar-backdrop"
+      class="fixed inset-0 bg-gray-900/50 z-20 hidden lg:hidden"></div>
+    <aside id="sidebar"
+      class="fixed inset-y-0 left-0 w-64 bg-[#b23a48] text-white flex-shrink-0 flex flex-col transition-all duration-300 -translate-x-full lg:translate-x-0 lg:static z-30 h-full">
+      <div
+        class="bg-[#8e2e39] px-6 py-5 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2"><i
+            class="fa-solid fa-grip text-white text-lg"></i><span
+            class="font-mono font-bold text-sm tracking-wide">AdminPanel</span>
+        </div><button class="lg:hidden text-white/70 hover:text-white"><i
+            class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6">
+        <div class="rounded-xl p-3">
+          <h3
+            class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+            OVERVIEW</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#d4515f] transition-colors text-sm"><i
+                  class="fa-solid fa-chart-line w-4"></i><span>Overview</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-list-check w-4"></i><span>Tasks</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-table-columns w-4"></i><span>Kanban
+                  Board</span></a></li>
+          </ul>
+        </div>
+        <div class="rounded-xl p-3">
+          <h3
+            class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+            MANAGEMENT</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-users w-4"></i><span>Team
+                  Members</span></a></li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-building w-4"></i><span>Departments</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-file-lines w-4"></i><span>Reports</span></a>
+            </li>
+          </ul>
+        </div>
+        <div class="rounded-xl p-3">
+          <h3
+            class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+            PERSONAL</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-clipboard-check w-4"></i><span>My
+                  Tasks</span></a></li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-bell w-4"></i><span>Notifications</span></a>
+            </li>
+          </ul>
+        </div>
+        <div class="rounded-xl p-3">
+          <h3
+            class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+            SYSTEM</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-gear w-4"></i><span>Settings</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-circle-question w-4"></i><span>Help</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-user w-4"></i><span>Profile</span></a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="px-4 py-4 border-t border-white/10 space-y-2 shrink-0"><a
+          href="#"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+            class="fa-solid fa-right-from-bracket w-4"></i><span>Logout</span></a><button
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm w-full"><i
+            class="fa-solid fa-angles-left w-4"></i><span>Collapse</span></button>
+      </div>
+    </aside>
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative w-full">
+      <header id="main-header"
+        class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 z-10">
+        <div class="flex items-center flex-1"><button
+            class="lg:hidden mr-4 text-gray-500 hover:text-gray-900 focus:outline-none"><i
+              class="fa-solid fa-bars text-xl"></i></button>
+          <div class="max-w-md w-full lg:max-w-xs relative hidden sm:block">
+            <div
+              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fa-solid fa-magnifying-glass text-gray-400"></i></div>
+            <input type="text" placeholder="Search (Cmd+K)"
+              class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#b23a48] focus:border-[#b23a48] sm:text-sm transition-colors">
+            <div
+              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <span
+                class="text-gray-400 text-xs border border-gray-200 rounded px-1.5 py-0.5 bg-white">⌘K</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div id="header-quick-actions"
+            class="hidden sm:flex items-center space-x-2"><button
+              class="bg-[#b23a48] hover:bg-[#8f2e3a] text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center">
+              <i class="fa-solid fa-plus mr-1.5 text-xs"></i>
+              Task
+            </button></div><button
+            class="relative p-2 text-gray-400 hover:text-gray-500 focus:outline-none rounded-full hover:bg-gray-100 transition-colors"><span
+              class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span><i
+              class="fa-regular fa-bell text-xl"></i></button>
+        </div>
+      </header>
+      <div class="flex-1 overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
+        <div class="max-w-7xl mx-auto space-y-6">
+          <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 id="dashboard-title" class="text-2xl font-bold text-gray-900">
+                Overview</h1>
+              <p id="dashboard-subtitle" class="text-sm text-gray-500 mt-1">
+                Here's what's happening across your projects today.</p>
+            </div>
+            <div class="flex items-center space-x-2"><span
+                class="text-sm text-gray-500">Last updated: Just
+                now</span><button
+                class="p-1.5 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-200 transition-colors"><i
+                  class="fa-solid fa-arrow-rotate-right"></i></button></div>
+          </div>
+          <div id="admin-view" class="space-y-6 block">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div
+                class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-gray-500">Total Tasks</p>
+                  <div
+                    class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <i class="fa-solid fa-layer-group text-blue-600"></i></div>
+                </div>
+                <div class="mt-4 flex items-baseline">
+                  <p class="text-3xl font-bold text-gray-900">24</p>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">vs last month</p>
+              </div>
+              <div
+                class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-gray-500">Active Tasks</p>
+                  <div
+                    class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                    <i class="fa-solid fa-list-check text-purple-600"></i></div>
+                </div>
+                <div class="mt-4 flex items-baseline">
+                  <p class="text-3xl font-bold text-gray-900">142</p>
+                </div>
+                <div id="ikg35j"
+                  class="w-full bg-gray-100 rounded-full h-1.5 mt-3">
+                  <div id="i4zito"
+                    class="bg-purple-500 h-1.5 rounded-full bg-[#40916C]"></div>
+                </div>
+              </div>
+              <div
+                class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-gray-500">Overdue</p>
+                  <div
+                    class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                    <i
+                      class="fa-solid fa-triangle-exclamation text-red-600"></i>
+                  </div>
+                </div>
+                <div class="mt-4 flex items-baseline">
+                  <p class="text-3xl font-bold text-gray-900">18</p>
+                </div>
+                <p id="iru596" class="text-xs text-gray-500 mt-1">Requires
+                  immediate attention</p>
+              </div>
+              <div
+                class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-gray-500">Employees</p>
+                  <div
+                    class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+                    <i class="fa-solid fa-users-gear text-orange-600"></i></div>
+                </div>
+                <div class="mt-4 flex items-baseline">
+                  <p class="text-3xl font-bold text-gray-900">85</p>
+                </div>
+                <div class="flex -space-x-2 mt-3"><img
+                    src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg"
+                    alt=""
+                    class="w-6 h-6 rounded-full border-2 border-white"><img
+                    src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
+                    alt=""
+                    class="w-6 h-6 rounded-full border-2 border-white"><img
+                    src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"
+                    alt="" class="w-6 h-6 rounded-full border-2 border-white">
+                  <div
+                    class="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-medium text-gray-600">
+                    +5
+                  </div>
+                </div>
+              </div>
+            </div><!-- Two Column Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Left Col: Department Summaries -->
+              <div class="lg:col-span-2 space-y-6">
+                <!-- Chart Section -->
+                <div
+                  class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                  <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900">Task
+                      Completion Trend</h2><select
+                      class="text-sm border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary py-1.5 pl-3 pr-8">
+                      <option>Last 7 Days</option>
+                      <option>Last 30 Days</option>
+                      <option>This Quarter</option>
+                    </select>
+                  </div>
+                  <div id="completion-chart" class="h-[300px] w-full"></div>
+                </div><!-- Department Progress -->
+                <div
+                  class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                  <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                    Department Progress</h2>
+                  <div class="space-y-5">
+                    <!-- Dept 1 -->
+                    <div>
+                      <div class="flex justify-between text-sm mb-1.5"><span
+                          class="font-medium text-gray-700">Design</span><span
+                          class="text-gray-500">78%</span></div>
+                      <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div id="if0q82" class="bg-accent h-2 rounded-full">
+                        </div>
+                      </div>
+                    </div><!-- Dept 2 -->
+                    <div>
+                      <div class="flex justify-between text-sm mb-1.5"><span
+                          class="font-medium text-gray-700">Engineering</span><span
+                          class="text-gray-500">45%</span></div>
+                      <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div id="icqye6" class="bg-blue-500 h-2 rounded-full">
+                        </div>
+                      </div>
+                    </div><!-- Dept 3 -->
+                    <div>
+                      <div class="flex justify-between text-sm mb-1.5"><span
+                          class="font-medium text-gray-700">Marketing</span><span
+                          class="text-gray-500">92%</span></div>
+                      <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div id="imcviv" class="bg-green-500 h-2 rounded-full">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div><!-- Right Col: Activity Feed -->
+              <div
+                class="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col h-[650px]">
+                <div
+                  class="p-5 border-b border-gray-100 flex items-center justify-between">
+                  <h2 class="text-lg font-semibold text-gray-900">Recent
+                    Activity</h2><button
+                    class="text-sm text-primary hover:text-primary-hover font-medium">View
+                    All</button>
+                </div>
+                <div class="p-5 flex-1 overflow-y-auto">
+                  <div class="relative">
+                    <!-- Timeline line -->
+                    <div
+                      class="absolute top-0 bottom-0 left-4 w-px bg-gray-200">
+                    </div>
+                    <div class="space-y-6 relative">
+                      <!-- Activity 1 -->
+                      <div class="flex items-start">
+                        <div
+                          class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center z-10 shrink-0">
+                          <img
+                            src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg"
+                            alt="" class="w-7 h-7 rounded-full"></div>
+                        <div class="ml-4">
+                          <p class="text-sm text-gray-900"><span
+                              class="font-medium">Sarah Jenkins</span> completed
+                            task <span class="font-medium">Update Homepage
+                              UI</span></p>
+                          <p class="text-xs text-gray-500 mt-0.5">10 mins ago •
+                            Website Redesign</p>
+                        </div>
+                      </div><!-- Activity 2 -->
+                      <div class="flex items-start">
+                        <div
+                          class="w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center z-10 shrink-0">
+                          <i class="fa-solid fa-plus text-blue-500 text-xs"></i>
+                        </div>
+                        <div class="ml-4">
+                          <p class="text-sm text-gray-900"><span
+                              class="font-medium">You</span> created a new
+                            project <span class="font-medium">Q3 Marketing
+                              Campaign</span></p>
+                          <p class="text-xs text-gray-500 mt-0.5">2 hours ago
+                          </p>
+                        </div>
+                      </div><!-- Activity 3 -->
+                      <div class="flex items-start">
+                        <div
+                          class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center z-10 shrink-0">
+                          <img
+                            src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
+                            alt="" class="w-7 h-7 rounded-full"></div>
+                        <div class="ml-4">
+                          <p class="text-sm text-gray-900"><span
+                              class="font-medium">Mike Ross</span> commented on
+                            <span class="font-medium">API Integration</span></p>
+                          <div
+                            class="mt-2 bg-gray-50 p-3 rounded-lg text-sm text-gray-600 border border-gray-100">
+                            "I've pushed the latest endpoints to staging. Can
+                            someone review?"
+                          </div>
+                          <p class="text-xs text-gray-500 mt-1.5">Yesterday at
+                            4:30 PM</p>
+                        </div>
+                      </div><!-- Activity 4 -->
+                      <div class="flex items-start">
+                        <div
+                          class="w-8 h-8 rounded-full bg-red-50 border border-red-100 flex items-center justify-center z-10 shrink-0">
+                          <i
+                            class="fa-solid fa-triangle-exclamation text-red-500 text-xs"></i>
+                        </div>
+                        <div class="ml-4">
+                          <p class="text-sm text-gray-900">Task <span
+                              class="font-medium text-red-600">Prepare Q2
+                              Report</span> is overdue</p>
+                          <p class="text-xs text-gray-500 mt-0.5">Yesterday •
+                            Assigned to David</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- ========================================== -->
+          <!-- EMPLOYEE VIEW WIDGETS                      -->
+          <!-- ========================================== -->
+          <div id="employee-view" class="space-y-6 hidden">
+            <!-- Welcome Banner -->
+            <div
+              class="bg-gradient-to-r from-[#9e2a2b] to-[#c53b3c] rounded-xl p-6 text-white shadow-md relative overflow-hidden">
+              <div class="relative z-10 max-w-2xl">
+                <h2 class="text-2xl font-bold mb-2">Good morning, Alex! 👋</h2>
+                <p class="text-red-100 mb-4">You have 5 tasks due today and 2
+                  upcoming meetings. Let's make it a productive day.</p><button
+                  class="bg-white text-[#9e2a2b] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors shadow-sm">View
+                  My Schedule</button>
+              </div><i
+                class="fa-solid fa-calendar-check absolute right-8 -bottom-8 text-9xl text-white opacity-10"></i>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Left Col: Tasks -->
+              <div class="lg:col-span-2 space-y-6">
+                <!-- Overdue Tasks (Shows Empty State) -->
+                <div
+                  class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                  <div
+                    class="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-red-50/30">
+                    <h3
+                      class="text-base font-semibold text-red-800 flex items-center">
+                      <i
+                        class="fa-solid fa-circle-exclamation mr-2 text-red-500"></i>
+                      Overdue Tasks
+                    </h3><span
+                      class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">0</span>
+                  </div><!-- Empty State -->
+                  <div
+                    class="p-8 text-center flex flex-col items-center justify-center">
+                    <div
+                      class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mb-3">
+                      <i class="fa-solid fa-check text-green-500 text-xl"></i>
+                    </div>
+                    <h4 class="text-sm font-medium text-gray-900 mb-1">You're
+                      all caught up!</h4>
+                    <p class="text-sm text-gray-500">No overdue tasks to worry
+                      about. Great job staying on top of things.</p>
+                  </div>
+                </div><!-- Today's Tasks -->
+                <div
+                  class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                  <div
+                    class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <h3
+                      class="text-base font-semibold text-gray-900 flex items-center">
+                      <i
+                        class="fa-regular fa-calendar-star mr-2 text-primary"></i>
+                      Due Today
+                    </h3><span
+                      class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">3</span>
+                  </div>
+                  <ul class="divide-y divide-gray-100">
+                    <!-- Task Item 1 -->
+                    <li
+                      class="p-4 hover:bg-gray-50 transition-colors group flex items-start gap-3">
+                      <input type="checkbox"
+                        class="mt-1 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-1">
+                          <p class="text-sm font-medium text-gray-900 truncate">
+                            Review Q3 Marketing Assets</p><span
+                            class="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-0.5 rounded">High
+                            Priority</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-2">Marketing Campaign
+                          2024</p>
+                        <div
+                          class="flex items-center gap-4 text-xs text-gray-500">
+                          <span class="flex items-center"><i
+                              class="fa-regular fa-clock mr-1"></i> Due 2:00
+                            PM</span><span class="flex items-center"><i
+                              class="fa-regular fa-comment mr-1"></i> 3
+                            comments</span></div>
+                      </div>
+                    </li><!-- Task Item 2 -->
+                    <li
+                      class="p-4 hover:bg-gray-50 transition-colors group flex items-start gap-3">
+                      <input type="checkbox"
+                        class="mt-1 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-1">
+                          <p class="text-sm font-medium text-gray-900 truncate">
+                            Update user documentation</p><span
+                            class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Medium
+                            Priority</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-2">Product Wiki</p>
+                        <div
+                          class="flex items-center gap-4 text-xs text-gray-500">
+                          <span class="flex items-center"><i
+                              class="fa-regular fa-clock mr-1"></i> Due 5:00
+                            PM</span></div>
+                      </div>
+                    </li>
+                  </ul>
+                </div><!-- Upcoming Tasks (Skeleton Loading State) -->
+                <div
+                  class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                  <div
+                    class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <h3
+                      class="text-base font-semibold text-gray-900 flex items-center">
+                      <i
+                        class="fa-regular fa-calendar-days mr-2 text-gray-500"></i>
+                      Upcoming
+                    </h3>
+                  </div>
+                  <div class="p-4 space-y-4">
+                    <!-- Skeleton Item 1 -->
+                    <div class="flex items-start gap-3 skeleton">
+                      <div class="w-4 h-4 rounded bg-gray-200 mt-1 shrink-0">
+                      </div>
+                      <div class="flex-1 space-y-2">
+                        <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                        <div class="h-3 bg-gray-100 rounded w-1/2"></div>
+                      </div>
+                    </div><!-- Skeleton Item 2 -->
+                    <div id="i2zngh" class="flex items-start gap-3 skeleton">
+                      <div class="w-4 h-4 rounded bg-gray-200 mt-1 shrink-0">
+                      </div>
+                      <div class="flex-1 space-y-2">
+                        <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+                        <div class="h-3 bg-gray-100 rounded w-1/3"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div><!-- Right Col: Productivity & Quick Links -->
+              <div class="space-y-6">
+                <!-- Weekly Progress -->
+                <div
+                  class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                  <h3 class="text-base font-semibold text-gray-900 mb-4">Weekly
+                    Goal</h3>
+                  <div class="flex items-center justify-center mb-4">
+                    <div
+                      class="relative w-32 h-32 flex items-center justify-center">
+                      <svg viewBox="0 0 36 36"
+                        class="w-full h-full transform -rotate-90">
+                        <path stroke-width="3" stroke="currentColor" fill="none"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          class="text-gray-100"></path>
+                        <path stroke-dasharray="65, 100" stroke-width="3"
+                          stroke-linecap="round" stroke="currentColor"
+                          fill="none"
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          class="text-[#9e2a2b]"></path>
+                      </svg>
+                      <div
+                        class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                        <span
+                          class="text-2xl font-bold text-gray-900">65%</span><span
+                          class="text-[10px] text-gray-500 uppercase tracking-wider">Completed</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-sm text-center text-gray-600">You've completed
+                    13 of 20 tasks this week. Keep it up!</p>
+                </div><!-- Quick Links -->
+                <div
+                  class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                  <h3 class="text-base font-semibold text-gray-900 mb-4">Quick
+                    Links</h3>
+                  <div class="grid grid-cols-2 gap-3"><a href="#"
+                      class="flex flex-col items-center justify-center p-3 rounded-lg border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors text-center"><i
+                        class="fa-solid fa-file-lines text-blue-500 mb-2"></i><span
+                        class="text-xs font-medium text-gray-700">Guidelines</span></a><a
+                      href="#"
+                      class="flex flex-col items-center justify-center p-3 rounded-lg border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors text-center"><i
+                        class="fa-solid fa-users text-purple-500 mb-2"></i><span
+                        class="text-xs font-medium text-gray-700">Team
+                        Directory</span></a><a href="#"
+                      class="flex flex-col items-center justify-center p-3 rounded-lg border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors text-center"><i
+                        class="fa-solid fa-headset text-green-500 mb-2"></i><span
+                        class="text-xs font-medium text-gray-700">IT
+                        Support</span></a><a href="#"
+                      class="flex flex-col items-center justify-center p-3 rounded-lg border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors text-center"><i
+                        class="fa-solid fa-umbrella-beach text-orange-500 mb-2"></i><span
+                        class="text-xs font-medium text-gray-700">Request
+                        PTO</span></a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      // Toggle Logic for Demo
+      function toggleRole()
+      {
+        const isEmployee = document.getElementById('role-toggle').checked;
+        const adminView = document.getElementById('admin-view');
+        const employeeView = document.getElementById('employee-view');
+        const headerActions = document.getElementById('header-quick-actions');
+        const currentRoleLabel = document.getElementById('current-role-label');
+        const userRoleText = document.getElementById('user-role-text');
+
+        if (isEmployee)
+        {
+          adminView.classList.add('hidden');
+          employeeView.classList.remove('hidden');
+          headerActions.classList.add('hidden');
+          currentRoleLabel.textContent = 'Employee View';
+          userRoleText.textContent = 'Team Member';
+        }
+        else
+        {
+          adminView.classList.remove('hidden');
+          employeeView.classList.add('hidden');
+          headerActions.classList.remove('hidden');
+          headerActions.classList.add('sm:flex');
+          currentRoleLabel.textContent = 'Admin View';
+          userRoleText.textContent = 'Administrator';
+        }
+      }
+
+      // Toggle Sidebar
+      function toggleSidebar()
+      {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+
+        if (sidebar.classList.contains('translate-x-full'))
+        {
+          sidebar.classList.remove('translate-x-full');
+          sidebar.classList.add('translate-x-0');
+          backdrop.classList.add('hidden');
+        }
+        else
+        {
+          sidebar.classList.add('translate-x-full');
+          backdrop.classList.remove('hidden');
+        }
+      }
+
+      // Render Chart
+      window.addEventListener('load', function()
+      {
+        try
+        {
+          const trace1 = {
+            x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            y: [12, 19, 15, 25, 22, 10, 8],
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Completed',
+            line:
+            {
+              color: '#9e2a2b',
+              width: 3
+            },
+            marker:
+            {
+              size: 8
+            }
+          };
+
+          const trace2 = {
+            x: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            y: [5, 8, 12, 9, 15, 4, 2],
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Created',
+            line:
+            {
+              color: '#9CA3AF',
+              width: 2,
+              dash: 'dot'
+            }
+          };
+
+          const layout = {
+            margin:
+            {
+              t: 10,
+              r: 10,
+              b: 40,
+              l: 40
+            },
+            showlegend: true,
+            legend:
+            {
+              orientation: 'h',
+              y: -0.2
+            },
+            xaxis:
+            {
+              showgrid: false
+            },
+            yaxis:
+            {
+              showgrid: true,
+              gridcolor: '#F3F4F6'
+            },
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent'
+          };
+
+          const config = {
+            responsive: true,
+            displayModeBar: false
+          };
+
+          Plotly.newPlot('completion-chart', [trace1, trace2], layout,
+            config);
+        }
+        catch (e)
+        {
+          console.error('Chart error', e);
+        }
+      });
+    </script>
+  </body>
+
+</html>

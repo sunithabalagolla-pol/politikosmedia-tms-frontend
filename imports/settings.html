@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    window.FontAwesomeConfig = {
+      autoReplaceSvg: 'nest'
+    };
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - AdminPanel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          },
+          colors: {
+            background: '#F8FAFC',
+            sidebar: '#FFFFFF',
+            panel: '#FFFFFF',
+            'panel-hover': '#F1F5F9',
+            primary: '#b23a48',
+            'primary-hover': '#9a2f3b',
+            'sidebar-bg': '#52b788',
+            'sidebar-header': '#2d6a4f',
+            'sidebar-active': '#1b4332',
+            secondary: '#E2E8F0',
+            text: {
+              main: '#0F172A',
+              muted: '#64748B',
+              dark: '#94A3B8'
+            },
+            border: '#E2E8F0',
+            success: '#22C55E',
+            warning: '#F97316',
+            danger: '#F43F5E',
+            info: '#3B82F6',
+          },
+          boxShadow: {
+            'glow': '0 0 20px rgba(178, 58, 72, 0.1)',
+            'panel': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #E2E8F0;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #CBD5E1;
+    }
+
+    .hide-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .hide-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .toggle-checkbox:checked {
+      right: 0;
+      border-color: #b23a48;
+    }
+
+    .toggle-checkbox:checked + .toggle-label {
+      background-color: #b23a48;
+    }
+
+    .toggle-checkbox {
+      right: 0;
+      z-index: 1;
+      border-color: #e2e8f0;
+      transition: all 0.3s;
+    }
+
+    .toggle-label {
+      width: 2.5rem;
+      height: 1.25rem;
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .toggle-label:after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 1rem;
+      height: 1rem;
+      background-color: white;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .toggle-checkbox:checked + .toggle-label:after {
+      transform: translateX(1.25rem);
+    }
+  </style>
+</head>
+
+<body class="h-screen flex overflow-hidden selection:bg-primary/20">
+  <!-- Mobile Sidebar Backdrop -->
+  <div id="sidebar-backdrop"
+    class="fixed inset-0 bg-black/20 z-40 hidden lg:hidden backdrop-blur-sm">
+  </div><!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 w-64 bg-sidebar-bg text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-50 h-full shadow-lg">
+    <div
+      class="bg-sidebar-header px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-6 h-6 border border-white/30 rounded flex items-center justify-center">
+          <i class="fa-solid fa-grip-vertical text-white text-xs"></i></div>
+        <span
+          class="font-mono font-bold text-sm tracking-wide">AdminPanel</span>
+      </div>
+    </div>
+    <nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6 hide-scroll">
+      <div>
+        <h3
+          class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+          OVERVIEW</h3>
+        <ul class="space-y-1">
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-solid fa-border-all w-4 opacity-70"></i><span>Overview</span></a>
+          </li>
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-solid fa-list-check w-4 opacity-70"></i><span>Tasks</span></a>
+          </li>
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-solid fa-table-columns w-4 opacity-70"></i><span>Kanban
+                Board</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h3
+          class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+          MANAGEMENT</h3>
+        <ul class="space-y-1">
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-solid fa-user-group w-4 opacity-70"></i><span>Team
+                Members</span></a></li>
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-solid fa-building w-4 opacity-70"></i><span>Departments</span></a>
+          </li>
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-solid fa-chart-simple w-4 opacity-70"></i><span>Reports</span></a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h3
+          class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+          PERSONAL</h3>
+        <ul class="space-y-1">
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-solid fa-list w-4 opacity-70"></i><span>My
+                Tasks</span></a></li>
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-regular fa-bell w-4 opacity-70"></i><span>Notifications</span></a>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h3
+          class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+          SYSTEM</h3>
+        <ul class="space-y-1">
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg bg-sidebar-active transition-colors text-sm font-medium"><i
+                class="fa-solid fa-gear w-4"></i><span>Settings</span></a>
+          </li>
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-regular fa-circle-question w-4 opacity-70"></i><span>Help</span></a>
+          </li>
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-regular fa-user w-4 opacity-70"></i><span>Profile</span></a>
+          </li>
+          <li><a href="#"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                class="fa-solid fa-arrow-right-from-bracket w-4 opacity-70"></i><span>Logout</span></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </aside><!-- Main Content -->
+  <main
+    class="flex-1 flex flex-col h-full overflow-hidden relative bg-background">
+    <!-- Header -->
+    <header id="header"
+      class="h-16 bg-white border-b border-border flex items-center px-6 z-10 shrink-0">
+      <div class="flex items-center gap-3"><button
+          class="lg:hidden text-text-muted hover:text-text-main transition-colors"><i
+            class="fa-solid fa-bars text-xl"></i></button>
+        <div class="flex items-center gap-2 text-text-main"><i
+            class="fa-solid fa-table-columns text-sm"></i>
+          <h1 class="text-[15px] font-semibold tracking-tight">Settings</h1>
+        </div>
+      </div>
+    </header><!-- Content Area -->
+    <div id="content-area"
+      class="flex-1 overflow-auto p-6 lg:p-8 hide-scroll">
+      <div class="max-w-3xl mx-auto space-y-6">
+        <!-- General Settings Card -->
+        <div id="general-settings"
+          class="bg-white border border-border rounded-xl shadow-sm p-6">
+          <div class="mb-6">
+            <h2 class="text-xl font-semibold text-text-main mb-1">General</h2>
+            <p class="text-sm text-text-muted">Manage your application
+              preferences</p>
+          </div>
+          <div class="space-y-6">
+            <!-- Application Name -->
+            <div class="space-y-2"><label
+                class="block text-sm font-medium text-text-main">Application
+                Name</label><input type="text" value="AdminPanel"
+                class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow">
+            </div>
+            <div class="h-px bg-border w-full"></div><!-- Dark Mode Toggle -->
+            <div class="flex items-center justify-between">
+              <div><label
+                  class="block text-sm font-medium text-text-main">Dark
+                  Mode</label>
+                <p class="text-sm text-text-muted">Toggle dark theme for the
+                  dashboard</p>
+              </div>
+              <div
+                class="relative inline-block w-10 mr-2 align-middle select-none">
+                <input type="checkbox" name="toggle" id="dark-mode-toggle"
+                  class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"><label
+                  for="dark-mode-toggle"
+                  class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+              </div>
+            </div>
+            <div class="h-px bg-border w-full"></div><!-- Language Select -->
+            <div class="space-y-2"><label
+                class="block text-sm font-medium text-text-main">Language</label>
+              <div class="relative"><select
+                  class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow">
+                  <option value="en">English</option>
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
+                </select>
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-text-muted">
+                  <i class="fa-solid fa-chevron-down text-xs"></i></div>
+              </div>
+            </div>
+            <div class="h-px bg-border w-full"></div><!-- Timezone Select -->
+            <div class="space-y-2"><label
+                class="block text-sm font-medium text-text-main">Timezone</label>
+              <div class="relative"><select
+                  class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow">
+                  <option value="utc">UTC (GMT+0)</option>
+                  <option value="est">EST (GMT-5)</option>
+                  <option value="pst">PST (GMT-8)</option>
+                </select>
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-text-muted">
+                  <i class="fa-solid fa-chevron-down text-xs"></i></div>
+              </div>
+            </div>
+          </div>
+        </div><!-- Display Settings Card -->
+        <div id="display-settings"
+          class="bg-white border border-border rounded-xl shadow-sm p-6">
+          <div class="mb-6">
+            <h2 class="text-xl font-semibold text-text-main mb-1">Display</h2>
+            <p class="text-sm text-text-muted">Customize how the dashboard
+              looks</p>
+          </div>
+          <div class="space-y-6">
+            <!-- Compact Mode Toggle -->
+            <div class="flex items-center justify-between">
+              <div><label
+                  class="block text-sm font-medium text-text-main">Compact
+                  Mode</label>
+                <p class="text-sm text-text-muted">Reduce spacing for denser
+                  layouts</p>
+              </div>
+              <div
+                class="relative inline-block w-10 mr-2 align-middle select-none">
+                <input type="checkbox" name="toggle" id="compact-mode-toggle"
+                  class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"><label
+                  for="compact-mode-toggle"
+                  class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+              </div>
+            </div>
+            <div class="h-px bg-border w-full"></div>
+            <!-- Animations Toggle -->
+            <div class="flex items-center justify-between">
+              <div>
+                <label class="block text-sm font-medium text-text-main">Animations</label>
+                <p class="text-sm text-text-muted">Enable transition animations</p>
+              </div>
+              <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                <input type="checkbox" name="toggle" id="animations-toggle" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer">
+                <label for="animations-toggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer" style="background-color: #b23a48;"></label>
+              </div>
+            </div>
+          </div>
+        </div><!-- Action Buttons -->
+        <div class="flex justify-end pt-2 pb-8">
+          <button class="text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm hover:opacity-90" style="background-color: #b23a48;">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      sidebar.classList.toggle('-translate-x-full');
+      backdrop.classList.toggle('hidden');
+    }
+  </script>
+</body>
+
+</html>

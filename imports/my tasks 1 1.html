@@ -1,0 +1,228 @@
+,<!DOCTYPE html><html lang="en"><head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Tasks</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <script>
+    window.FontAwesomeConfig = {
+      autoReplaceSvg: 'nest'
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    tailwind.config = {
+      theme:
+      {
+        extend:
+        {
+          fontFamily:
+          {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+            dm: ['DM Sans', 'sans-serif'],
+          },
+          colors:
+          {
+            primary: '#b23a48',
+            'primary-hover': '#8f2e3a',
+            'sidebar-bg': '#d4737f',
+            'sidebar-header': '#8f2e3a',
+            'sidebar-active': '#6b1f28',
+            background: '#F8FAFC',
+            surface: '#FFFFFF',
+            'text-primary': '#0F172A',
+            'text-secondary': '#64748B',
+            border: '#E2E8F0',
+            'tech': '#3B82F6',
+            'media': '#A855F7',
+            'video': '#F97316',
+            'seo': '#22C55E',
+            'priority-low': '#22C55E',
+            'priority-medium': '#3B82F6',
+            'priority-high': '#F97316',
+            'priority-urgent': '#F43F5E',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body
+    {
+      font-family: 'Inter', sans-serif;
+    }
+
+    ::-webkit-scrollbar
+    {
+      display: none;
+    }
+
+    @keyframes pulse
+    {
+
+      0%,
+      100%
+      {
+        opacity: 1;
+      }
+
+      50%
+      {
+        opacity: .5;
+      }
+    }
+
+    .skeleton
+    {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .hide-scroll::-webkit-scrollbar
+    {
+      display: none;
+    }
+
+    .hide-scroll
+    {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown-menu {
+      animation: fadeSlideIn 200ms ease;
+    }
+
+    .menu-item {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+    }
+  </style>
+<style data-grapesjs-styles="true">* { box-sizing: border-box; } body {margin: 0;}body{font-family:Inter, sans-serif;}::-webkit-scrollbar{display:none;}.hide-scroll::-webkit-scrollbar{display:none;}.hide-scroll{scrollbar-width:none;}#igk9rp{width:65%;}@keyframes pulse{0%, 100%{opacity:1;}50%{opacity:0.5;}}@keyframes fadeSlideIn{0%{opacity:0;transform:translateY(-8px);}100%{opacity:1;transform:translateY(0px);}}</style></head>
+
+<body class="bg-background text-text-primary h-screen flex overflow-hidden"><div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/50 z-20 hidden lg:hidden"></div><aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-sidebar-bg text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-30 h-full"><div class="bg-sidebar-header px-6 py-5 flex items-center justify-between"><div class="flex items-center gap-2"><i class="fa-solid fa-grip text-white text-lg"></i><span class="font-mono font-bold text-sm tracking-wide">AdminPanel</span></div><button class="lg:hidden text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div><nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6"><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+          OVERVIEW</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-chart-line w-4"></i><span>Overview</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-list-check w-4"></i><span>Tasks</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-table-columns w-4"></i><span>Kanban
+                Board</span></a></li></ul></div><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+          MANAGEMENT</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-users w-4"></i><span>Team
+                Members</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-building w-4"></i><span>Departments</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-file-lines w-4"></i><span>Reports</span></a></li></ul></div><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+          PERSONAL</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-active transition-colors text-sm"><i class="fa-solid fa-clipboard-check w-4"></i><span>My
+                Tasks</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-bell w-4"></i><span>Notifications</span></a></li></ul></div><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">
+          SYSTEM</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-gear w-4"></i><span>Settings</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-circle-question w-4"></i><span>Help</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-user w-4"></i><span>Profile</span></a></li></ul></div></nav><div class="px-4 py-4 border-t border-white/10 space-y-2"><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-right-from-bracket w-4"></i><span>Logout</span></a><button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm w-full"><i class="fa-solid fa-angles-left w-4"></i><span>Collapse</span></button></div></aside><main class="flex-1 flex flex-col h-full overflow-hidden relative w-full bg-background"><header id="main-header" class="h-16 bg-surface border-b border-border flex items-center justify-between px-4 sm:px-6 lg:px-8 z-10"><div class="flex items-center flex-1"><button class="lg:hidden mr-4 text-text-secondary hover:text-text-primary focus:outline-none"><i class="fa-solid fa-bars text-xl"></i></button><div class="hidden sm:flex items-center text-sm text-text-secondary"><a href="#" class="hover:text-text-primary">Dashboard</a><i class="fa-solid fa-chevron-right text-[10px] mx-2"></i><span class="font-medium text-text-primary">My Tasks</span></div></div><div class="flex items-center space-x-4"><button class="relative p-2 text-text-secondary hover:text-text-primary focus:outline-none rounded-lg hover:bg-background transition-colors"><span class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-priority-urgent ring-2 ring-surface"></span><i class="fa-regular fa-bell text-xl"></i></button><button class="p-2 text-text-secondary hover:text-text-primary focus:outline-none rounded-lg hover:bg-background transition-colors"><i class="fa-solid fa-ellipsis-vertical text-xl"></i></button></div></header><div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8"><div class="max-w-7xl mx-auto h-full flex flex-col"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6"><div><h1 class="text-2xl font-bold text-text-primary">My Tasks</h1><p class="text-sm text-text-secondary mt-1">Manage your assigned tasks and track progress.</p></div><div class="flex flex-wrap items-center gap-3"><div class="relative w-full sm:w-64"><div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fa-solid fa-magnifying-glass text-text-secondary text-sm"></i></div><input type="text" placeholder="Search tasks..." class="block w-full pl-9 pr-3 py-2 border border-border rounded-lg leading-5 bg-surface placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-colors"></div><button class="flex items-center px-3 py-2 border border-border rounded-lg text-sm font-medium text-text-primary bg-surface hover:bg-background transition-colors"><i class="fa-solid fa-filter mr-2 text-text-secondary"></i>Filters</button><button class="flex items-center px-3 py-2 border border-border rounded-lg text-sm font-medium text-text-primary bg-surface hover:bg-background transition-colors"><i class="fa-solid fa-arrow-down-a-z mr-2 text-text-secondary"></i>Sort</button></div></div><!-- Stats Cards --><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"><div class="bg-surface border border-border rounded-xl p-4"><div class="flex items-center justify-between"><div><p class="text-text-secondary text-sm font-medium">Total Tasks</p><p class="text-2xl font-bold text-text-primary">24</p></div><div class="p-3 bg-tech/10 rounded-lg"><i class="fa-solid fa-list-check text-tech text-lg"></i></div></div></div><div class="bg-surface border border-border rounded-xl p-4"><div class="flex items-center justify-between"><div><p class="text-text-secondary text-sm font-medium">In Progress</p><p class="text-2xl font-bold text-text-primary">8</p></div><div class="p-3 bg-media/10 rounded-lg"><i class="fa-solid fa-clock text-media text-lg"></i></div></div></div><div class="bg-surface border border-border rounded-xl p-4"><div class="flex items-center justify-between"><div><p class="text-text-secondary text-sm font-medium">Completed</p><p class="text-2xl font-bold text-text-primary">12</p></div><div class="p-3 bg-seo/10 rounded-lg"><i class="fa-solid fa-check-circle text-seo text-lg"></i></div></div></div><div class="bg-surface border border-border rounded-xl p-4"><div class="flex items-center justify-between"><div><p class="text-text-secondary text-sm font-medium">Overdue</p><p class="text-2xl font-bold text-text-primary">4</p></div><div class="p-3 bg-priority-urgent/10 rounded-lg"><i class="fa-solid fa-exclamation-triangle text-priority-urgent text-lg"></i></div></div></div></div><!-- Filters Bar --><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-border pb-4"><div class="flex items-center space-x-1 bg-background p-1 rounded-lg w-full sm:w-max border border-border"><button class="flex-1 sm:flex-none px-3 py-1.5 bg-surface shadow-sm text-text-primary rounded-md text-sm font-medium flex items-center justify-center"><i class="fa-solid fa-list mr-2"></i>
+              List</button><button class="flex-1 sm:flex-none px-3 py-1.5 text-text-secondary hover:text-text-primary rounded-md text-sm font-medium flex items-center justify-center transition-colors"><i class="fa-solid fa-table-cells-large mr-2"></i> Board
+            </button></div><div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-1"><span class="text-xs text-text-secondary font-medium whitespace-nowrap">Active
+              Filters:</span><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary whitespace-nowrap">
+              Status: In Progress
+              <button class="ml-1.5 text-primary hover:text-primary/80"><i class="fa-solid fa-xmark"></i></button></span><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-video/10 text-video whitespace-nowrap">
+              Priority: High
+              <button class="ml-1.5 text-video hover:text-video/80"><i class="fa-solid fa-xmark"></i></button></span><button class="text-xs text-text-secondary hover:text-primary hover:bg-primary/5 px-2 py-1 rounded-md transition-colors font-medium whitespace-nowrap">Clear
+              all</button></div></div><!-- Task List --><div class="space-y-3 mb-8"><!-- Task Item 1 --><div class="bg-surface border border-border rounded-xl p-4 hover:shadow-md transition-shadow"><div class="flex items-start justify-between gap-4"><div class="flex items-start gap-3 flex-1"><button class="mt-1 text-text-secondary hover:text-primary transition-colors"><i class="fa-regular fa-circle text-lg"></i></button><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-medium text-text-primary hover:text-primary cursor-pointer">
+                      Redesign login page interface
+                    </h3><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-priority-high/10 text-priority-high"><i class="fa-solid fa-circle text-[8px] mr-1.5"></i> High
+                    </span></div><p class="text-sm text-text-secondary mb-3 line-clamp-2">
+                    Update the login page design to match the new brand guidelines and improve user experience.
+                  </p><div class="flex items-center gap-4 text-xs text-text-secondary"><div class="flex items-center gap-1"><i class="fa-solid fa-folder text-tech"></i><span>Website Redesign V2</span></div><div class="flex items-center gap-1"><i class="fa-regular fa-calendar"></i><span>Due Oct 25</span></div><div class="flex items-center gap-1"><i class="fa-solid fa-tag"></i><span>Design</span></div></div></div></div><div class="flex items-center gap-2"><button class="text-text-secondary hover:text-text-primary"><i class="fa-solid fa-ellipsis"></i></button></div></div></div><!-- Task Item 2 --><div class="bg-surface border border-border rounded-xl p-4 hover:shadow-md transition-shadow"><div class="flex items-start justify-between gap-4"><div class="flex items-start gap-3 flex-1"><button class="mt-1 text-seo hover:text-seo/80 transition-colors"><i class="fa-solid fa-check-circle text-lg"></i></button><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-medium text-text-secondary line-through">
+                      Setup database migration scripts
+                    </h3><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-seo/10 text-seo"><i class="fa-solid fa-check text-[8px] mr-1.5"></i> Completed
+                    </span></div><p class="text-sm text-text-secondary mb-3 line-clamp-2">
+                    Create and test database migration scripts for the new user authentication system.
+                  </p><div class="flex items-center gap-4 text-xs text-text-secondary"><div class="flex items-center gap-1"><i class="fa-solid fa-folder text-media"></i><span>Authentication System</span></div><div class="flex items-center gap-1"><i class="fa-solid fa-check-double text-seo"></i><span>Completed Oct 20</span></div><div class="flex items-center gap-1"><i class="fa-solid fa-tag"></i><span>Backend</span></div></div></div></div><div class="flex items-center gap-2"><button class="text-text-secondary hover:text-text-primary"><i class="fa-solid fa-ellipsis"></i></button></div></div></div><!-- Task Item 3 --><div class="bg-surface border border-priority-urgent border-l-4 rounded-xl p-4 hover:shadow-md transition-shadow"><div class="flex items-start justify-between gap-4"><div class="flex items-start gap-3 flex-1"><button class="mt-1 text-text-secondary hover:text-primary transition-colors"><i class="fa-regular fa-circle text-lg"></i></button><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-medium text-text-primary hover:text-primary cursor-pointer">
+                      Fix critical security vulnerability
+                    </h3><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-priority-urgent/10 text-priority-urgent"><i class="fa-solid fa-exclamation text-[8px] mr-1.5"></i> Urgent
+                    </span><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-priority-urgent/10 text-priority-urgent">
+                      Overdue
+                    </span></div><p class="text-sm text-text-secondary mb-3 line-clamp-2">
+                    Address the critical security issue found in the user authentication module.
+                  </p><div class="flex items-center gap-4 text-xs text-text-secondary"><div class="flex items-center gap-1"><i class="fa-solid fa-folder text-priority-urgent"></i><span>Security Audit</span></div><div class="flex items-center gap-1"><i class="fa-regular fa-calendar text-priority-urgent"></i><span>Due Oct 18</span></div><div class="flex items-center gap-1"><i class="fa-solid fa-tag"></i><span>Security</span></div></div></div></div><div class="flex items-center gap-2"><button class="text-text-secondary hover:text-text-primary"><i class="fa-solid fa-ellipsis"></i></button></div></div></div><!-- Task Item 4 --><div class="bg-surface border border-border rounded-xl p-4 hover:shadow-md transition-shadow"><div class="flex items-start justify-between gap-4"><div class="flex items-start gap-3 flex-1"><button class="mt-1 text-text-secondary hover:text-primary transition-colors"><i class="fa-regular fa-circle text-lg"></i></button><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-medium text-text-primary hover:text-primary cursor-pointer">
+                      Create user onboarding flow
+                    </h3><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-priority-medium/10 text-priority-medium"><i class="fa-solid fa-circle text-[8px] mr-1.5"></i> Medium
+                    </span></div><p class="text-sm text-text-secondary mb-3 line-clamp-2">
+                    Design and implement a comprehensive user onboarding experience for new customers.
+                  </p><div class="flex items-center gap-4 text-xs text-text-secondary"><div class="flex items-center gap-1"><i class="fa-solid fa-folder text-seo"></i><span>Mobile App Launch</span></div><div class="flex items-center gap-1"><i class="fa-regular fa-calendar"></i><span>Due Nov 5</span></div><div class="flex items-center gap-1"><i class="fa-solid fa-tag"></i><span>UX</span></div></div><div class="mt-3"><div class="flex justify-between text-xs mb-1"><span class="font-medium text-text-secondary">Progress</span><span class="text-text-primary font-medium">65%</span></div><div class="w-full bg-background rounded-full h-1.5 border border-border"><div class="bg-priority-medium h-1.5 rounded-full" id="igk9rp"></div></div></div></div></div><div class="flex items-center gap-2"><button class="text-text-secondary hover:text-text-primary"><i class="fa-solid fa-ellipsis"></i></button></div></div></div><!-- Task Item 5 --><div class="bg-surface border border-border rounded-xl p-4 hover:shadow-md transition-shadow"><div class="flex items-start justify-between gap-4"><div class="flex items-start gap-3 flex-1"><button class="mt-1 text-text-secondary hover:text-primary transition-colors"><i class="fa-regular fa-circle text-lg"></i></button><div class="flex-1 min-w-0"><div class="flex items-center gap-2 mb-2"><h3 class="text-lg font-medium text-text-primary hover:text-primary cursor-pointer">
+                      Update API documentation
+                    </h3><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-priority-low/10 text-priority-low"><i class="fa-solid fa-circle text-[8px] mr-1.5"></i> Low
+                    </span></div><p class="text-sm text-text-secondary mb-3 line-clamp-2">
+                    Review and update API documentation to reflect recent changes and new endpoints.
+                  </p><div class="flex items-center gap-4 text-xs text-text-secondary"><div class="flex items-center gap-1"><i class="fa-solid fa-folder text-tech"></i><span>API Development</span></div><div class="flex items-center gap-1"><i class="fa-regular fa-calendar"></i><span>Due Nov 12</span></div><div class="flex items-center gap-1"><i class="fa-solid fa-tag"></i><span>Documentation</span></div></div></div></div><div class="flex items-center gap-2"><button class="text-text-secondary hover:text-text-primary"><i class="fa-solid fa-ellipsis"></i></button></div></div></div></div><!-- Pagination --><div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border"><p class="text-sm text-text-secondary">
+            Showing <span class="font-medium text-text-primary">1-5</span> of <span class="font-medium text-text-primary">24</span> tasks
+          </p><div class="flex items-center gap-2"><button disabled="" class="px-3 py-2 border border-border rounded-lg text-sm font-medium text-text-secondary bg-surface hover:bg-background transition-colors disabled:opacity-50 disabled:cursor-not-allowed"><i class="fa-solid fa-chevron-left"></i></button><button class="px-3 py-2 border border-primary bg-primary text-white rounded-lg text-sm font-medium">
+              1
+            </button><button class="px-3 py-2 border border-border rounded-lg text-sm font-medium text-text-primary bg-surface hover:bg-background transition-colors">
+              2
+            </button><button class="px-3 py-2 border border-border rounded-lg text-sm font-medium text-text-primary bg-surface hover:bg-background transition-colors">
+              3
+            </button><span class="px-2 text-text-secondary">...</span><button class="px-3 py-2 border border-border rounded-lg text-sm font-medium text-text-primary bg-surface hover:bg-background transition-colors">
+              5
+            </button><button class="px-3 py-2 border border-border rounded-lg text-sm font-medium text-text-primary bg-surface hover:bg-background transition-colors"><i class="fa-solid fa-chevron-right"></i></button></div></div></div></div></main><script>
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const menuBtn = document.querySelector('header button');
+    const closeSidebarBtn = sidebar.querySelector('button');
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.remove('-translate-x-full');
+      backdrop.classList.remove('hidden');
+    });
+
+    closeSidebarBtn.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    });
+
+    backdrop.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    });
+  </script><script>
+    window.FontAwesomeConfig = {
+      autoReplaceSvg: 'nest'
+    };
+  </script><script>
+    tailwind.config = {
+      theme:
+      {
+        extend:
+        {
+          fontFamily:
+          {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+            dm: ['DM Sans', 'sans-serif'],
+          },
+          colors:
+          {
+            primary: '#b23a48',
+            'primary-hover': '#8f2e3a',
+            'sidebar-bg': '#d4737f',
+            'sidebar-header': '#8f2e3a',
+            'sidebar-active': '#6b1f28',
+            background: '#F8FAFC',
+            surface: '#FFFFFF',
+            'text-primary': '#0F172A',
+            'text-secondary': '#64748B',
+            border: '#E2E8F0',
+            'tech': '#3B82F6',
+            'media': '#A855F7',
+            'video': '#F97316',
+            'seo': '#22C55E',
+            'priority-low': '#22C55E',
+            'priority-medium': '#3B82F6',
+            'priority-high': '#F97316',
+            'priority-urgent': '#F43F5E',
+          }
+        }
+      }
+    }
+  </script></body></html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <script>
+      window.FontAwesomeConfig = {
+        autoReplaceSvg: 'nest'
+      };
+    </script>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - AdminPanel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"
+      rel="stylesheet">
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js">
+    </script>
+    <script>
+      tailwind.config = {
+        theme:
+        {
+          extend:
+          {
+            fontFamily:
+            {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors:
+            {
+              background: '#F8FAFC',
+              sidebar: '#FFFFFF',
+              panel: '#FFFFFF',
+              'panel-hover': '#F1F5F9',
+              primary: '#b23a48',
+              'primary-hover': '#9a2f3c',
+              'sidebar-bg': '#52b788',
+              'sidebar-header': '#2d6a4f',
+              'sidebar-active': '#1b4332',
+              secondary: '#E2E8F0',
+              text:
+              {
+                main: '#0F172A',
+                muted: '#64748B',
+                dark: '#94A3B8'
+              },
+              border: '#E2E8F0',
+              success: '#22C55E',
+              warning: '#F97316',
+              danger: '#F43F5E',
+              info: '#3B82F6',
+              tech: '#3B82F6',
+              media: '#A855F7',
+              video: '#F97316',
+              seo: '#22C55E',
+            },
+            boxShadow:
+            {
+              'glow': '0 0 20px rgba(178, 58, 72, 0.1)',
+              'panel': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+              'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body
+      {
+        font-family: 'Inter', sans-serif;
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+
+      ::-webkit-scrollbar
+      {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track
+      {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb
+      {
+        background: #E2E8F0;
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover
+      {
+        background: #CBD5E1;
+      }
+
+      .hide-scroll::-webkit-scrollbar
+      {
+        display: none;
+      }
+
+      .hide-scroll
+      {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+
+  <body class="h-screen flex overflow-hidden selection:bg-primary/20">
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebar-backdrop"
+      class="fixed inset-0 bg-black/20 z-40 hidden lg:hidden backdrop-blur-sm">
+    </div><!-- Sidebar -->
+    <aside id="sidebar"
+      class="fixed inset-y-0 left-0 w-64 bg-sidebar-bg text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-50 h-full shadow-lg">
+      <div
+        class="bg-sidebar-header px-6 py-5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-6 h-6 border border-white/30 rounded flex items-center justify-center">
+            <i class="fa-solid fa-grip-vertical text-white text-xs"></i></div>
+          <span
+            class="font-mono font-bold text-sm tracking-wide">AdminPanel</span>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6 hide-scroll">
+        <div>
+          <h3
+            class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+            OVERVIEW</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-border-all w-4 opacity-70"></i><span>Overview</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-list-check w-4 opacity-70"></i><span>Tasks</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-table-columns w-4 opacity-70"></i><span>Kanban
+                  Board</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h3
+            class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+            MANAGEMENT</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-user-group w-4 opacity-70"></i><span>Team
+                  Members</span></a></li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-building w-4 opacity-70"></i><span>Departments</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-chart-simple w-4 opacity-70"></i><span>Reports</span></a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3
+            class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+            PERSONAL</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-list w-4 opacity-70"></i><span>My
+                  Tasks</span></a></li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-regular fa-bell w-4 opacity-70"></i><span>Notifications</span></a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3
+            class="font-mono text-[10px] font-bold tracking-widest mb-3 px-3 opacity-70 uppercase">
+            SYSTEM</h3>
+          <ul class="space-y-1">
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-gear w-4 opacity-70"></i><span>Settings</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-regular fa-circle-question w-4 opacity-70"></i><span>Help</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg bg-sidebar-active transition-colors text-sm font-medium"><i
+                  class="fa-regular fa-user w-4"></i><span>Profile</span></a>
+            </li>
+            <li><a href="#"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm"><i
+                  class="fa-solid fa-arrow-right-from-bracket w-4 opacity-70"></i><span>Logout</span></a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside><!-- Main Content -->
+    <main
+      class="flex-1 flex flex-col h-full overflow-hidden relative bg-background">
+      <!-- Header -->
+      <header id="header"
+        class="h-16 bg-white border-b border-border flex items-center px-6 z-10 shrink-0">
+        <div class="flex items-center gap-3"><button
+            class="lg:hidden text-text-muted hover:text-text-main transition-colors"><i
+              class="fa-solid fa-bars text-xl"></i></button>
+          <div class="flex items-center gap-2 text-text-main"><i
+              class="fa-regular fa-window-maximize text-sm"></i>
+            <h1 class="text-[15px] font-semibold tracking-tight">Profile</h1>
+          </div>
+        </div>
+      </header><!-- Content Area -->
+      <div id="content-area"
+        class="flex-1 overflow-auto p-6 lg:p-8 hide-scroll">
+        <div class="max-w-4xl space-y-6">
+          <!-- Profile Information Section -->
+          <div id="profile-info"
+            class="bg-white border border-border rounded-xl shadow-sm p-6">
+            <div class="mb-6">
+              <h2 class="text-xl font-semibold text-text-main mb-1">Profile
+                Information</h2>
+              <p class="text-sm text-text-muted">Update your personal details
+                and avatar</p>
+            </div>
+            <div class="flex items-start gap-6 mb-8">
+              <div
+                class="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-semibold shrink-0 bg-[#b23a48]">
+                JD
+              </div>
+              <div>
+                <h3 class="text-sm font-medium text-text-main mb-1">Profile
+                  Photo</h3>
+                <p class="text-xs text-text-muted mb-3">JPG, PNG or GIF. Max
+                  2MB.</p><button
+                  class="px-4 py-2 border border-border rounded-lg text-sm font-medium text-text-main hover:bg-gray-50 transition-colors">
+                  Upload Photo
+                </button>
+              </div>
+            </div>
+            <form class="space-y-5">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="space-y-2"><label
+                    class="flex items-center gap-2 text-sm font-medium text-text-main"><i
+                      class="fa-regular fa-user text-text-muted text-xs"></i>
+                    Full Name
+                  </label><input type="text" value="John Doe"
+                    class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow">
+                </div>
+                <div class="space-y-2"><label
+                    class="flex items-center gap-2 text-sm font-medium text-text-main"><i
+                      class="fa-regular fa-envelope text-text-muted text-xs"></i>
+                    Email
+                  </label><input type="email" value="john.doe@company.com"
+                    class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow">
+                </div>
+              </div>
+              <div class="space-y-2"><label
+                  class="flex items-center gap-2 text-sm font-medium text-text-main"><i
+                    class="fa-solid fa-phone text-text-muted text-xs"></i> Phone
+                </label><input type="tel" value="+1 (555) 123-4567"
+                  class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow">
+              </div>
+              <div class="space-y-2"><label
+                  class="block text-sm font-medium text-text-main">Bio</label><textarea rows="3" class="w-full px-3 py-2 border border-border rounded-lg text-sm text-text-main focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-shadow resize-y">Senior product manager with 8 years of experience in SaaS platforms.</textarea>
+              </div>
+              <div class="flex justify-end pt-2"><button type="submit"
+                  class="hover:bg-primary-hover text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors shadow-sm bg-[#b23a48]">
+                  Save Profile
+                </button></div>
+            </form>
+          </div><!-- Activity Log Section -->
+          <div id="activity-log"
+            class="bg-white border border-border rounded-xl shadow-sm p-6">
+            <div class="mb-6">
+              <h2 class="text-xl font-semibold text-text-main mb-1">Activity Log
+              </h2>
+              <p class="text-sm text-text-muted">Your recent actions and login
+                history</p>
+            </div>
+            <div class="space-y-0 divide-y divide-border">
+              <!-- Activity Item 1 -->
+              <div class="py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3"><span
+                    class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-[10px] font-medium tracking-wide uppercase">Profile</span><span
+                    class="text-sm text-text-main">Updated profile
+                    picture</span></div><span
+                  class="text-xs text-text-muted flex items-center gap-1"><i
+                    class="fa-regular fa-clock text-[10px]"></i> 2 hours
+                  ago</span>
+              </div><!-- Activity Item 2 -->
+              <div class="py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3"><span
+                    class="px-2 py-1 bg-purple-50 text-purple-600 rounded text-[10px] font-medium tracking-wide uppercase">Settings</span><span
+                    class="text-sm text-text-main">Changed notification
+                    settings</span></div><span
+                  class="text-xs text-text-muted flex items-center gap-1"><i
+                    class="fa-regular fa-clock text-[10px]"></i> 1 day
+                  ago</span>
+              </div><!-- Activity Item 3 -->
+              <div class="py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3"><span
+                    class="px-2 py-1 bg-green-50 text-green-600 rounded text-[10px] font-medium tracking-wide uppercase">Task</span><span
+                    class="text-sm text-text-main">Completed task: Q1
+                    Report</span></div><span
+                  class="text-xs text-text-muted flex items-center gap-1"><i
+                    class="fa-regular fa-clock text-[10px]"></i> 2 days
+                  ago</span>
+              </div><!-- Activity Item 4 -->
+              <div class="py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3"><span
+                    class="px-2 py-1 bg-orange-50 text-orange-600 rounded text-[10px] font-medium tracking-wide uppercase">Team</span><span
+                    class="text-sm text-text-main">Added new team member</span>
+                </div><span
+                  class="text-xs text-text-muted flex items-center gap-1"><i
+                    class="fa-regular fa-clock text-[10px]"></i> 3 days
+                  ago</span>
+              </div><!-- Activity Item 5 -->
+              <div class="py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3"><span
+                    class="px-2 py-1 bg-red-50 text-red-600 rounded text-[10px] font-medium tracking-wide uppercase">Security</span><span
+                    class="text-sm text-text-main">Logged in from new
+                    device</span></div><span
+                  class="text-xs text-text-muted flex items-center gap-1"><i
+                    class="fa-regular fa-clock text-[10px]"></i> 5 days
+                  ago</span>
+              </div><!-- Activity Item 6 -->
+              <div class="py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3"><span
+                    class="px-2 py-1 bg-red-50 text-red-600 rounded text-[10px] font-medium tracking-wide uppercase">Security</span><span
+                    class="text-sm text-text-main">Updated password</span></div>
+                <span class="text-xs text-text-muted flex items-center gap-1"><i
+                    class="fa-regular fa-clock text-[10px]"></i> 1 week
+                  ago</span>
+              </div><!-- Activity Item 7 -->
+              <div class="py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3"><span
+                    class="px-2 py-1 bg-teal-50 text-teal-600 rounded text-[10px] font-medium tracking-wide uppercase">Admin</span><span
+                    class="text-sm text-text-main">Created department:
+                    Engineering</span></div><span
+                  class="text-xs text-text-muted flex items-center gap-1"><i
+                    class="fa-regular fa-clock text-[10px]"></i> 2 weeks
+                  ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      function toggleSidebar()
+      {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        sidebar.classList.toggle('-translate-x-full');
+        backdrop.classList.toggle('hidden');
+      }
+    </script>
+  </body>
+
+</html>

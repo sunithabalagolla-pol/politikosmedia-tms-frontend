@@ -1,0 +1,67 @@
+import { useQuery } from '@tanstack/react-query'
+import axiosInstance from '../api/axiosInstance'
+
+interface AuthMeResponse {
+  user: {
+    id: string
+    name: string
+    email: string
+    role: string
+  }
+  permissions: string[]
+}
+
+// Fetch user info and permissions from backend
+export function useUserPermissions() {
+  return useQuery({
+    queryKey: ['auth', 'me'],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get('/api/auth/me')
+      return data.data as AuthMeResponse
+    },
+    staleTime: 1000, // 1 second - refresh quickly to show permission changes
+    refetchInterval: 2000, // Poll every 2 seconds for real-time updates
+    retry: 1, // Only retry once on failure
+  })
+}
+
+// Check if user has a specific permission
+export function usePermission(permissionKey: string): boolean {
+  const { data } = useUserPermissions()
+  
+  if (!data?.permissions) {
+    console.log(`❌ usePermission('${permissionKey}'): No permissions data`)
+    return false
+  }
+  
+  const hasPermission = data.permissions.includes(permissionKey)
+  console.log(`🔑 usePermission('${permissionKey}'):`, {
+    hasPermission,
+    allPermissions: data.permissions,
+    userRole: data.user?.role
+  })
+  
+  return hasPermission
+}
+
+// Check if user has ANY of the provided permissions
+export function useHasAnyPermission(permissionKeys: string[]): boolean {
+  const { data } = useUserPermissions()
+  
+  if (!data?.permissions) {
+    return false
+  }
+  
+  return permissionKeys.some(key => data.permissions.includes(key))
+}
+
+// Check if user has ALL of the provided permissions
+export function useHasAllPermissions(permissionKeys: string[]): boolean {
+  const { data } = useUserPermissions()
+  
+  if (!data?.permissions) {
+    return false
+  }
+  
+  return permissionKeys.every(key => data.permissions.includes(key))
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="en"><head>
+    <script>
+      window.FontAwesomeConfig = {
+        autoReplaceSvg: 'nest'
+      };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors: {
+              background: '#F8FAFC',
+              sidebar: '#FFFFFF',
+              panel: '#FFFFFF',
+              'panel-hover': '#F1F5F9',
+              primary: '#B23A48',
+              'primary-hover': '#8E2E39',
+              'sidebar-bg': '#D9717D',
+              'sidebar-header': '#B23A48',
+              'sidebar-active': '#8E2E39',
+              secondary: '#F1F5F9',
+              text: {
+                main: '#0F172A',
+                muted: '#64748B',
+                dark: '#94A3B8'
+              },
+              border: '#E2E8F0',
+              success: '#22C55E',
+              warning: '#F97316',
+              danger: '#F43F5E',
+              tech: '#3B82F6',
+              media: '#A855F7',
+              video: '#F97316',
+              seo: '#22C55E',
+            },
+            boxShadow: {
+              'glow': '0 0 20px rgba(178, 58, 72, 0.15)',
+              'panel': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+              'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #F8FAFC;
+        color: #0F172A;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #E2E8F0;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #CBD5E1;
+      }
+      .hide-scroll::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scroll {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+      }
+      .upload-zone-active {
+        border-color: #B23A48 !important;
+        background-color: rgba(178, 58, 72, 0.05) !important;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      .animate-pulse-custom {
+        animation: pulse 2s infinite;
+      }
+    </style>
+<style data-grapesjs-styles="true">* { box-sizing: border-box; } body {margin: 0;}body{font-family:Inter, sans-serif;background-color:rgb(248, 250, 252);color:rgb(15, 23, 42);margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px;}::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background-image:initial;background-position-x:initial;background-position-y:initial;background-size:initial;background-repeat:initial;background-attachment:initial;background-origin:initial;background-clip:initial;background-color:transparent;}::-webkit-scrollbar-thumb{background-image:initial;background-position-x:initial;background-position-y:initial;background-size:initial;background-repeat:initial;background-attachment:initial;background-origin:initial;background-clip:initial;background-color:rgb(226, 232, 240);border-top-left-radius:10px;border-top-right-radius:10px;border-bottom-right-radius:10px;border-bottom-left-radius:10px;}::-webkit-scrollbar-thumb:hover{background-image:initial;background-position-x:initial;background-position-y:initial;background-size:initial;background-repeat:initial;background-attachment:initial;background-origin:initial;background-clip:initial;background-color:rgb(203, 213, 225);}.hide-scroll::-webkit-scrollbar{display:none;}.hide-scroll{scrollbar-width:none;}.animate-pulse-custom{animation-duration:2s;animation-timing-function:ease;animation-delay:0s;animation-iteration-count:infinite;animation-direction:normal;animation-fill-mode:none;animation-play-state:running;animation-name:pulse;animation-timeline:auto;animation-range-start:normal;animation-range-end:normal;}*{box-sizing:border-box;}#i1nqe4{width:67%;}#ibvrl8{width:0%;}@keyframes fadeIn{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0px);}}@keyframes pulse{0%, 100%{opacity:1;}50%{opacity:0.7;}}</style></head>
+<body class="h-screen flex overflow-hidden selection:bg-primary/20"><div id="sidebar-backdrop" class="fixed inset-0 bg-black/20 z-40 hidden lg:hidden backdrop-blur-sm"></div><aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-sidebar-bg text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-50 h-full"><div class="bg-sidebar-header px-6 py-5 flex items-center justify-between"><div class="flex items-center gap-2"><i class="fa-solid fa-grip text-white text-lg"></i><span class="font-mono font-bold text-sm tracking-wide">AdminPanel</span></div></div><nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6 hide-scroll"><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">OVERVIEW</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-chart-line w-4"></i><span>Overview</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-list-check w-4"></i><span>Tasks</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-table-columns w-4"></i><span>Kanban Board</span></a></li></ul></div><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">MANAGEMENT</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-users w-4"></i><span>Team Members</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-building w-4"></i><span>Departments</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-file-lines w-4"></i><span>Reports</span></a></li></ul></div><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">PERSONAL</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-clipboard-check w-4"></i><span>My Tasks</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-bell w-4"></i><span>Notifications</span></a></li></ul></div><div><h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">SYSTEM</h3><ul class="space-y-1"><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-gear w-4"></i><span>Settings</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-circle-question w-4"></i><span>Help</span></a></li><li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-user w-4"></i><span>Profile</span></a></li></ul></div></nav><div class="px-4 py-4 border-t border-white/10 space-y-2"><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-right-from-bracket w-4"></i><span>Logout</span></a><button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm w-full"><i class="fa-solid fa-angles-left w-4"></i><span>Collapse</span></button></div></aside><main class="flex-1 flex flex-col h-full overflow-hidden relative"><header id="header" class="h-20 bg-white border-b border-border flex items-center justify-between px-6 z-10 shrink-0 shadow-sm"><div class="flex items-center gap-4"><button class="lg:hidden text-text-muted hover:text-text-main transition-colors"><i class="fa-solid fa-bars text-xl"></i></button><div><h1 class="text-xl font-bold text-text-main tracking-tight">Document Upload</h1><p class="text-[13px] text-text-muted mt-0.5">Upload and manage project documents</p></div></div><div class="flex items-center gap-3 md:gap-4"><div class="hidden sm:flex items-center gap-2 bg-success/10 border border-success/20 rounded-lg px-3 py-1.5"><i class="fa-solid fa-cloud-arrow-up text-success text-[13px]"></i><span class="text-[13px] font-semibold text-success">12 Files</span></div><button class="flex items-center gap-2 bg-white border border-border rounded-lg px-3 py-1.5 hover:bg-secondary transition-colors shadow-sm"><i class="fa-regular fa-bell text-text-muted text-[14px]"></i><span class="bg-danger/10 text-danger text-[10px] px-2 py-0.5 rounded-full font-bold border border-danger/20">2 New</span></button></div></header><div id="main-content" class="flex-1 overflow-y-auto p-6 space-y-6"><!-- Upload Statistics --><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div><!-- Upload Section --><div class="grid grid-cols-1 xl:grid-cols-3 gap-6"><!-- Main Upload Area --><div class="xl:col-span-2 space-y-6"><div class="bg-white rounded-xl border border-border p-6 shadow-sm"><div class="flex items-center justify-between mb-6"><div><h2 class="text-lg font-bold text-text-main">Upload Documents</h2><p class="text-[13px] text-text-muted">Drag and drop files or click to browse</p></div><button class="text-[12px] text-danger hover:text-danger/80 font-semibold">Clear All</button></div><div id="upload-zone" class="border-2 border-dashed border-border hover:border-primary/50 bg-background rounded-xl p-8 text-center cursor-pointer transition-all group min-h-[300px] flex flex-col items-center justify-center"><div class="w-20 h-20 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300 border border-primary/20"><i class="fa-solid fa-cloud-arrow-up text-4xl"></i></div><h3 class="text-lg font-bold text-text-main mb-2 group-hover:text-primary transition-colors">Choose files to upload</h3><p class="text-[14px] text-text-muted mb-6 max-w-md leading-relaxed">Drag and drop files here, or click to select files from your computer. Multiple files supported.</p><div class="flex flex-wrap justify-center gap-2 mb-6"><span class="px-3 py-1.5 bg-white rounded-lg text-[12px] text-text-muted font-semibold border border-border shadow-sm">PDF</span><span class="px-3 py-1.5 bg-white rounded-lg text-[12px] text-text-muted font-semibold border border-border shadow-sm">DOCX</span><span class="px-3 py-1.5 bg-white rounded-lg text-[12px] text-text-muted font-semibold border border-border shadow-sm">XLSX</span><span class="px-3 py-1.5 bg-white rounded-lg text-[12px] text-text-muted font-semibold border border-border shadow-sm">PPTX</span><span class="px-3 py-1.5 bg-white rounded-lg text-[12px] text-text-muted font-semibold border border-border shadow-sm">TXT</span><span class="px-3 py-1.5 bg-white rounded-lg text-[12px] text-text-muted font-semibold border border-border shadow-sm">Images</span></div><button class="px-6 py-3 bg-primary hover:bg-primary-hover text-white text-[14px] font-semibold rounded-lg transition-all shadow-sm flex items-center gap-2"><i class="fa-solid fa-folder-open"></i>
+                  Browse Files
+                </button><p class="text-[12px] text-text-dark mt-4">Maximum file size: 50MB per file</p></div></div><!-- Recent Uploads --><div class="bg-white rounded-xl border border-border shadow-sm"><div class="p-6 border-b border-border"><div class="flex items-center justify-between"><h3 class="text-lg font-bold text-text-main">Recent Uploads</h3><button class="text-[12px] text-primary hover:text-primary-hover font-semibold">View All</button></div></div><div id="recent-uploads" class="p-6 space-y-4"><div class="flex items-center gap-4 p-4 bg-background rounded-lg border border-border"><div class="w-12 h-12 bg-danger/10 rounded-lg flex items-center justify-center text-danger shrink-0"><i class="fa-solid fa-file-pdf text-lg"></i></div><div class="flex-1 min-w-0"><h4 class="font-semibold text-[14px] text-text-main mb-1">Project_Brief_Q4.pdf</h4><div class="flex items-center gap-3 text-[12px] text-text-muted"><span>2.4 MB</span><span>•</span><span>2 hours ago</span><span>•</span><span class="text-success">Completed</span></div></div><button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:bg-white hover:text-text-main transition-colors"><i class="fa-solid fa-download text-[13px]"></i></button></div><div class="flex items-center gap-4 p-4 bg-background rounded-lg border border-border"><div class="w-12 h-12 bg-tech/10 rounded-lg flex items-center justify-center text-tech shrink-0"><i class="fa-solid fa-file-word text-lg"></i></div><div class="flex-1 min-w-0"><h4 class="font-semibold text-[14px] text-text-main mb-1">Technical_Specifications.docx</h4><div class="flex items-center gap-3 text-[12px] text-text-muted"><span>1.8 MB</span><span>•</span><span>5 hours ago</span><span>•</span><span class="text-primary animate-pulse-custom">Processing</span></div></div><button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:bg-white hover:text-text-main transition-colors"><i class="fa-solid fa-eye text-[13px]"></i></button></div><div class="flex items-center gap-4 p-4 bg-background rounded-lg border border-border"><div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center text-success shrink-0"><i class="fa-solid fa-file-excel text-lg"></i></div><div class="flex-1 min-w-0"><h4 class="font-semibold text-[14px] text-text-main mb-1">Budget_Analysis_2024.xlsx</h4><div class="flex items-center gap-3 text-[12px] text-text-muted"><span>876 KB</span><span>•</span><span>1 day ago</span><span>•</span><span class="text-success">Completed</span></div></div><button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:bg-white hover:text-text-main transition-colors"><i class="fa-solid fa-download text-[13px]"></i></button></div></div></div></div><!-- Sidebar --><div class="space-y-6"><!-- Upload Progress --><div class="bg-white rounded-xl border border-border p-6 shadow-sm"><h3 class="text-lg font-bold text-text-main mb-4">Upload Progress</h3><div class="space-y-4"><div class="space-y-2"><div class="flex items-center justify-between text-[13px]"><span class="font-semibold text-text-main">Design_Mockups.zip</span><span class="text-primary">67%</span></div><div class="w-full bg-secondary rounded-full h-2"><div id="i1nqe4" class="bg-primary h-2 rounded-full transition-all duration-300"></div></div><div class="flex justify-between text-[11px] text-text-muted"><span>4.2 MB of 6.3 MB</span><span>2 min remaining</span></div></div><div class="space-y-2"><div class="flex items-center justify-between text-[13px]"><span class="font-semibold text-text-main">User_Research.pdf</span><span class="text-warning">Queued</span></div><div class="w-full bg-secondary rounded-full h-2"><div id="ibvrl8" class="bg-warning h-2 rounded-full"></div></div><div class="flex justify-between text-[11px] text-text-muted"><span>0 MB of 3.1 MB</span><span>Waiting...</span></div></div></div></div><!-- Quick Actions --><div class="bg-white rounded-xl border border-border p-6 shadow-sm"><h3 class="text-lg font-bold text-text-main mb-4">Quick Actions</h3><div class="space-y-3"><button class="w-full flex items-center gap-3 p-3 bg-background hover:bg-secondary rounded-lg transition-colors text-left"><div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary"><i class="fa-solid fa-folder text-[13px]"></i></div><div><p class="text-[13px] font-semibold text-text-main">Create Folder</p><p class="text-[11px] text-text-muted">Organize your files</p></div></button><button class="w-full flex items-center gap-3 p-3 bg-background hover:bg-secondary rounded-lg transition-colors text-left"><div class="w-8 h-8 bg-tech/10 rounded-lg flex items-center justify-center text-tech"><i class="fa-solid fa-share text-[13px]"></i></div><div><p class="text-[13px] font-semibold text-text-main">Share Files</p><p class="text-[11px] text-text-muted">Generate share links</p></div></button><button class="w-full flex items-center gap-3 p-3 bg-background hover:bg-secondary rounded-lg transition-colors text-left"><div class="w-8 h-8 bg-warning/10 rounded-lg flex items-center justify-center text-warning"><i class="fa-solid fa-download text-[13px]"></i></div><div><p class="text-[13px] font-semibold text-text-main">Download All</p><p class="text-[11px] text-text-muted">Download all files</p></div></button></div></div></div></div></div></main><script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        sidebar.classList.toggle('-translate-x-full');
+        backdrop.classList.toggle('hidden');
+      }
+
+      function clearAll() {
+        console.log('Clear all files');
+      }
+
+      function simulateUpload() {
+        console.log('Browse files clicked');
+      }
+
+      document.getElementById('sidebar-backdrop')?.addEventListener('click', toggleSidebar);
+    </script><script>
+      window.FontAwesomeConfig = {
+        autoReplaceSvg: 'nest'
+      };
+    </script><script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors: {
+              background: '#F8FAFC',
+              sidebar: '#FFFFFF',
+              panel: '#FFFFFF',
+              'panel-hover': '#F1F5F9',
+              primary: '#B23A48',
+              'primary-hover': '#8E2E39',
+              'sidebar-bg': '#D9717D',
+              'sidebar-header': '#B23A48',
+              'sidebar-active': '#8E2E39',
+              secondary: '#F1F5F9',
+              text: {
+                main: '#0F172A',
+                muted: '#64748B',
+                dark: '#94A3B8'
+              },
+              border: '#E2E8F0',
+              success: '#22C55E',
+              warning: '#F97316',
+              danger: '#F43F5E',
+              tech: '#3B82F6',
+              media: '#A855F7',
+              video: '#F97316',
+              seo: '#22C55E',
+            },
+            boxShadow: {
+              'glow': '0 0 20px rgba(178, 58, 72, 0.15)',
+              'panel': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+              'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+            }
+          }
+        }
+      }
+    </script><script>
+      window.FontAwesomeConfig = {
+        autoReplaceSvg: 'nest'
+      };
+    </script><script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors: {
+              background: '#F8FAFC',
+              sidebar: '#FFFFFF',
+              panel: '#FFFFFF',
+              'panel-hover': '#F1F5F9',
+              primary: '#B23A48',
+              'primary-hover': '#8E2E39',
+              'sidebar-bg': '#D9717D',
+              'sidebar-header': '#B23A48',
+              'sidebar-active': '#8E2E39',
+              secondary: '#F1F5F9',
+              text: {
+                main: '#0F172A',
+                muted: '#64748B',
+                dark: '#94A3B8'
+              },
+              border: '#E2E8F0',
+              success: '#22C55E',
+              warning: '#F97316',
+              danger: '#F43F5E',
+              tech: '#3B82F6',
+              media: '#A855F7',
+              video: '#F97316',
+              seo: '#22C55E',
+            },
+            boxShadow: {
+              'glow': '0 0 20px rgba(178, 58, 72, 0.15)',
+              'panel': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+              'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+            }
+          }
+        }
+      }
+    </script></body></html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      window.FontAwesomeConfig = { autoReplaceSvg: 'nest' };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['Space Mono', 'monospace'],
+            },
+            colors: {
+              primary: '#b23a48',
+              'primary-hover': '#8f2e3a',
+              'sidebar-bg': '#d4737f',
+              'sidebar-header': '#8f2e3a',
+              'sidebar-active': '#6b1f28',
+              background: '#F8FAFC',
+              surface: '#FFFFFF',
+              'text-primary': '#0F172A',
+              'text-secondary': '#64748B',
+              border: '#E2E8F0',
+              'tech': '#3B82F6',
+              'media': '#A855F7',
+              'video': '#F97316',
+              'seo': '#22C55E',
+              'priority-low': '#22C55E',
+              'priority-medium': '#3B82F6',
+              'priority-high': '#F97316',
+              'priority-urgent': '#F43F5E',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+      ::-webkit-scrollbar { display: none; }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+      }
+      .skeleton { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+      .hide-scroll::-webkit-scrollbar { display: none; }
+      .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+      #ig87nr { width: 45%; }
+    </style>
+</head>
+<body class="bg-background text-text-primary h-screen flex overflow-hidden">
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900/50 z-20 hidden lg:hidden"></div>
+    
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-sidebar-bg text-white flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 lg:static lg:inset-0 z-30 h-full">
+      <div class="bg-sidebar-header px-6 py-5 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-grip text-white text-lg"></i>
+          <span class="font-mono font-bold text-sm tracking-wide">AdminPanel</span>
+        </div>
+        <button class="lg:hidden text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      
+      <nav class="flex-1 px-4 py-6 overflow-y-auto space-y-6">
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">OVERVIEW</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-chart-line w-4"></i><span>Overview</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-active transition-colors text-sm"><i class="fa-solid fa-list-check w-4"></i><span>Tasks</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-table-columns w-4"></i><span>Kanban Board</span></a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">MANAGEMENT</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-users w-4"></i><span>Team Members</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-building w-4"></i><span>Departments</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-file-lines w-4"></i><span>Reports</span></a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">PERSONAL</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-clipboard-check w-4"></i><span>My Tasks</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-bell w-4"></i><span>Notifications</span></a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-mono text-xs font-bold tracking-wider mb-3 px-3 opacity-80">SYSTEM</h3>
+          <ul class="space-y-1">
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-gear w-4"></i><span>Settings</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-circle-question w-4"></i><span>Help</span></a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-user w-4"></i><span>Profile</span></a></li>
+          </ul>
+        </div>
+      </nav>
+      
+      <div class="px-4 py-4 border-t border-white/10 space-y-2">
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm"><i class="fa-solid fa-right-from-bracket w-4"></i><span>Logout</span></a>
+        <button class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-sm w-full"><i class="fa-solid fa-angles-left w-4"></i><span>Collapse</span></button>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative w-full bg-background">
+      <header id="main-header" class="h-16 bg-surface border-b border-border flex items-center justify-between px-4 sm:px-6 lg:px-8 z-10">
+        <div class="flex items-center flex-1">
+          <button class="lg:hidden mr-4 text-text-secondary hover:text-text-primary focus:outline-none"><i class="fa-solid fa-bars text-xl"></i></button>
+          <div class="hidden sm:flex items-center text-sm text-text-secondary">
+            <a href="#" class="hover:text-text-primary">Dashboard</a>
+            <i class="fa-solid fa-chevron-right text-[10px] mx-2"></i>
+            <span class="font-medium text-text-primary">Tasks</span>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button class="relative p-2 text-text-secondary hover:text-text-primary focus:outline-none rounded-lg hover:bg-background transition-colors">
+            <span class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-priority-urgent ring-2 ring-surface"></span>
+            <i class="fa-regular fa-bell text-xl"></i>
+          </button>
+          <button class="p-2 text-text-secondary hover:text-text-primary focus:outline-none rounded-lg hover:bg-background transition-colors"><i class="fa-solid fa-ellipsis-vertical text-xl"></i></button>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <div class="max-w-7xl mx-auto h-full flex flex-col">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 class="text-2xl font-bold text-text-primary">Task</h1>
+              <p class="text-sm text-text-secondary mt-1">Manage and track all your active tasks.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <div class="relative w-full sm:w-64">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fa-solid fa-magnifying-glass text-text-secondary text-sm"></i>
+                </div>
+                <input type="text" placeholder="Search projects..." class="block w-full pl-9 pr-3 py-2 border border-border rounded-lg leading-5 bg-surface placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-colors">
+              </div>
+              <button class="flex items-center px-3 py-2 border border-border rounded-lg text-sm font-medium text-text-primary bg-surface hover:bg-background transition-colors"><i class="fa-solid fa-filter mr-2 text-text-secondary"></i>Filters</button>
+              <button class="flex items-center px-3 py-2 border border-border rounded-lg text-sm font-medium text-text-primary bg-surface hover:bg-background transition-colors"><i class="fa-solid fa-arrow-down-a-z mr-2 text-text-secondary"></i>Sort</button>
+              
+              <div class="relative">
+                <button id="new-task-btn" class="flex items-center px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg text-sm font-medium transition-colors shadow-sm w-full sm:w-auto justify-center">
+                  <i class="fa-solid fa-plus mr-2"></i>
+                  New Task
+                  <i class="fa-solid fa-chevron-down ml-2 text-xs"></i>
+                </button>
+                
+                <div id="task-dropdown" class="hidden absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-surface border border-border z-50">
+                  <div class="py-1">
+                    <a href="#" class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-background transition-colors">
+                      <i class="fa-solid fa-plus w-5 text-primary"></i>
+                      <span>Single Task</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-background transition-colors">
+                      <i class="fa-solid fa-layer-group w-5 text-primary"></i>
+                      <span>Multiple Tasks</span>
+                    </a>
+                    <div class="border-t border-border my-1"></div>
+                    <a href="#" class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-background transition-colors">
+                      <i class="fa-solid fa-file-import w-5 text-text-secondary"></i>
+                      <span>Import Tasks</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-2.5 text-sm text-text-primary hover:bg-background transition-colors">
+                      <i class="fa-solid fa-copy w-5 text-text-secondary"></i>
+                      <span>Duplicate Task</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-border pb-4">
+            <div class="flex items-center space-x-1 bg-background p-1 rounded-lg w-full sm:w-max border border-border">
+              <button class="flex-1 sm:flex-none px-3 py-1.5 bg-surface shadow-sm text-text-primary rounded-md text-sm font-medium flex items-center justify-center"><i class="fa-solid fa-table-cells-large mr-2"></i> Grid</button>
+              <button class="flex-1 sm:flex-none px-3 py-1.5 text-text-secondary hover:text-text-primary rounded-md text-sm font-medium flex items-center justify-center transition-colors"><i class="fa-solid fa-list mr-2"></i> List
+              </button></div>
+            <div
+              class="flex items-center gap-2 overflow-x-auto hide-scroll pb-1">
+              <span
+                class="text-xs text-text-secondary font-medium whitespace-nowrap">Active
+                Filters:</span><span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-tech/10 text-tech whitespace-nowrap">
+                Status: Active
+                <button class="ml-1.5 text-tech hover:text-tech/80"><i
+                    class="fa-solid fa-xmark"></i></button></span><span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-media/10 text-media whitespace-nowrap">
+                Dept: Design
+                <button class="ml-1.5 text-media hover:text-media/80"><i
+                    class="fa-solid fa-xmark"></i></button></span><button
+                class="text-xs text-text-secondary hover:text-primary hover:bg-primary/5 px-2 py-1 rounded-md transition-colors font-medium whitespace-nowrap">Clear
+                all</button></div>
+          </div><!-- Projects Grid -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Project Card 1 -->
+            <div
+              class="bg-surface border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group relative overflow-hidden flex flex-col h-full">
+              <div class="absolute top-0 left-0 w-1 h-full bg-tech"></div>
+              <div class="p-5 flex-1 flex flex-col">
+                <div class="flex justify-between items-start mb-3">
+                  <div class="flex items-center gap-2"><span
+                      class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tech/10 text-tech"><i
+                        class="fa-solid fa-circle text-[8px] mr-1.5"></i> Active
+                    </span></div><button
+                    class="text-text-secondary hover:text-text-primary opacity-0 group-hover:opacity-100 transition-opacity"><i
+                      class="fa-solid fa-ellipsis"></i></button>
+                </div>
+                <h3
+                  class="text-lg font-bold text-text-primary mb-1 group-hover:text-primary transition-colors">
+                  Cross-Functional Project Plan</h3>
+                <p class="text-sm text-text-secondary line-clamp-2 mb-4">
+                  Comprehensive planning and execution strategy for Q3
+                  cross-departmental initiatives.</p>
+                <div class="mt-auto space-y-4">
+                  <!-- Tags -->
+                  <div class="flex flex-wrap gap-2"><span
+                      class="px-2 py-1 bg-background text-text-secondary rounded text-xs font-medium border border-border">#planning</span><span
+                      class="px-2 py-1 bg-background text-text-secondary rounded text-xs font-medium border border-border">#q3</span><span
+                      class="px-2 py-1 bg-background text-text-secondary rounded text-xs font-medium border border-border">#strategy</span>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-4 border-t border-border">
+                    <div class="flex -space-x-2"><img
+                        src="https://storage.googleapis.com/uxpilot-auth.appspot.com/41513e3301-9a787948b1e8b4223f31.png"
+                        alt="diverse team member avatar 1, professional"
+                        class="w-7 h-7 rounded-full border-2 border-surface"><img
+                        src="https://storage.googleapis.com/uxpilot-auth.appspot.com/03aeb619fb-728d27559806428ebb23.png"
+                        alt="diverse team member avatar 2, professional"
+                        class="w-7 h-7 rounded-full border-2 border-surface"><img
+                        src="https://storage.googleapis.com/uxpilot-auth.appspot.com/dff19c9056-93252df0c967ebfe65f2.png"
+                        alt="diverse team member avatar 3, professional"
+                        class="w-7 h-7 rounded-full border-2 border-surface">
+                      <div
+                        class="w-7 h-7 rounded-full border-2 border-surface bg-background flex items-center justify-center text-[10px] font-medium text-text-secondary">
+                        +3</div>
+                    </div>
+                    <div
+                      class="flex items-center text-xs text-text-secondary font-medium">
+                      <i class="fa-regular fa-calendar mr-1.5"></i> Oct 15
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- Project Card 2 -->
+            <div
+              class="bg-surface border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group relative overflow-hidden flex flex-col h-full">
+              <div class="absolute top-0 left-0 w-1 h-full bg-media"></div>
+              <div class="p-5 flex-1 flex flex-col">
+                <div class="flex justify-between items-start mb-3">
+                  <div class="flex items-center gap-2"><span
+                      class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-media/10 text-media"><i
+                        class="fa-solid fa-circle text-[8px] mr-1.5"></i>
+                      Planning
+                    </span></div><button
+                    class="text-text-secondary hover:text-text-primary opacity-0 group-hover:opacity-100 transition-opacity"><i
+                      class="fa-solid fa-ellipsis"></i></button>
+                </div>
+                <h3
+                  class="text-lg font-bold text-text-primary mb-1 group-hover:text-primary transition-colors">
+                  Website Redesign V2</h3>
+                <p class="text-sm text-text-secondary line-clamp-2 mb-4">
+                  Overhaul of the main corporate website focusing on conversion
+                  optimization and mobile experience.</p>
+                <div class="mt-auto space-y-4">
+                  <!-- Tags -->
+                  <div class="flex flex-wrap gap-2"><span
+                      class="px-2 py-1 bg-background text-text-secondary rounded text-xs font-medium border border-border">#design</span><span
+                      class="px-2 py-1 bg-background text-text-secondary rounded text-xs font-medium border border-border">#ui/ux</span>
+                  </div><!-- Progress -->
+                  <div class="w-full">
+                    <div class="flex justify-between text-xs mb-1"><span
+                        class="font-medium text-text-secondary">Progress</span><span
+                        class="text-text-primary font-medium">45%</span></div>
+                    <div
+                      class="w-full bg-background rounded-full h-1.5 border border-border">
+                      <div id="ig87nr" class="bg-media h-1.5 rounded-full">
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-4 border-t border-border">
+                    <div class="flex -space-x-2"><img
+                        src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg"
+                        alt=""
+                        class="w-7 h-7 rounded-full border-2 border-surface"><img
+                        src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg"
+                        alt=""
+                        class="w-7 h-7 rounded-full border-2 border-surface">
+                    </div>
+                    <div
+                      class="flex items-center text-xs text-text-secondary font-medium">
+                      <i class="fa-regular fa-calendar mr-1.5"></i> Nov 02
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- Project Card 3 -->
+            <div
+              class="bg-surface border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group relative overflow-hidden flex flex-col h-full">
+              <div class="absolute top-0 left-0 w-1 h-full bg-seo"></div>
+              <div class="p-5 flex-1 flex flex-col">
+                <div class="flex justify-between items-start mb-3">
+                  <div class="flex items-center gap-2"><span
+                      class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-seo/10 text-seo"><i
+                        class="fa-solid fa-check text-[10px] mr-1.5"></i>
+                      Completed
+                    </span></div><button
+                    class="text-text-secondary hover:text-text-primary opacity-0 group-hover:opacity-100 transition-opacity"><i
+                      class="fa-solid fa-ellipsis"></i></button>
+                </div>
+                <h3
+                  class="text-lg font-bold text-text-primary mb-1 group-hover:text-primary transition-colors">
+                  Mobile App Launch</h3>
+                <p class="text-sm text-text-secondary line-clamp-2 mb-4">iOS and
+                  Android application rollout for customer portal.</p>
+                <div class="mt-auto space-y-4">
+                  <!-- Tags -->
+                  <div class="flex flex-wrap gap-2"><span
+                      class="px-2 py-1 bg-background text-text-secondary rounded text-xs font-medium border border-border">#development</span><span
+                      class="px-2 py-1 bg-background text-text-secondary rounded text-xs font-medium border border-border">#mobile</span>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-4 border-t border-border">
+                    <div class="flex -space-x-2"><img
+                        src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg"
+                        alt=""
+                        class="w-7 h-7 rounded-full border-2 border-surface"><img
+                        src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg"
+                        alt=""
+                        class="w-7 h-7 rounded-full border-2 border-surface"><img
+                        src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-9.jpg"
+                        alt=""
+                        class="w-7 h-7 rounded-full border-2 border-surface">
+                    </div>
+                    <div
+                      class="flex items-center text-xs text-text-secondary font-medium">
+                      <i class="fa-solid fa-check-double mr-1.5 text-seo"></i>
+                      Sep 28
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- Skeleton Loading Card -->
+            <div
+              class="bg-surface border border-border rounded-xl shadow-sm p-5 flex flex-col h-full skeleton">
+              <div class="flex justify-between items-start mb-4">
+                <div class="w-16 h-5 bg-border rounded"></div>
+              </div>
+              <div class="w-3/4 h-6 bg-border rounded mb-3"></div>
+              <div class="w-full h-4 bg-background rounded mb-2"></div>
+              <div class="w-5/6 h-4 bg-background rounded mb-6"></div>
+              <div class="mt-auto">
+                <div class="flex gap-2 mb-4">
+                  <div class="w-12 h-6 bg-background rounded"></div>
+                  <div class="w-16 h-6 bg-background rounded"></div>
+                </div>
+                <div
+                  class="flex items-center justify-between pt-4 border-t border-border">
+                  <div class="flex -space-x-2">
+                    <div
+                      class="w-7 h-7 rounded-full bg-border border-2 border-surface">
+                    </div>
+                    <div
+                      class="w-7 h-7 rounded-full bg-border border-2 border-surface">
+                    </div>
+                  </div>
+                  <div class="w-16 h-4 bg-background rounded"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Empty State (Hidden by default, shown for demonstration) -->
+          <div
+            class="hidden flex flex-col items-center justify-center p-12 bg-surface border border-border rounded-xl border-dashed">
+            <div
+              class="w-16 h-16 bg-background rounded-full flex items-center justify-center mb-4">
+              <i
+                class="fa-solid fa-folder-open text-2xl text-text-secondary"></i>
+            </div>
+            <h3 class="text-lg font-medium text-text-primary mb-1">No projects
+              found</h3>
+            <p class="text-sm text-text-secondary mb-6 max-w-sm text-center">We
+              couldn't find any projects matching your current filters. Try
+              adjusting your search or create a new project.</p><button
+              class="px-4 py-2 bg-surface border border-border text-text-primary rounded-lg text-sm font-medium hover:bg-background transition-colors">
+              Clear Filters
+            </button>
+          </div><!-- Pagination -->
+          <div
+            class="mt-auto pt-6 border-t border-border flex items-center justify-between">
+            <p class="text-sm text-text-secondary">Showing <span
+                class="font-medium text-text-primary">1</span> to <span
+                class="font-medium text-text-primary">12</span> of <span
+                class="font-medium text-text-primary">24</span> results</p>
+            <div class="flex items-center space-x-2"><button disabled=""
+                class="px-3 py-1 border border-border rounded-lg text-sm font-medium text-text-secondary bg-surface hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed">Previous</button><button
+                class="px-3 py-1 border border-border rounded-lg text-sm font-medium text-text-primary bg-surface hover:bg-background">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main><!-- Create Project Modal (Hidden by default) -->
+    <div id="create-modal" aria-labelledby="modal-title" role="dialog"
+      aria-modal="true" class="fixed inset-0 z-50 hidden">
+      <!-- Background backdrop -->
+      <div
+        class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm">
+      </div>
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div
+          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div
+            class="relative transform overflow-hidden rounded-xl bg-surface text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <!-- Modal Header -->
+            <div
+              class="bg-surface px-6 py-4 border-b border-border flex items-center justify-between">
+              <h3 id="modal-title"
+                class="text-lg font-semibold leading-6 text-text-primary">Create
+                New Project</h3><button type="button"
+                class="text-text-secondary hover:text-text-primary focus:outline-none"><i
+                  class="fa-solid fa-xmark text-lg"></i></button>
+            </div><!-- Modal Body (Form) -->
+            <div class="px-6 py-5 space-y-5">
+              <div><label for="project-name"
+                  class="block text-sm font-medium text-text-primary mb-1">Project
+                  Name <span class="text-priority-urgent">*</span></label><input
+                  type="text" name="project-name" id="project-name"
+                  placeholder="e.g. Q4 Marketing Campaign"
+                  class="block w-full rounded-lg border border-border px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm">
+              </div>
+              <div><label for="description"
+                  class="block text-sm font-medium text-text-primary mb-1">Description</label><textarea id="description" name="description" rows="3" placeholder="Briefly describe the project goals..." class="block w-full rounded-lg border border-border px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm"></textarea>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div><label for="department"
+                    class="block text-sm font-medium text-text-primary mb-1">Department</label><select
+                    id="department" name="department"
+                    class="block w-full rounded-lg border border-border px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm bg-surface">
+                    <option>Design</option>
+                    <option>Engineering</option>
+                    <option>Marketing</option>
+                    <option>Product</option>
+                  </select></div>
+                <div><label for="due-date"
+                    class="block text-sm font-medium text-text-primary mb-1">Due
+                    Date</label><input type="date" name="due-date" id="due-date"
+                    class="block w-full rounded-lg border border-border px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary sm:text-sm">
+                </div>
+              </div>
+            </div><!-- Modal Footer -->
+            <div
+              class="bg-background px-6 py-4 flex items-center justify-end gap-3 border-t border-border">
+              <button type="button"
+                class="px-4 py-2 text-sm font-medium text-text-primary bg-surface border border-border rounded-lg shadow-sm hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">Cancel</button><button
+                type="button"
+                class="px-4 py-2 text-sm font-medium text-white bg-primary border border-transparent rounded-lg shadow-sm hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">Create
+                Project</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function toggleSidebar()
+      {
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+
+        if (sidebar.classList.contains('-translate-x-full'))
+        {
+          sidebar.classList.remove('-translate-x-full');
+          sidebar.classList.add('translate-x-0');
+          backdrop.classList.remove('hidden');
+        }
+        else
+        {
+          sidebar.classList.add('-translate-x-full');
+          sidebar.classList.remove('translate-x-0');
+          backdrop.classList.add('hidden');
+        }
+      }
+      
+      // New Task Dropdown Toggle
+      document.addEventListener('DOMContentLoaded', function() {
+        const newTaskBtn = document.getElementById('new-task-btn');
+        const taskDropdown = document.getElementById('task-dropdown');
+        
+        newTaskBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          taskDropdown.classList.toggle('hidden');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!newTaskBtn.contains(e.target) && !taskDropdown.contains(e.target)) {
+            taskDropdown.classList.add('hidden');
+          }
+        });
+        
+        // Close dropdown when clicking on menu items
+        taskDropdown.querySelectorAll('a').forEach(item => {
+          item.addEventListener('click', function() {
+            taskDropdown.classList.add('hidden');
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
