@@ -50,6 +50,7 @@ export function useTickets(filters?: TicketFilters) {
       const { data } = await axiosInstance.get(url)
       return data.data || data
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 

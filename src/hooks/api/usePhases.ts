@@ -88,6 +88,7 @@ export function usePhase(id: string | null) {
       return data.data as PhaseWithDetails
     },
     enabled: !!id,
+    staleTime: 30000, // 30s
   })
 }
 
