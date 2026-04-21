@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext'
 import { usePermission } from '../../hooks/usePermission'
 import { useRole } from '../../hooks/useRole'
 import { usePublicSettings } from '../../hooks/api/useSettings'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 export default function TeamMembers() {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
@@ -28,15 +29,15 @@ export default function TeamMembers() {
   const userRole = user?.role
   
   const canAddMember = isAdmin() || usePermission('team:add_member')
-  const showAddForRole = userRole === 'manager' ? settings?.show_team_add_manager : settings?.show_team_add_employee
+  const showAddForRole = userRole === 'admin' ? settings?.show_team_add_admin ?? true : userRole === 'manager' ? settings?.show_team_add_manager : settings?.show_team_add_employee
   const shouldShowAddButton = canAddMember && showAddForRole
   
   const canEditMember = isAdmin() || usePermission('team:edit_member')
-  const showEditForRole = userRole === 'manager' ? settings?.show_team_edit_manager : settings?.show_team_edit_employee
+  const showEditForRole = userRole === 'admin' ? settings?.show_team_edit_admin ?? true : userRole === 'manager' ? settings?.show_team_edit_manager : settings?.show_team_edit_employee
   const shouldShowEditButton = canEditMember && showEditForRole
   
   const canDeactivateMember = isAdmin() || usePermission('team:deactivate')
-  const showDeactivateForRole = userRole === 'manager' ? settings?.show_team_deactivate_manager : settings?.show_team_deactivate_employee
+  const showDeactivateForRole = userRole === 'admin' ? settings?.show_team_deactivate_admin ?? true : userRole === 'manager' ? settings?.show_team_deactivate_manager : settings?.show_team_deactivate_employee
   const shouldShowDeactivateButton = canDeactivateMember && showDeactivateForRole
 
   // Debug logging
@@ -155,7 +156,7 @@ export default function TeamMembers() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="relative">
-                          {member.avatar_url ? <img src={member.avatar_url} alt={member.name} className="w-10 h-10 rounded-full object-cover border-2 border-gray-200" />
+                          {member.avatar_url ? <img src={resolveFileUrl(member.avatar_url)} alt={member.name} className="w-10 h-10 rounded-full object-cover border-2 border-gray-200" />
                             : <div className="w-10 h-10 rounded-full bg-[#b23a48] flex items-center justify-center border-2 border-gray-200"><span className="text-white font-semibold text-[11px]">{member.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}</span></div>}
                           <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 ${getStatusColor(member.status)} border-2 border-white rounded-full`}></div>
                         </div>

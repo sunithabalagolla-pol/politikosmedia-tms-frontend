@@ -17,7 +17,7 @@ export default function UserDashboard() {
   const { theme, toggleTheme } = useTheme()
   const location = useLocation()
   const navigate = useNavigate()
-  const { logout, canSwitchView, switchView } = useAuth()
+  const { logout, canSwitchView, switchView, user } = useAuth()
   
   // Permission checks
   const canViewDepartments = usePermission('dept:view')
@@ -25,7 +25,9 @@ export default function UserDashboard() {
   
   // Global settings
   const { data: publicSettings } = usePublicSettings()
-  const showDepartmentsMenuEmployee = publicSettings?.show_departments_menu_employee ?? true
+  const showDepartmentsMenuEmployee = user?.role === 'admin'
+    ? publicSettings?.show_departments_menu_admin ?? true
+    : publicSettings?.show_departments_menu_employee ?? true
   
   // Combined check: user has permission AND global setting is enabled
   const shouldShowDepartments = canViewDepartments && showDepartmentsMenuEmployee
