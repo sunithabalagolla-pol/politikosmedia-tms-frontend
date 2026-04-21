@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Upload } from 'lucide-react'
 import { useChannel, useUpdateChannel, useUploadChannelLogo } from '../../hooks/api'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 interface EditChannelModalProps {
   channelId: string
@@ -83,7 +84,7 @@ export default function EditChannelModal({ channelId, isOpen, onClose }: EditCha
                   Current Logo
                 </label>
                 <img
-                  src={channel.logo_url}
+                  src={resolveFileUrl(channel.logo_url)}
                   alt={channel.name}
                   className="w-16 h-16 object-contain rounded-lg border border-gray-200 dark:border-gray-700"
                 />

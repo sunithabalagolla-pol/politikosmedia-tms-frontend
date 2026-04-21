@@ -6,6 +6,7 @@ import {
   useChannelProgressByEmployee, useChannelRecentActivity
 } from '../../hooks/api/useDashboard'
 import { formatDistanceToNow } from 'date-fns'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 export default function ChannelsOverview() {
   const [selectedChannel, setSelectedChannel] = useState<string>()
@@ -229,7 +230,7 @@ export default function ChannelsOverview() {
                 <div key={emp.user_id}>
                   <div className="flex items-center gap-3 mb-2">
                     {emp.avatar_url ? (
-                      <img src={emp.avatar_url} alt={emp.name} className="w-8 h-8 rounded-full" />
+                      <img src={resolveFileUrl(emp.avatar_url)} alt={emp.name} className="w-8 h-8 rounded-full" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-[#b23a48] flex items-center justify-center">
                         <span className="text-xs font-bold text-white">{emp.name?.split(' ').map((n: string) => n[0]).join('')}</span>
@@ -268,7 +269,7 @@ export default function ChannelsOverview() {
                 {recentActivity.map((item: any, i: number) => (
                   <div key={i} className="flex items-start gap-3">
                     {item.user_avatar ? (
-                      <img src={item.user_avatar} alt={item.user_name} className="w-7 h-7 rounded-full shrink-0" />
+                      <img src={resolveFileUrl(item.user_avatar)} alt={item.user_name} className="w-7 h-7 rounded-full shrink-0" />
                     ) : (
                       <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
                         <span className="text-xs font-bold text-teal-600">{item.user_name?.split(' ').map((n: string) => n[0]).join('')}</span>

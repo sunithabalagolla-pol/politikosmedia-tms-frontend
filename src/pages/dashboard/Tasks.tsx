@@ -8,6 +8,7 @@ import { usePhaseTasks } from '../../hooks/api/usePhases'
 import { formatDate as fmtDate } from '../../lib/dateUtils'
 import { usePermission } from '../../hooks/usePermission'
 import { useRole } from '../../hooks/useRole'
+import { resolveFileUrl } from '../../lib/fileUrl'
 import axiosInstance from '../../api/axiosInstance'
 import CategoriesView from '../../components/tasks/CategoriesView'
 import PhasesView from '../../components/tasks/PhasesView'
@@ -344,7 +345,7 @@ const handleHoldCancel = () => {
                         <div className="flex items-center justify-between pt-1.5 border-t border-gray-200 dark:border-gray-700">
                           <div className="flex -space-x-1">
                             {(task.assignees || []).slice(0, 3).map((a: any) => (
-                              a.avatar_url ? <img key={a.id} src={a.avatar_url} alt="" className="w-5 h-5 rounded-full border border-white dark:border-gray-800" /> :
+                              a.avatar_url ? <img key={a.id} src={resolveFileUrl(a.avatar_url)} alt="" className="w-5 h-5 rounded-full border border-white dark:border-gray-800" /> :
                               <div key={a.id} className="w-5 h-5 rounded-full bg-[#b23a48] flex items-center justify-center border border-white dark:border-gray-800"><span className="text-xs font-bold text-white">{a.name?.split(' ').map((n: string) => n[0]).join('')}</span></div>
                             ))}
                             {(task.assignees || []).length > 3 && <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center border border-white text-xs font-medium text-gray-600">+{task.assignees.length - 3}</div>}

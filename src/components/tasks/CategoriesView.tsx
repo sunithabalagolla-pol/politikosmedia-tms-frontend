@@ -4,6 +4,7 @@ import { Folder, Search } from 'lucide-react'
 import { useCategories } from '../../hooks/api/useCategories'
 import { CategoriesLoadingSkeleton } from './LoadingSkeletons'
 import { useRole } from '../../hooks/useRole'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 export default function CategoriesView() {
   const { data: categories, isLoading } = useCategories()
@@ -76,7 +77,7 @@ export default function CategoriesView() {
                 {/* Category Logo or Folder Icon */}
                 {category.logo_url ? (
                   <img 
-                    src={category.logo_url} 
+                    src={resolveFileUrl(category.logo_url)} 
                     alt={category.name}
                     className="w-16 h-16 object-contain group-hover:scale-110 transition-transform"
                   />

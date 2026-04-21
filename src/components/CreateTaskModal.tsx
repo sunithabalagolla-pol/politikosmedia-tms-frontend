@@ -362,8 +362,13 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
               if (err?.response?.status === 403) {
                 errors.push('You can only upload files to your assigned tasks')
               } else {
-                const msg = err?.response?.data?.message || err?.response?.data?.error
-                errors.push(msg || `${file.name} failed to upload. Try again.`)
+                const msg = err?.response?.data?.message || err?.response?.data?.error || ''
+                const msgLower = msg.toLowerCase()
+                errors.push(
+                  msgLower.includes('file type') || msgLower.includes('not allowed') || msgLower.includes('invalid') || msgLower.includes('unsupported')
+                    ? 'Invalid file type. Allowed: Images, PDF, Word, Excel, ZIP, MP4'
+                    : msg || `${file.name} failed to upload. Try again.`
+                )
               }
             }
           }
@@ -415,8 +420,13 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
                 if (err?.response?.status === 403) {
                   errors.push('You can only upload files to your assigned tasks')
                 } else {
-                  const msg = err?.response?.data?.message || err?.response?.data?.error
-                  errors.push(msg || `${file.name} failed to upload. Try again.`)
+                  const msg = err?.response?.data?.message || err?.response?.data?.error || ''
+                  const msgLower = msg.toLowerCase()
+                  errors.push(
+                    msgLower.includes('file type') || msgLower.includes('not allowed') || msgLower.includes('invalid') || msgLower.includes('unsupported')
+                      ? 'Invalid file type. Allowed: Images, PDF, Word, Excel, ZIP, MP4'
+                      : msg || `${file.name} failed to upload. Try again.`
+                  )
                 }
               }
             }
@@ -926,12 +936,14 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
                       <Upload className="w-3.5 h-3.5" /> {r2Verified ? 'Upload File' : 'Storage not configured'}
                       <input
                         type="file"
+                        accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.mp4,.zip"
                         multiple
                         onChange={(e) => handleFileChange(form.id, e)}
                         className="hidden"
                         disabled={!r2Verified}
                       />
                     </label>
+                    {r2Verified && <p className="text-xs text-gray-400 mt-1">Supported: Images, PDF, Word, Excel, ZIP, MP4 (max 10MB)</p>}
                     {!r2Verified && (
                       <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3 shrink-0" /> Admin must verify R2 credentials in Settings.

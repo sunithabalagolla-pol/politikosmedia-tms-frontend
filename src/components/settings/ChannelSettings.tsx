@@ -5,6 +5,7 @@ import { usePermission } from '../../hooks/usePermission'
 import CreateChannelModal from './CreateChannelModal'
 import EditChannelModal from './EditChannelModal'
 import SubcategoryManagement from './SubcategoryManagement'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 export default function ChannelSettings() {
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -96,7 +97,7 @@ export default function ChannelSettings() {
               {channel.logo_url && (
                 <div className="mb-3">
                   <img
-                    src={channel.logo_url}
+                    src={resolveFileUrl(channel.logo_url)}
                     alt={channel.name}
                     className="w-16 h-16 object-contain rounded-lg"
                   />

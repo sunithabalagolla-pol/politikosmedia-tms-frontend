@@ -3,6 +3,7 @@ import { useChannelTask, useUpdateProgress, ChannelTaskStatus } from '../../hook
 import { useUserPermissions } from '../../hooks/usePermission'
 import { formatDistanceToNow, format } from 'date-fns'
 import { useState, useEffect } from 'react'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 const STATUS_LABEL: Record<ChannelTaskStatus, string> = {
   not_started: 'Not Started',
@@ -185,7 +186,7 @@ export default function ChannelTaskDetailPanel({ isOpen, onClose, taskId, readOn
                       <div key={a.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
                         <div className="flex items-center gap-2">
                           {a.avatar_url ? (
-                            <img src={a.avatar_url} alt={a.name} className="w-7 h-7 rounded-full" />
+                            <img src={resolveFileUrl(a.avatar_url)} alt={a.name} className="w-7 h-7 rounded-full" />
                           ) : (
                             <div className="w-7 h-7 rounded-full bg-[#b23a48] flex items-center justify-center">
                               <span className="text-[11px] font-bold text-white">{a.name?.charAt(0).toUpperCase()}</span>

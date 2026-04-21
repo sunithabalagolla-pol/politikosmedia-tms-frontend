@@ -212,7 +212,7 @@ export default function CreateChannelTaskModal({
               Assign To <span className="text-red-500">*</span>
             </label>
             <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
-              {employees.map((employee) => (
+              {employees.map((employee: { id: string; name: string }) => (
                 <label key={employee.id} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"

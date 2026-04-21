@@ -13,6 +13,7 @@ if (IS_SSO_MODE) {
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000',
   headers: { 'Content-Type': 'application/json' },
+  timeout: 30000,
 })
 
 // Request interceptor — attach token
@@ -50,10 +51,17 @@ axiosInstance.interceptors.request.use(async (config) => {
   return config
 })
 
-// Response interceptor — handle 401
+// Response interceptor — handle 401 and timeouts
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle timeout errors
+    if (error.code === 'ECONNABORTED') {
+      console.error('Request timed out. Please try again.')
+      // You can add a toast notification here if you have a toast library
+      return Promise.reject(new Error('Request timed out. Please try again.'))
+    }
+
     if (error.response?.status === 401) {
       const url = error.config?.url || ''
       // Don't redirect if the 401 came from login endpoints — AuthContext handles those

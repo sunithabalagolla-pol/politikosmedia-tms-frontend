@@ -5,7 +5,7 @@ import {
   Filter, ListChecks, Clock, CheckCircle2, AlertTriangle, List, LayoutGrid,
   X, Circle, Calendar, Flag, CircleDot, Loader2, Check, Pencil, Trash2, AlertCircle, Video, Tv
 } from 'lucide-react'
-import { useMyTasks, useMyTasksStats, useDeleteTask } from '../../hooks/api/useTasks'
+import { useMyTasks, useMyTasksStats, useDeleteTask, useUpdateTaskStatus } from '../../hooks/api/useTasks'
 import { useMyChannelTasks } from '../../hooks/api'
 import { useMyShowTasks } from '../../hooks/api/useShows'
 import { usePermission } from '../../hooks/usePermission'
@@ -52,6 +52,7 @@ export default function MyTasks() {
   const { data: channelTasks, isLoading: channelTasksLoading } = useMyChannelTasks()
   const { data: showTasks = [] } = useMyShowTasks()
   const deleteTask = useDeleteTask()
+  const updateStatus = useUpdateTaskStatus()
 
   const tasks = tasksData?.tasks || []
   const pagination = tasksData?.pagination || { total: 0, page: 1, limit: 20, totalPages: 1 }
@@ -210,7 +211,7 @@ export default function MyTasks() {
 
   const handleHoldConfirm = () => {
     if (holdTaskId) {
-      updateStatus.mutate({ id: holdTaskId, status: 'hold', holdReason })
+      updateStatus.mutate({ id: holdTaskId, status: 'hold', hold_note: holdReason })
     }
     setShowHoldModal(false)
     setHoldReason('')

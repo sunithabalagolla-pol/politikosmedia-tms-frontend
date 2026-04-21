@@ -7,6 +7,7 @@ import { usePermission, useUserPermissions } from '../hooks/usePermission'
 import { useQuery } from '@tanstack/react-query'
 import axiosInstance from '../api/axiosInstance'
 import { formatDate } from '../lib/dateUtils'
+import { resolveFileUrl } from '../lib/fileUrl'
 
 function triggerDownload(url: string, filename: string) {
   fetch(url)
@@ -88,7 +89,7 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
       name: att.file_name,
       type: att.file_type?.split('/').pop() || 'file',
       size: att.file_size ? `${(att.file_size / 1024 / 1024).toFixed(1)} MB` : '—',
-      url: att.file_url,
+      url: resolveFileUrl(att.file_url),
       uploadedBy: att.uploaded_by,
       uploaderName: att.uploader_name,
     })),
@@ -206,9 +207,16 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
       await uploadAttachment.mutateAsync({ taskId: task.id, file })
     } catch (err: any) {
       const msg = err?.response?.data?.message || ''
-      setUploadError(err?.response?.status === 403
-        ? 'You can only upload to tasks assigned to you'
-        : msg.toLowerCase().includes('storage') ? 'Storage not configured. Contact your administrator.' : msg || 'Upload failed. Try again.')
+      const msgLower = msg.toLowerCase()
+      setUploadError(
+        err?.response?.status === 403
+          ? 'You can only upload to tasks assigned to you'
+          : msgLower.includes('storage')
+            ? 'Storage not configured. Contact your administrator.'
+            : msgLower.includes('file type') || msgLower.includes('not allowed') || msgLower.includes('invalid') || msgLower.includes('unsupported')
+              ? 'Invalid file type. Allowed: Images, PDF, Word, Excel, ZIP, MP4'
+              : msg || 'Upload failed. Try again.'
+      )
     }
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
@@ -424,10 +432,13 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
                   })}
                   {uploadError && <p className="text-[10px] text-red-600 flex items-center gap-1"><AlertCircle className="w-3 h-3 shrink-0" />{uploadError}</p>}
                   {canUploadAttachment && (
-                    <label className={`w-full py-1.5 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-[10px] font-medium flex items-center justify-center gap-1.5 transition-colors ${r2Verified ? 'cursor-pointer hover:bg-white dark:hover:bg-gray-700 text-gray-500' : 'cursor-not-allowed opacity-50 text-gray-400'}`}>
-                      {uploadAttachment.isPending ? <><Loader2 className="w-3 h-3 animate-spin" /> Uploading...</> : <><Upload className="w-3 h-3" />{r2Verified ? '+ Attach File' : 'Storage not configured'}</>}
-                      <input ref={fileInputRef} type="file" className="hidden" disabled={!r2Verified || uploadAttachment.isPending} onChange={handleFileUpload} />
-                    </label>
+                    <>
+                      <label className={`w-full py-1.5 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-[10px] font-medium flex items-center justify-center gap-1.5 transition-colors ${r2Verified ? 'cursor-pointer hover:bg-white dark:hover:bg-gray-700 text-gray-500' : 'cursor-not-allowed opacity-50 text-gray-400'}`}>
+                        {uploadAttachment.isPending ? <><Loader2 className="w-3 h-3 animate-spin" /> Uploading...</> : <><Upload className="w-3 h-3" />{r2Verified ? '+ Attach File' : 'Storage not configured'}</>}
+                        <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.mp4,.zip" className="hidden" disabled={!r2Verified || uploadAttachment.isPending} onChange={handleFileUpload} />
+                      </label>
+                      {r2Verified && <p className="text-[10px] text-gray-400 mt-1">Supported: Images, PDF, Word, Excel, ZIP, MP4 (max 10MB)</p>}
+                    </>
                   )}
                 </div>
               </div>

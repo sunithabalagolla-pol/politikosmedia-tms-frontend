@@ -72,9 +72,9 @@ export default function ChannelTasksOverviewView() {
                 {tasks.map((task: any) => {
                   const pct = Math.round((task.my_completed_count / task.target_count) * 100)
                   const myStatus = task.my_status || 'not_started'
-                  const statusLabel = { not_started: 'Not Started', in_progress: 'In Progress', completed: 'Completed' }[myStatus]
-                  const statusBadge = { not_started: 'bg-gray-100 text-gray-700', in_progress: 'bg-blue-100 text-blue-700', completed: 'bg-green-100 text-green-700' }[myStatus]
-                  const barColor = { not_started: 'bg-gray-400', in_progress: 'bg-blue-500', completed: 'bg-green-500' }[myStatus]
+                  const statusLabel = ({ not_started: 'Not Started', in_progress: 'In Progress', completed: 'Completed' } as Record<string, string>)[myStatus]
+                  const statusBadge = ({ not_started: 'bg-gray-100 text-gray-700', in_progress: 'bg-blue-100 text-blue-700', completed: 'bg-green-100 text-green-700' } as Record<string, string>)[myStatus]
+                  const barColor = ({ not_started: 'bg-gray-400', in_progress: 'bg-blue-500', completed: 'bg-green-500' } as Record<string, string>)[myStatus]
                   return (
                     <div key={task.id} onClick={() => setViewTaskId(task.id)}
                       className={`p-4 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative overflow-hidden ${viewTaskId === task.id ? 'bg-red-50/30 dark:bg-red-900/10 border-l-[3px] border-l-[#b23a48]' : 'bg-gray-50 dark:bg-gray-900'}`}>

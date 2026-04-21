@@ -148,14 +148,14 @@ export default function Login() {
                           key={opt.value}
                           type="button"
                           onClick={() => setSelectedRole(opt.value)}
-                          className={`px-2 py-2 rounded-md border-2 transition-all font-medium text-xs flex flex-col items-center gap-0.5 ${
+                          className={`w-full px-2 py-2.5 rounded-md border-2 transition-all font-medium text-xs flex flex-col items-center gap-0.5 overflow-hidden ${
                             selectedRole === opt.value
                               ? 'border-[#b23a48] bg-[#b23a48]/5 text-[#b23a48]'
                               : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:border-gray-300'
                           }`}
                         >
-                          <span>{opt.label}</span>
-                          <span className={`text-xs font-normal ${selectedRole === opt.value ? 'text-[#b23a48]/70' : 'text-gray-400 dark:text-gray-500'}`}>{opt.email}</span>
+                          <span className="font-semibold">{opt.label}</span>
+                          <span className={`w-full text-center truncate text-[10px] font-normal ${selectedRole === opt.value ? 'text-[#b23a48]/70' : 'text-gray-400 dark:text-gray-500'}`}>{opt.email}</span>
                         </button>
                       ))}
                     </div>

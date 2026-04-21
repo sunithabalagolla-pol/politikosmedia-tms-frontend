@@ -5,6 +5,7 @@ import PhaseItem from './PhaseItem'
 import EditCategoryModal from './EditCategoryModal'
 import AddPhaseModal from './AddPhaseModal'
 import ConfirmDeleteModal from '../ConfirmDeleteModal'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 interface CategoryCardProps {
   category: {
@@ -59,7 +60,7 @@ export default function CategoryCard({ category }: CategoryCardProps) {
             {/* Category Logo & Info */}
             {category.logo_url ? (
               <img 
-                src={category.logo_url} 
+                src={resolveFileUrl(category.logo_url)} 
                 alt={category.name}
                 className="w-10 h-10 object-contain rounded-lg border border-gray-200 dark:border-gray-600 p-1 bg-white dark:bg-gray-700 shrink-0"
               />

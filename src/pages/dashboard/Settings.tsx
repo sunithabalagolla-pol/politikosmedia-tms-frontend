@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Save, Globe, Loader2, CheckCircle2, Shield, X, Check, Settings2, Wrench, Lock, FolderTree, Bell, User, Video, TrendingUp } from 'lucide-react'
+import { Save, Globe, Loader2, CheckCircle2, Shield, X, Check, Settings2, Wrench, Lock, FolderTree, Bell, User, Video, TrendingUp, AlertTriangle } from 'lucide-react'
 import { useTheme } from '../../hooks/useTheme'
 import { useSettings, useUpdateSettings, usePublicSettings, useUpdateDepartmentsMenuManagerSetting, useUpdateDepartmentsMenuEmployeeSetting, useUpdateTicketsCreateManagerSetting, useUpdateTicketsCreateEmployeeSetting, useUpdateTicketsUpdateManagerSetting, useUpdateTicketsUpdateEmployeeSetting, useUpdateTicketsViewManagerSetting, useUpdateTicketsViewEmployeeSetting, useUpdateTicketsDeleteManagerSetting, useUpdateTicketsDeleteEmployeeSetting, useUpdateTeamAddManagerSetting, useUpdateTeamAddEmployeeSetting, useUpdateTeamEditManagerSetting, useUpdateTeamEditEmployeeSetting, useUpdateTeamDeactivateManagerSetting, useUpdateTeamDeactivateEmployeeSetting } from '../../hooks/api/useSettings'
 import { usePermissions, useUpdatePermissions } from '../../hooks/api/usePermissions'
@@ -761,13 +761,22 @@ export default function Settings() {
                         {r2TestStatus === 'loading' ? 'Testing R2 connection...' : r2TestMessage}
                       </div>
                     )}
+                    {r2Verified && (
+                      <div className="flex items-start gap-2 p-3 rounded-lg border border-amber-200 bg-amber-50 text-xs text-amber-800">
+                        <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-600" />
+                        <div>
+                          <p className="font-semibold mb-0.5">⚠️ Important: Bucket must be PUBLIC</p>
+                          <p>Ensure your Cloudflare R2 bucket is set to <strong>PUBLIC access</strong> in the Cloudflare dashboard. If the bucket is private, uploaded files will not be visible to users.</p>
+                        </div>
+                      </div>
+                    )}
                     <div className="flex items-center gap-3 pt-2">
-                      <button onClick={handleSaveR2} disabled={r2Saving || !r2AccountId}
+                      <button onClick={handleSaveR2} disabled={r2Saving || !r2AccountId || (!r2AccessKeyId && !r2AccessKeyChanged) || (!r2SecretAccessKey && !r2SecretKeyChanged)}
                         className={`flex items-center gap-2 px-4 py-2 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${r2Saved ? 'bg-green-500' : 'bg-[#b23a48] hover:bg-[#8f2e3a]'}`}>
                         {r2Saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : r2Saved ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
                         {r2Saved ? 'Saved!' : 'Save R2 Settings'}
                       </button>
-                      <button onClick={handleTestR2} disabled={r2TestStatus === 'loading'}
+                      <button onClick={handleTestR2} disabled={r2TestStatus === 'loading' || !r2AccountId || !r2AccessKeyId || !r2SecretAccessKey}
                         className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         {r2TestStatus === 'loading' ? <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" /> : 'Test Connection'}
                       </button>

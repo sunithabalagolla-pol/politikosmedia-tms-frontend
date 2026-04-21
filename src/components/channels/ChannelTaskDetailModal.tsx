@@ -4,6 +4,7 @@ import { useChannelTask, useUpdateProgress, useAddChannelComment } from '../../h
 import { useUserPermissions } from '../../hooks/usePermission'
 import { formatDistanceToNow, format } from 'date-fns'
 import UpdateProgressModal from './UpdateProgressModal'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 interface ChannelTaskDetailModalProps {
   taskId: string
@@ -110,7 +111,7 @@ export default function ChannelTaskDetailModal({ taskId, isOpen, onClose }: Chan
                       <div className="flex items-center gap-3 mb-2">
                         {assignee.avatar_url ? (
                           <img
-                            src={assignee.avatar_url}
+                            src={resolveFileUrl(assignee.avatar_url)}
                             alt={assignee.name}
                             className="w-10 h-10 rounded-full"
                           />

@@ -6,6 +6,7 @@ import { usePermission } from '../../hooks/usePermission'
 import { Breadcrumb } from '../tasks/Breadcrumb'
 import CreateChannelTaskModal from './CreateChannelTaskModal'
 import ChannelTaskDetailPanel from './ChannelTaskDetailPanel'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 export default function ChannelTasksListView() {
   const [searchParams] = useSearchParams()
@@ -146,7 +147,7 @@ export default function ChannelTasksListView() {
                     <div className="flex -space-x-1">
                       {task.assignees.slice(0, 4).map((a) =>
                         a.avatar_url ? (
-                          <img key={a.id} src={a.avatar_url} alt={a.name} className="w-5 h-5 rounded-full border border-white dark:border-gray-800" />
+                          <img key={a.id} src={resolveFileUrl(a.avatar_url)} alt={a.name} className="w-5 h-5 rounded-full border border-white dark:border-gray-800" />
                         ) : (
                           <div key={a.id} className="w-5 h-5 rounded-full bg-[#b23a48] flex items-center justify-center border border-white dark:border-gray-800">
                             <span className="text-[11px] font-bold text-white">{a.name?.charAt(0).toUpperCase()}</span>

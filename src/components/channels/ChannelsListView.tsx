@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Video, Search, Loader2 } from 'lucide-react'
 import { useChannels } from '../../hooks/api'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 export default function ChannelsListView() {
   const { data: channels, isLoading } = useChannels()
@@ -69,7 +70,7 @@ export default function ChannelsListView() {
               <div className="flex flex-col items-center text-center space-y-3">
                 {channel.logo_url ? (
                   <img
-                    src={channel.logo_url}
+                    src={resolveFileUrl(channel.logo_url)}
                     alt={channel.name}
                     className="w-16 h-16 object-contain group-hover:scale-110 transition-transform"
                   />

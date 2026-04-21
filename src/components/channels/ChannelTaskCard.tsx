@@ -3,6 +3,7 @@ import { ChannelTask } from '../../hooks/api'
 import { usePermission } from '../../hooks/usePermission'
 import { useDeleteChannelTask } from '../../hooks/api'
 import { formatDistanceToNow } from 'date-fns'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 interface ChannelTaskCardProps {
   task: ChannelTask
@@ -65,7 +66,7 @@ export default function ChannelTaskCard({ task, onViewDetails }: ChannelTaskCard
               <div className="flex items-center gap-2">
                 {assignee.avatar_url ? (
                   <img
-                    src={assignee.avatar_url}
+                    src={resolveFileUrl(assignee.avatar_url)}
                     alt={assignee.name}
                     className="w-6 h-6 rounded-full"
                   />

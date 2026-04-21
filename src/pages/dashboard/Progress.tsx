@@ -247,7 +247,7 @@ export default function Progress() {
                               const existing = existingCat?.skills.find(s => s.skill_id === skill.skill_id)
                               const editScore = isEditing
                                 ? (scores[skill.skill_id] !== undefined ? scores[skill.skill_id] : (existing?.score ?? ''))
-                                : null
+                                : ''
                               const viewScore = existing?.score ?? null
                               return (
                                 <div key={skill.skill_id} className="flex items-center gap-3">

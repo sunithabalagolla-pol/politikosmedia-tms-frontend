@@ -161,13 +161,7 @@ export function useProgressCategories() {
     queryKey: ['progress', 'categories'],
     queryFn: async () => {
       const { data } = await axiosInstance.get(API.PROGRESS_CATEGORIES)
-      console.warn('=== PROGRESS CATEGORIES RAW ===', JSON.stringify(data))
-      // Handle all possible shapes: array, { data: [] }, { categories: [] }, { data: { categories: [] } }
-      if (Array.isArray(data)) return data
-      if (Array.isArray(data?.data)) return data.data
-      if (Array.isArray(data?.categories)) return data.categories
-      if (Array.isArray(data?.data?.categories)) return data.data.categories
-      return []
+      return data.data || data
     },
     staleTime: 30000,
   })
@@ -178,13 +172,7 @@ export function useAllProgressSkills() {
     queryKey: ['progress', 'skills-all'],
     queryFn: async () => {
       const { data } = await axiosInstance.get(API.PROGRESS_SKILLS_ALL)
-      console.warn('=== PROGRESS SKILLS RAW ===', JSON.stringify(data))
-      // Handle all possible shapes
-      if (Array.isArray(data)) return data
-      if (Array.isArray(data?.data)) return data.data
-      if (Array.isArray(data?.skills)) return data.skills
-      if (Array.isArray(data?.data?.skills)) return data.data.skills
-      return []
+      return data.data || data
     },
     staleTime: 30000,
   })

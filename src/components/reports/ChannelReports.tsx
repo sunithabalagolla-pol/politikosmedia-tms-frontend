@@ -6,6 +6,7 @@ import {
   useChannelByEmployee, useChannelCompletionTrend
 } from '../../hooks/api/useReports'
 import { useRole } from '../../hooks/useRole'
+import { resolveFileUrl } from '../../lib/fileUrl'
 import axiosInstance from '../../api/axiosInstance'
 
 export default function ChannelReports() {
@@ -268,7 +269,7 @@ export default function ChannelReports() {
                   <div key={emp.employee_id} className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                     <div className="flex items-center gap-3 mb-3">
                       {emp.avatar_url ? (
-                        <img src={emp.avatar_url} alt={emp.employee_name} className="w-9 h-9 rounded-full" />
+                        <img src={resolveFileUrl(emp.avatar_url)} alt={emp.employee_name} className="w-9 h-9 rounded-full" />
                       ) : (
                         <div className="w-9 h-9 rounded-full bg-[#b23a48] flex items-center justify-center">
                           <span className="text-[11px] font-bold text-white">{emp.employee_name?.split(' ').map((n: string) => n[0]).join('')}</span>
