@@ -37,32 +37,40 @@ export default function Help() {
   const { data: publicSettings } = usePublicSettings()
   
   // Determine visibility based on permissions AND UI settings
-  const showCreateForRole = userRole === 'manager' 
-    ? publicSettings?.show_tickets_create_manager 
-    : userRole === 'employee' 
-      ? publicSettings?.show_tickets_create_employee 
-      : true // Admin always sees
+  const showCreateForRole = userRole === 'admin'
+    ? publicSettings?.show_tickets_create_admin ?? true
+    : userRole === 'manager' 
+      ? publicSettings?.show_tickets_create_manager 
+      : userRole === 'employee' 
+        ? publicSettings?.show_tickets_create_employee 
+        : true // fallback
   const shouldShowCreateButton = canCreateTicket && (isAdmin() || showCreateForRole)
   
-  const showUpdateForRole = userRole === 'manager'
-    ? publicSettings?.show_tickets_update_manager
-    : userRole === 'employee'
-      ? publicSettings?.show_tickets_update_employee
-      : true // Admin always sees
+  const showUpdateForRole = userRole === 'admin'
+    ? publicSettings?.show_tickets_update_admin ?? true
+    : userRole === 'manager'
+      ? publicSettings?.show_tickets_update_manager
+      : userRole === 'employee'
+        ? publicSettings?.show_tickets_update_employee
+        : true // fallback
   const shouldShowUpdateButton = canUpdateTicket && (isAdmin() || showUpdateForRole)
   
-  const showViewForRole = userRole === 'manager'
-    ? publicSettings?.show_tickets_view_manager
-    : userRole === 'employee'
-      ? publicSettings?.show_tickets_view_employee
-      : true // Admin always sees
+  const showViewForRole = userRole === 'admin'
+    ? publicSettings?.show_tickets_view_admin ?? true
+    : userRole === 'manager'
+      ? publicSettings?.show_tickets_view_manager
+      : userRole === 'employee'
+        ? publicSettings?.show_tickets_view_employee
+        : true // fallback
   const shouldShowTickets = canViewTickets && (isAdmin() || showViewForRole)
   
-  const showDeleteForRole = userRole === 'manager'
-    ? publicSettings?.show_tickets_delete_manager
-    : userRole === 'employee'
-      ? publicSettings?.show_tickets_delete_employee
-      : true // Admin always sees
+  const showDeleteForRole = userRole === 'admin'
+    ? publicSettings?.show_tickets_delete_admin ?? true
+    : userRole === 'manager'
+      ? publicSettings?.show_tickets_delete_manager
+      : userRole === 'employee'
+        ? publicSettings?.show_tickets_delete_employee
+        : true // fallback
 
   // Category/Phase filters
   const [selectedCategory, setSelectedCategory] = useState<string>()

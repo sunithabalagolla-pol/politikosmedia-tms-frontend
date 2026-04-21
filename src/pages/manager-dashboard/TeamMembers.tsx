@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext'
 import { usePermission } from '../../hooks/usePermission'
 import { useRole } from '../../hooks/useRole'
 import { usePublicSettings } from '../../hooks/api/useSettings'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 export default function ManagerTeamMembers() {
   const [page, setPage] = useState(1)
@@ -27,15 +28,15 @@ export default function ManagerTeamMembers() {
   const userRole = user?.role
   
   const canAddMember = isAdmin() || usePermission('team:add_member')
-  const showAddForRole = userRole === 'manager' ? settings?.show_team_add_manager : settings?.show_team_add_employee
+  const showAddForRole = userRole === 'admin' ? settings?.show_team_add_admin ?? true : userRole === 'manager' ? settings?.show_team_add_manager : settings?.show_team_add_employee
   const shouldShowAddButton = canAddMember && showAddForRole
   
   const canEditMember = isAdmin() || usePermission('team:edit_member')
-  const showEditForRole = userRole === 'manager' ? settings?.show_team_edit_manager : settings?.show_team_edit_employee
+  const showEditForRole = userRole === 'admin' ? settings?.show_team_edit_admin ?? true : userRole === 'manager' ? settings?.show_team_edit_manager : settings?.show_team_edit_employee
   const shouldShowEditButton = canEditMember && showEditForRole
   
   const canDeactivateMember = isAdmin() || usePermission('team:deactivate')
-  const showDeactivateForRole = userRole === 'manager' ? settings?.show_team_deactivate_manager : settings?.show_team_deactivate_employee
+  const showDeactivateForRole = userRole === 'admin' ? settings?.show_team_deactivate_admin ?? true : userRole === 'manager' ? settings?.show_team_deactivate_manager : settings?.show_team_deactivate_employee
   const shouldShowDeactivateButton = canDeactivateMember && showDeactivateForRole
 
   // Debug logging
@@ -139,7 +140,7 @@ export default function ManagerTeamMembers() {
                 {members.map((m: any) => (
                   <tr key={m.id} className={`hover:bg-slate-50 dark:hover:bg-gray-700 group ${m.status === 'deactivated' ? 'opacity-50' : ''}`}>
                     <td className="px-6 py-4"><div className="flex items-center gap-3"><div className="relative">
-                      {m.avatar_url ? <img src={m.avatar_url} alt="" className="w-10 h-10 rounded-full border-2 border-gray-200" /> : <div className="w-10 h-10 rounded-full bg-[#b23a48] flex items-center justify-center border-2 border-gray-200"><span className="text-white font-semibold text-[11px]">{m.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}</span></div>}
+                      {m.avatar_url ? <img src={resolveFileUrl(m.avatar_url)} alt="" className="w-10 h-10 rounded-full border-2 border-gray-200" /> : <div className="w-10 h-10 rounded-full bg-[#b23a48] flex items-center justify-center border-2 border-gray-200"><span className="text-white font-semibold text-[11px]">{m.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}</span></div>}
                       <div className={`absolute bottom-0 right-0 w-3.5 h-3.5 ${getStatusColor(m.status)} border-2 border-white rounded-full`}></div>
                     </div><div><p className="text-[11px] font-semibold text-gray-900 dark:text-white">{m.name}</p><p className="text-[11px] text-gray-500">{m.email}</p></div></div></td>
                     <td className="px-6 py-4"><p className="text-[11px] font-medium text-gray-900 dark:text-white mb-1">{m.department_name || 'No dept'}</p><span className={`inline-block px-2 py-0.5 text-[11px] rounded-md font-semibold border ${getRoleBadgeColor(m.role)}`}>{m.role?.charAt(0).toUpperCase() + m.role?.slice(1)}</span></td>
