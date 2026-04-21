@@ -104,45 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('token')
     localStorage.removeItem('currentView')
     localStorage.removeItem('availableViews')
-  }, [])
-
-  // Call backend POST /api/auth/login with a token
-  const loginWithBackend = useCallback(async (token: string): Promise<User | null> => {
-    try {
-      const response = await axiosInstance.post('/api/auth/login', { token })
-      const data = response.data.data || response.data
-      const userData: User = {
-        name: data.name,
-        email: data.email,
-        role: mapBackendRole(data.role),
-      }
-      
-      // Save available_views from backend response
-      const views = data.available_views || [data.role === 'employee' ? 'employee' : 'manager']
-      setAvailableViews(views)
-      localStorage.setItem('availableViews', JSON.stringify(views))
-      
-      // Set initial currentView based on role if not already set
-      const storedView = localStorage.getItem('currentView')
-      if (!storedView) {
-        const initialView = userData.role === 'user' ? 'employee' : 'manager'
-        setCurrentView(initialView)
-        localStorage.setItem('currentView', initialView)
-      }
-      
-      saveUser(userData, token)
-      return userData
-    } catch (err: any) {
-      const msg = err?.response?.data?.message || ''
-      if (msg.toLowerCase().includes('deactivated')) {
-        localStorage.removeItem('deactivated_message')
-        setError(msg)
-      } else {
-        setError('Failed to verify with server. Please try again.')
-      }
-      return null
-    }
-  }, [saveUser])
+  }, []) // no deps — setters from useState are stable
 
   // On mount: restore session from cache
   useEffect(() => {
@@ -191,7 +153,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     initAuth()
-  }, [instance, loginWithBackend, clearAuth])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // run once on mount only
+
+  // Call backend POST /api/auth/login with a token
+  const loginWithBackend = useCallback(async (token: string): Promise<User | null> => {
+    try {
+      const response = await axiosInstance.post('/api/auth/login', { token })
+      const data = response.data.data || response.data
+      const userData: User = {
+        name: data.name,
+        email: data.email,
+        role: mapBackendRole(data.role),
+      }
+      
+      // Save available_views from backend response
+      const views = data.available_views || [data.role === 'employee' ? 'employee' : 'manager']
+      setAvailableViews(views)
+      localStorage.setItem('availableViews', JSON.stringify(views))
+      
+      // Set initial currentView based on role if not already set
+      const storedView = localStorage.getItem('currentView')
+      if (!storedView) {
+        const initialView = userData.role === 'user' ? 'employee' : 'manager'
+        setCurrentView(initialView)
+        localStorage.setItem('currentView', initialView)
+      }
+      
+      saveUser(userData, token)
+      return userData
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || ''
+      if (msg.toLowerCase().includes('deactivated')) {
+        localStorage.removeItem('deactivated_message')
+        setError(msg)
+      } else {
+        setError('Failed to verify with server. Please try again.')
+      }
+      return null
+    }
+  }, [saveUser])
 
   // SSO login (production — when Azure IDs are configured)
   const login = useCallback(async () => {

@@ -19,8 +19,7 @@ export function useUserPermissions() {
       const { data } = await axiosInstance.get('/api/auth/me')
       return data.data as AuthMeResponse
     },
-    staleTime: 1000, // 1 second - refresh quickly to show permission changes
-    refetchInterval: 2000, // Poll every 2 seconds for real-time updates
+    staleTime: 5 * 60 * 1000, // 5 minutes - permissions only change when admin updates them
     retry: 1, // Only retry once on failure
   })
 }

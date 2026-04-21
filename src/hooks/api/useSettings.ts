@@ -10,8 +10,8 @@ export function usePublicSettings() {
       const { data } = await axiosInstance.get('/api/settings/public')
       return data.data || data
     },
-    staleTime: 1000, // 1 second - refresh quickly to show UI changes
-    refetchInterval: 2000, // Poll every 2 seconds for real-time updates
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   })
 }
 

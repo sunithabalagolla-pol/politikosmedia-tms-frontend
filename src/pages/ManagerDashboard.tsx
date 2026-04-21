@@ -9,6 +9,7 @@ import { useTheme } from '../hooks/useTheme'
 import { useAuth } from '../context/AuthContext'
 import { usePermission } from '../hooks/usePermission'
 import { usePublicSettings } from '../hooks/api/useSettings'
+import { useRole } from '../hooks/useRole'
 import SearchBar from '../components/SearchBar'
 
 export default function ManagerDashboard() {
@@ -27,7 +28,10 @@ export default function ManagerDashboard() {
   
   // Global settings
   const { data: publicSettings } = usePublicSettings()
-  const showDepartmentsMenuManager = publicSettings?.show_departments_menu_manager ?? true
+  const { role } = useRole()
+  const showDepartmentsMenuManager = role === 'admin'
+    ? publicSettings?.show_departments_menu_admin ?? true
+    : publicSettings?.show_departments_menu_manager ?? true
   
   // Combined check: user has permission AND global setting is enabled
   const shouldShowDepartments = canViewDepartments && showDepartmentsMenuManager
