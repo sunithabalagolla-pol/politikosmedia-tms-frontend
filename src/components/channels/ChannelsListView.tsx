@@ -36,7 +36,7 @@ export default function ChannelsListView() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="h-full flex flex-col overflow-hidden space-y-3">
       {/* Header */}
       <div>
         <h1 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Channel & Platform</h1>
@@ -52,39 +52,39 @@ export default function ChannelsListView() {
             placeholder="Search channels..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-800"
+            className="w-full pl-10 pr-4 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-800"
           />
         </div>
       )}
 
       {/* Channels Grid */}
       {filteredChannels && filteredChannels.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 flex-1 content-start">
           {filteredChannels.map((channel) => (
             <div
               key={channel.id}
               onClick={() => handleChannelClick(channel.id)}
-              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer p-6 group"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer p-3 group"
             >
-              <div className="flex flex-col items-center text-center space-y-3">
+              <div className="flex flex-col items-center text-center space-y-1.5">
                 {channel.logo_url ? (
                   <img
                     src={channel.logo_url}
                     alt={channel.name}
-                    className="w-16 h-16 object-contain group-hover:scale-110 transition-transform"
+                    className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
                   />
                 ) : (
-                  <Video className="w-12 h-12 text-[#b23a48] group-hover:scale-110 transition-transform" />
+                  <Video className="w-8 h-8 text-[#b23a48] group-hover:scale-110 transition-transform" />
                 )}
-                <h3 className="text-xs font-bold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors">
+                <h3 className="text-[11px] font-bold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors leading-tight">
                   {channel.name}
                 </h3>
                 {channel.description && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">
                     {channel.description}
                   </p>
                 )}
-                <div className="text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-700 w-full text-center">
+                <div className="text-[10px] text-gray-500 dark:text-gray-400 pt-1.5 border-t border-gray-100 dark:border-gray-700 w-full text-center">
                   <span className="font-medium">
                     {channel.subcategory_count || 0} {(channel.subcategory_count || 0) === 1 ? 'subcategory' : 'subcategories'}
                   </span>

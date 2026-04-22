@@ -43,7 +43,7 @@ export default function UserDashboard() {
   const baseMenuItems = [
     { path: '/user/overview', icon: ChartLine, label: 'Overview' },
     { path: '/user/my-tasks', icon: ClipboardCheck, label: 'My Tasks' },
-    { path: '/user/board', icon: LayoutGrid, label: 'Board' },
+    { path: '/user/board', icon: LayoutGrid, label: 'Task Board' },
     { path: '/user/reports', icon: FileText, label: 'Reports' },
     { path: '/user/calendar', icon: Calendar, label: 'Calendar' },
   ]
@@ -52,9 +52,7 @@ export default function UserDashboard() {
   const menuItems = [
     ...baseMenuItems,
     ...(shouldShowDepartments ? [{ path: '/user/departments', icon: Building2, label: 'Departments' }] : []),
-    { path: '/user/settings', icon: Settings, label: 'Settings' },
-    { path: '/user/help', icon: HelpCircle, label: 'Help' },
-    { path: '/user/profile', icon: User, label: 'Profile' }
+    { path: '/user/settings', icon: Settings, label: 'Settings' }
   ]
 
   const isActive = (path: string) => location.pathname === path
@@ -164,6 +162,15 @@ export default function UserDashboard() {
             <div className="relative hidden md:block w-64">
               <SearchBar />
             </div>
+
+            {/* Help */}
+            <Link
+              to="/user/help"
+              className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title="Help & Support"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </Link>
 
             {/* Theme Toggle */}
             <button

@@ -193,7 +193,7 @@ export default function Calendar() {
 
           {/* Month View */}
           {activeView === 'month' && (
-            <div className="grid grid-cols-7 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden max-w-5xl">
+            <div className="grid grid-cols-7 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
               {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
                 <div key={d} className="bg-gray-50 dark:bg-gray-900 py-1 text-center text-[11px] font-semibold text-gray-700 dark:text-gray-300 border-b border-r border-gray-200 dark:border-gray-700 last:border-r-0">{d}</div>
               ))}
@@ -223,7 +223,7 @@ export default function Calendar() {
 
           {/* Week View */}
           {activeView === 'week' && (
-            <div className="grid grid-cols-7 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden max-w-5xl">
+            <div className="grid grid-cols-7 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
               {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
                 <div key={d} className="bg-gray-50 dark:bg-gray-900 py-1 text-center text-[11px] font-semibold text-gray-700 border-b border-r border-gray-200 dark:border-gray-700 last:border-r-0">{d}</div>
               ))}

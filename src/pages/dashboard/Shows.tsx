@@ -24,6 +24,7 @@ function ShowsBoard() {
   const [editShow, setEditShow] = useState<{ id: string; name: string; description: string } | null>(null)
   const [editName, setEditName] = useState('')
   const [editDesc, setEditDesc] = useState('')
+  const [showDetailEpisode, setShowDetailEpisode] = useState<any>(null)
 
   const { data: board, isLoading } = useShowBoard()
   const createShow = useCreateShow()
@@ -149,6 +150,7 @@ function ShowsBoard() {
                       columnKey={col.key}
                       onClickCard={() => {
                         if (col.key === 'creation_production') navigate(`${basePath}?show=${ep.show_id}`)
+                        else setShowDetailEpisode(ep)
                       }}
                       onMarkReady={() => markReady.mutateAsync(ep.id)}
                       onMarkBroadcasted={() => markBroadcasted.mutateAsync(ep.id)}
@@ -255,6 +257,79 @@ function ShowsBoard() {
           </div>
         </div>
       )}
+
+      {/* Show Detail Modal - popup when clicking a tile */}
+      {showDetailEpisode && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDetailEpisode(null)}>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-sm font-bold text-gray-900 dark:text-white">Show Details</h2>
+              <button onClick={() => setShowDetailEpisode(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              {/* Show Name */}
+              <div>
+                <h3 className="text-[11px] font-bold text-gray-900 dark:text-white">{showDetailEpisode.show_name}</h3>
+                {showDetailEpisode.show_description && (
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{showDetailEpisode.show_description}</p>
+                )}
+              </div>
+
+              {/* Episode Info */}
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1">Episode</p>
+                <p className="text-[11px] font-semibold text-gray-900 dark:text-white">
+                  Ep {String(showDetailEpisode.episode_number).padStart(2, '0')}: {showDetailEpisode.title}
+                </p>
+                {showDetailEpisode.target_duration && (
+                  <p className="text-[10px] text-gray-500 mt-0.5">Duration: {showDetailEpisode.target_duration} mins</p>
+                )}
+              </div>
+
+              {/* Status */}
+              <div>
+                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Status</p>
+                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium ${
+                  showDetailEpisode.status === 'production' ? 'bg-blue-100 text-blue-700' :
+                  showDetailEpisode.status === 'approved' ? 'bg-orange-100 text-orange-700' :
+                  showDetailEpisode.status === 'ready_for_broadcast' ? 'bg-yellow-100 text-yellow-700' :
+                  showDetailEpisode.status === 'broadcasted' ? 'bg-green-100 text-green-700' :
+                  'bg-gray-100 text-gray-700'
+                }`}>
+                  {showDetailEpisode.status.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
+                </span>
+              </div>
+
+              {/* Impact Notes */}
+              {showDetailEpisode.impact_notes && showDetailEpisode.impact_notes.length > 0 && (
+                <div>
+                  <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1">Impact Notes</p>
+                  <div className="space-y-1">
+                    {showDetailEpisode.impact_notes.map((note: any) => (
+                      <div key={note.id} className="bg-gray-50 dark:bg-gray-700/50 rounded p-2 border border-gray-200 dark:border-gray-700">
+                        <p className="text-[10px] font-medium text-gray-900 dark:text-white">{note.assigned_to_name}</p>
+                        {note.notes && <p className="text-[10px] text-gray-500 mt-0.5">{note.notes}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Action: Go to workspace */}
+              <div className="flex justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => { navigate(`${basePath}?show=${showDetailEpisode.show_id}`); setShowDetailEpisode(null) }}
+                  className="px-3 py-1.5 text-[11px] font-semibold text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg transition-colors"
+                >
+                  Open Show Workspace
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -274,27 +349,24 @@ function EpisodeCard({ episode, columnKey, onClickCard, onMarkReady, onMarkBroad
   }
 
   return (
-    <div onClick={columnKey === 'creation_production' ? onClickCard : undefined}
-      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-2.5 shadow-sm hover:shadow-md transition-shadow ${columnKey === 'creation_production' ? 'cursor-pointer' : ''}`}>
+    <div onClick={onClickCard}
+      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-2.5 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
 
-      {/* Show name + episode */}
-      <div className="flex items-start justify-between gap-1 mb-1.5">
-        <div className="min-w-0">
-          <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide truncate">{episode.show_name}</p>
-          <p className="text-[11px] font-semibold text-gray-900 dark:text-white leading-snug">
-            Ep {String(episode.episode_number).padStart(2, '0')}: {episode.title}
-          </p>
-        </div>
-        {columnKey === 'creation_production' && <ChevronRight className="w-3 h-3 text-gray-300 shrink-0 mt-1" />}
-      </div>
-
-      {/* Status dot + label inline */}
-      <div className="flex items-center gap-1 mb-2">
+      {/* Status tag at the very top */}
+      <div className="flex items-center gap-1 mb-1.5">
         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusDots[episode.status] || 'bg-gray-400'}`} />
         <span className={`text-[10px] font-medium ${statusColors[episode.status] || 'text-gray-500'}`}>
           {episode.status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
         </span>
       </div>
+
+      {/* Show name */}
+      <p className="text-[11px] font-bold text-gray-900 dark:text-white uppercase tracking-wide truncate mb-0.5">{episode.show_name}</p>
+
+      {/* Episode title */}
+      <p className="text-[10px] font-medium text-gray-600 dark:text-gray-400 leading-snug mb-2">
+        Ep {String(episode.episode_number).padStart(2, '0')}: {episode.title}
+      </p>
 
       {/* Broadcasting actions — compact inline buttons */}
       {columnKey === 'broadcasting' && (

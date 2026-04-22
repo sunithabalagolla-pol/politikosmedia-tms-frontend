@@ -176,10 +176,10 @@ export default function Dashboard() {
                   title={collapsed ? 'Board' : ''}
                 >
                   <LayoutGrid className="w-4 h-4 shrink-0" />
-                  <span className={`transition-all duration-300 whitespace-nowrap font-medium text-xs ${collapsed ? 'lg:opacity-0 lg:w-0 lg:overflow-hidden' : 'opacity-100'}`}>Board</span>
+                  <span className={`transition-all duration-300 whitespace-nowrap font-medium text-xs ${collapsed ? 'lg:opacity-0 lg:w-0 lg:overflow-hidden' : 'opacity-100'}`}>Task Board</span>
                   {collapsed && (
                     <span className="hidden lg:block absolute left-full ml-6 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
-                      Board
+                      Task Board
                     </span>
                   )}
                 </Link>
@@ -323,40 +323,6 @@ export default function Dashboard() {
                   )}
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/dashboard/help"
-                  className={`group flex items-center gap-3 rounded-lg transition-all duration-200 relative ${
-                    isActive('/dashboard/help') ? 'bg-[#d4515f] shadow-lg' : 'hover:bg-white/10'
-                  } ${collapsed ? 'lg:justify-center lg:px-2 lg:py-2.5' : 'px-4 py-2'}`}
-                  title={collapsed ? 'Help' : ''}
-                >
-                  <HelpCircle className="w-4 h-4 shrink-0" />
-                  <span className={`transition-all duration-300 whitespace-nowrap font-medium text-xs ${collapsed ? 'lg:opacity-0 lg:w-0 lg:overflow-hidden' : 'opacity-100'}`}>Help</span>
-                  {collapsed && (
-                    <span className="hidden lg:block absolute left-full ml-6 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
-                      Help
-                    </span>
-                  )}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard/profile"
-                  className={`group flex items-center gap-3 rounded-lg transition-all duration-200 relative ${
-                    isActive('/dashboard/profile') ? 'bg-[#d4515f] shadow-lg' : 'hover:bg-white/10'
-                  } ${collapsed ? 'lg:justify-center lg:px-2 lg:py-2.5' : 'px-4 py-2'}`}
-                  title={collapsed ? 'Profile' : ''}
-                >
-                  <User className="w-4 h-4 shrink-0" />
-                  <span className={`transition-all duration-300 whitespace-nowrap font-medium text-xs ${collapsed ? 'lg:opacity-0 lg:w-0 lg:overflow-hidden' : 'opacity-100'}`}>Profile</span>
-                  {collapsed && (
-                    <span className="hidden lg:block absolute left-full ml-6 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
-                      Profile
-                    </span>
-                  )}
-                </Link>
-              </li>
             </ul>
           </div>
         </nav>
@@ -411,7 +377,7 @@ export default function Dashboard() {
               <h1 className="text-xs font-bold text-gray-900 dark:text-white truncate">
                 {location.pathname === '/dashboard/overview' && 'Overview'}
                 {location.pathname === '/dashboard/tasks' && 'Tasks'}
-                {location.pathname === '/dashboard/kanban' && 'Board'}
+                {location.pathname === '/dashboard/kanban' && 'Task Board'}
                 {location.pathname === '/dashboard/team' && 'Workforce'}
                 {location.pathname === '/dashboard/departments' && 'Departments'}
                 {location.pathname === '/dashboard/reports' && 'Reports'}
@@ -435,6 +401,13 @@ export default function Dashboard() {
 
           {/* Right: Actions & User */}
           <div className="flex items-center gap-2 flex-1 justify-end">
+            <Link
+              to="/dashboard/help"
+              className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title="Help & Support"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </Link>
             <button
               onClick={toggleTheme}
               className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -465,7 +438,7 @@ export default function Dashboard() {
 
         {/* Dashboard Content */}
         <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-2 sm:p-3 lg:p-4 transition-colors duration-300">
-          <div className="max-w-7xl mx-auto h-full">
+          <div className="mx-auto h-full">
             <Outlet />
           </div>
         </div>
