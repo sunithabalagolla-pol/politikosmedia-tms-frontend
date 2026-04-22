@@ -511,9 +511,9 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
 
   return (
     <div className="fixed inset-0 bg-gray-900/50 dark:bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         {/* Modal Header */}
-        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between shrink-0">
+        <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between shrink-0">
           <h2 className="text-sm font-bold text-gray-900 dark:text-white">
             {editTask ? 'Edit Task' : 'Create New Task'}
           </h2>
@@ -526,93 +526,87 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-3 space-y-2">
           {/* Document Extraction Section - Only show in create mode */}
           {!editTask && !showExtractPreview && (
-            <div className="border-2 border-dashed border-[#b23a48]/30 rounded-xl p-4 bg-gradient-to-br from-[#b23a48]/5 to-purple-50">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-[#b23a48]/10 rounded-lg">
-                  <Sparkles className="w-4 h-4 text-[#b23a48]" />
+            <div className="border-2 border-dashed border-[#b23a48]/30 rounded-lg p-2.5 bg-gradient-to-br from-[#b23a48]/5 to-purple-50">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-[#b23a48]/10 rounded-lg">
+                  <Sparkles className="w-3.5 h-3.5 text-[#b23a48]" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xs font-bold text-gray-900 dark:text-white mb-1">
+                  <h3 className="text-[11px] font-bold text-gray-900 dark:text-white">
                     Extract Tasks from Document
                   </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2.5">
-                    Upload a document (PDF, Word, Excel, Image) and let AI automatically extract tasks, deadlines, and assignments.
+                  <p className="text-[10px] text-gray-600 dark:text-gray-400">
+                    Upload a document (PDF, Word, Excel, Image) and let AI automatically extract tasks.
                   </p>
-                  
-                  {isExtracting ? (
-                    <div className="flex items-center gap-2 py-2">
-                      <Loader2 className="w-3.5 h-3.5 text-[#b23a48] animate-spin" />
-                      <span className="text-xs text-gray-700 dark:text-gray-300 font-medium">Analyzing document and extracting tasks...</span>
-                    </div>
-                  ) : (
-                    <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#b23a48] text-white rounded-lg text-xs font-semibold hover:bg-[#8f2e3a] transition-colors cursor-pointer shadow-sm">
-                      <FileText className="w-3 h-3" />
-                      Upload Document
-                      <input
-                        type="file"
-                        accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                        onChange={handleDocumentUpload}
-                        className="hidden"
-                      />
-                    </label>
-                  )}
                 </div>
+                {isExtracting ? (
+                  <div className="flex items-center gap-1.5">
+                    <Loader2 className="w-3 h-3 text-[#b23a48] animate-spin" />
+                    <span className="text-[10px] text-gray-700 dark:text-gray-300 font-medium">Extracting...</span>
+                  </div>
+                ) : (
+                  <label className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#b23a48] text-white rounded-lg text-[11px] font-semibold hover:bg-[#8f2e3a] transition-colors cursor-pointer shadow-sm shrink-0">
+                    <FileText className="w-3 h-3" />
+                    Upload
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                      onChange={handleDocumentUpload}
+                      className="hidden"
+                    />
+                  </label>
+                )}
               </div>
             </div>
           )}
 
           {/* Extracted Tasks Preview */}
           {showExtractPreview && extractedPreview.length > 0 && (
-            <div className="border-2 border-[#b23a48] rounded-xl p-4 bg-white dark:bg-gray-800">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#b23a48]" />
-                  <h3 className="text-xs font-bold text-gray-900 dark:text-white">
+            <div className="border-2 border-[#b23a48] rounded-lg p-3 bg-white dark:bg-gray-800">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-[#b23a48]" />
+                  <h3 className="text-[11px] font-bold text-gray-900 dark:text-white">
                     Extracted {extractedPreview.length} Task{extractedPreview.length > 1 ? 's' : ''}
                   </h3>
                 </div>
                 <button
                   onClick={cancelExtraction}
-                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                 >
                   <X className="w-3 h-3" />
                 </button>
               </div>
               
-              <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+              <p className="text-[10px] text-gray-600 dark:text-gray-400 mb-2">
                 Review the extracted tasks below. You can edit them after importing.
               </p>
 
-              <div className="space-y-2 mb-3 max-h-[300px] overflow-y-auto">
+              <div className="space-y-1.5 mb-2 max-h-[200px] overflow-y-auto">
                 {extractedPreview.map((task) => (
-                  <div key={task.id} className="p-3 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-lg">
-                    <div className="flex items-start justify-between mb-1.5">
-                      <h4 className="text-xs font-semibold text-gray-900 dark:text-white">{task.title}</h4>
-                      <span className={`text-xs px-1.5 py-0.5 rounded ${
+                  <div key={task.id} className="p-2 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div className="flex items-start justify-between mb-1">
+                      <h4 className="text-[11px] font-semibold text-gray-900 dark:text-white">{task.title}</h4>
+                      <span className={`text-[10px] px-1 py-0.5 rounded ${
                         task.confidence >= 0.9 ? 'bg-green-100 text-green-700' :
                         task.confidence >= 0.7 ? 'bg-yellow-100 text-yellow-700' :
                         'bg-orange-100 text-orange-700'
                       }`}>
-                        {Math.round(task.confidence * 100)}% confident
+                        {Math.round(task.confidence * 100)}%
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{task.description}</p>
-                    <div className="flex items-center gap-2 flex-wrap text-xs">
-                      <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded font-medium">
-                        {task.department}
-                      </span>
-                      <span className={`px-1.5 py-0.5 rounded font-medium ${
+                    <p className="text-[10px] text-gray-600 dark:text-gray-400 mb-1 line-clamp-1">{task.description}</p>
+                    <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
+                      <span className="px-1 py-0.5 bg-blue-100 text-blue-700 rounded font-medium">{task.department}</span>
+                      <span className={`px-1 py-0.5 rounded font-medium ${
                         task.priority === 'high' ? 'bg-red-100 text-red-700' :
                         task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
                         'bg-green-100 text-green-700'
-                      }`}>
-                        {task.priority}
-                      </span>
+                      }`}>{task.priority}</span>
                       <span className="text-gray-500 dark:text-gray-400">Due: {task.dueDate}</span>
-                      <span className="text-gray-500 dark:text-gray-400">{task.subtasks.length} subtasks</span>
                     </div>
                   </div>
                 ))}
@@ -621,13 +615,13 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
               <div className="flex items-center gap-2">
                 <button
                   onClick={cancelExtraction}
-                  className="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="flex-1 px-2.5 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-[11px] font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => applyExtractedTasks(extractedPreview)}
-                  className="flex-1 px-3 py-1.5 bg-[#b23a48] text-white rounded-lg text-xs font-semibold hover:bg-[#8f2e3a] transition-colors shadow-sm"
+                  className="flex-1 px-2.5 py-1 bg-[#b23a48] text-white rounded-lg text-[11px] font-semibold hover:bg-[#8f2e3a] transition-colors shadow-sm"
                 >
                   Import {extractedPreview.length} Task{extractedPreview.length > 1 ? 's' : ''}
                 </button>
@@ -638,185 +632,189 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
           {taskForms.map((form, formIndex) => (
             <div 
               key={form.id}
-              className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 bg-gray-50 dark:bg-gray-700/50 relative"
+              className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-700/50 relative"
             >
               {/* Remove Task Button */}
               {taskForms.length > 1 && !editTask && (
                 <button
                   onClick={() => removeTaskForm(form.id)}
-                  className="absolute top-3 right-3 text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded-lg transition-colors"
+                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 p-0.5 hover:bg-red-50 rounded-lg transition-colors"
                   title="Remove task"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
               )}
 
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {/* Task Number */}
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    Task {formIndex + 1}
-                  </span>
-                </div>
+                <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  Task {formIndex + 1}
+                </span>
 
                 {/* Validation Errors */}
                 {validationErrors[form.id] && (
-                  <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <div className="p-1.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                     {validationErrors[form.id].map((err, i) => (
-                      <p key={i} className="text-xs text-red-600 dark:text-red-400">{err}</p>
+                      <p key={i} className="text-[10px] text-red-600 dark:text-red-400">{err}</p>
                     ))}
                   </div>
                 )}
 
-                {/* Title */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                    Title <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.title}
-                    onChange={(e) => updateTaskForm(form.id, 'title', e.target.value)}
-                    placeholder="Enter task title"
-                    className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
-                  />
+                {/* Title + Category + Phase in a row */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div className={prefilledCategory && categoryName ? '' : 'sm:col-span-3'}>
+                    <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                      Title <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={form.title}
+                      onChange={(e) => updateTaskForm(form.id, 'title', e.target.value)}
+                      placeholder="Enter task title"
+                      className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                    />
+                  </div>
+
+                  {prefilledCategory && categoryName && (
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                        Category
+                      </label>
+                      <input
+                        type="text"
+                        value={categoryName}
+                        disabled
+                        className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded-lg text-[11px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed"
+                      />
+                    </div>
+                  )}
+
+                  {prefilledPhase && phaseName && (
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                        Phase
+                      </label>
+                      <input
+                        type="text"
+                        value={phaseName}
+                        disabled
+                        className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded-lg text-[11px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed"
+                      />
+                    </div>
+                  )}
                 </div>
-
-                {/* Category (Read-only if pre-filled) */}
-                {prefilledCategory && categoryName && (
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                      Category
-                    </label>
-                    <input
-                      type="text"
-                      value={categoryName}
-                      disabled
-                      className="w-full px-2.5 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed"
-                    />
-                  </div>
-                )}
-
-                {/* Phase (Read-only if pre-filled) */}
-                {prefilledPhase && phaseName && (
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                      Phase
-                    </label>
-                    <input
-                      type="text"
-                      value={phaseName}
-                      disabled
-                      className="w-full px-2.5 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed"
-                    />
-                  </div>
-                )}
 
                 {/* Description */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
                     Description
                   </label>
                   <textarea
                     value={form.description}
                     onChange={(e) => updateTaskForm(form.id, 'description', e.target.value)}
                     placeholder="Enter task description"
-                    rows={3}
-                    className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors resize-none"
+                    rows={2}
+                    className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors resize-none"
                   />
                 </div>
 
                 {/* Subtasks */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-1">
                     Subtasks
                   </label>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     {form.subtasks.map((subtask, idx) => (
-                      <div key={subtask.id} className="flex items-center gap-1.5">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium w-4">{idx + 1}.</span>
+                      <div key={subtask.id} className="flex items-center gap-1">
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium w-3">{idx + 1}.</span>
                         <input
                           type="text"
                           value={subtask.title}
                           onChange={(e) => updateSubtask(form.id, subtask.id, e.target.value)}
                           placeholder="Enter subtask"
-                          className="flex-1 px-2.5 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                          className="flex-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
                         />
                         <button
                           onClick={() => handleDeleteSubtaskClick(form.id, subtask.id, subtask.title)}
-                          className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors"
+                          className="text-red-500 hover:text-red-700 p-0.5 hover:bg-red-50 rounded transition-colors"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-2.5 h-2.5" />
                         </button>
                       </div>
                     ))}
                     <button
                       onClick={() => addSubtask(form.id)}
-                      className="w-full py-1.5 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 transition-colors flex items-center justify-center gap-1"
+                      className="w-full py-1 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-[11px] font-medium text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 transition-colors flex items-center justify-center gap-1"
                     >
-                      <Plus className="w-3 h-3" /> Add Subtask
+                      <Plus className="w-2.5 h-2.5" /> Add Subtask
                     </button>
                   </div>
                 </div>
 
-                {/* Department and Assigned - Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Department, Assigned, Dates - Row */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {/* Department */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
                       Department
                     </label>
                     <select
                       value={form.department}
                       onChange={(e) => updateTaskForm(form.id, 'department', e.target.value)}
-                      className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                      className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
                     >
-                      <option value="">Select department</option>
+                      <option value="">Select</option>
                       {departments.map((dept: any) => (
                         <option key={dept.id} value={dept.id}>{dept.name}</option>
                       ))}
                     </select>
                   </div>
 
-                  {/* Assigned */}
+                  {/* Assigned To - Dropdown */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                      Assigned To
+                    <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                      Assigned To {form.assigned.length > 0 && <span className="font-normal text-gray-400">({form.assigned.length})</span>}
                     </label>
-                    <div className="border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 max-h-[120px] overflow-y-auto p-1.5">
-                      {assignees.length === 0 ? (
-                        <p className="text-xs text-gray-400 px-1 py-1">No employees found</p>
-                      ) : (
-                        assignees.map((person: any) => (
-                          <label key={person.id} className="flex items-center gap-2 px-1.5 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={form.assigned.includes(person.id)}
-                              onChange={() => {
-                                const current = form.assigned
-                                const updated = current.includes(person.id)
-                                  ? current.filter((id: string) => id !== person.id)
-                                  : [...current, person.id]
-                                updateTaskForm(form.id, 'assigned', updated)
-                              }}
-                              className="w-3 h-3 text-[#b23a48] border-gray-300 rounded focus:ring-[#b23a48]"
-                            />
-                            <span className="text-xs text-gray-700 dark:text-gray-300">{person.name}</span>
-                          </label>
-                        ))
-                      )}
-                    </div>
+                    <select
+                      value=""
+                      onChange={(e) => {
+                        const personId = e.target.value
+                        if (!personId) return
+                        const current = form.assigned
+                        if (!current.includes(personId)) {
+                          updateTaskForm(form.id, 'assigned', [...current, personId])
+                        }
+                      }}
+                      className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                    >
+                      <option value="">Select assignee</option>
+                      {assignees.filter((person: any) => !form.assigned.includes(person.id)).map((person: any) => (
+                        <option key={person.id} value={person.id}>{person.name}</option>
+                      ))}
+                    </select>
                     {form.assigned.length > 0 && (
-                      <p className="text-xs text-gray-500 mt-1">{form.assigned.length} selected</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {form.assigned.map((id: string) => {
+                          const person = assignees.find((a: any) => a.id === id)
+                          return (
+                            <span key={id} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-[10px] font-medium">
+                              {person?.name || id}
+                              <button
+                                onClick={() => updateTaskForm(form.id, 'assigned', form.assigned.filter((a: string) => a !== id))}
+                                className="text-blue-500 hover:text-blue-700 ml-0.5"
+                              >
+                                <X className="w-2.5 h-2.5" />
+                              </button>
+                            </span>
+                          )
+                        })}
+                      </div>
                     )}
                   </div>
-                </div>
 
-                {/* Start Date and Due Date - Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Start Date */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
                       Start Date
                     </label>
                     <div className="relative">
@@ -824,15 +822,14 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
                         type="date"
                         value={form.startDate}
                         onChange={(e) => updateTaskForm(form.id, 'startDate', e.target.value)}
-                        className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                        className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
                       />
-                      <Calendar className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 dark:text-gray-500 pointer-events-none" />
                     </div>
                   </div>
 
                   {/* Due Date */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
                       Due Date
                     </label>
                     <div className="relative">
@@ -840,36 +837,35 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
                         type="date"
                         value={form.dueDate}
                         onChange={(e) => updateTaskForm(form.id, 'dueDate', e.target.value)}
-                        className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                        className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
                       />
-                      <Calendar className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 dark:text-gray-500 pointer-events-none" />
                     </div>
                   </div>
                 </div>
 
                 {/* Priority and Status - Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {/* Priority */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
                       Priority
                     </label>
-                    <div className="flex gap-1.5">
+                    <div className="flex gap-1">
                       {(['high', 'medium', 'low'] as const).map(priority => (
                         <button
                           key={priority}
                           onClick={() => updateTaskForm(form.id, 'priority', priority)}
-                          className={`flex-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
+                          className={`flex-1 px-2 py-1 rounded-lg text-[11px] font-medium transition-colors flex items-center justify-center gap-0.5 ${
                             form.priority === priority
                               ? priority === 'high' 
-                                ? 'bg-red-100 text-red-700 border-2 border-red-500'
+                                ? 'bg-red-100 text-red-700 border border-red-500'
                                 : priority === 'medium'
-                                ? 'bg-yellow-100 text-yellow-700 border-2 border-yellow-500'
-                                : 'bg-green-100 text-green-700 border-2 border-green-500'
-                              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-gray-600'
+                                ? 'bg-yellow-100 text-yellow-700 border border-yellow-500'
+                                : 'bg-green-100 text-green-700 border border-green-500'
+                              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-transparent hover:bg-gray-200 dark:hover:bg-gray-600'
                           }`}
                         >
-                          <Flag className="w-3 h-3" />
+                          <Flag className="w-2.5 h-2.5" />
                           {priority.charAt(0).toUpperCase() + priority.slice(1)}
                         </button>
                       ))}
@@ -878,13 +874,13 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
 
                   {/* Status */}
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
                       Status
                     </label>
                     <select
                       value={form.status}
                       onChange={(e) => updateTaskForm(form.id, 'status', e.target.value as TaskForm['status'])}
-                      className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                      className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
                     >
                       <option value="todo">To Do</option>
                       <option value="in-progress">In Progress</option>
@@ -894,36 +890,15 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
                   </div>
                 </div>
 
-                {/* File Attachment */}
+                {/* File Attachment - Compact with upload icon */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
-                    File Attachments <span className="font-normal text-gray-400">(max 10MB per file)</span>
-                  </label>
-                  {fileUploadErrors.length > 0 && (
-                    <div className="mb-1.5 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                      {fileUploadErrors.map((err, i) => (
-                        <p key={i} className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3 shrink-0" /> {err}
-                        </p>
-                      ))}
-                    </div>
-                  )}
-                  <div className="space-y-1.5">
-                    {form.files.map((file, idx) => (
-                      <div key={idx} className="flex items-center gap-2 p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg">
-                        <Upload className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-                        <span className="flex-1 text-xs text-gray-700 dark:text-gray-300 truncate">{file.name}</span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024).toFixed(1)} KB</span>
-                        <button
-                          onClick={() => removeFile(form.id, idx)}
-                          className="text-red-500 hover:text-red-700 p-0.5 hover:bg-red-50 rounded transition-colors"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                    <label className={`w-full py-2 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500 transition-colors flex items-center justify-center gap-1.5 ${r2Verified ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
-                      <Upload className="w-3.5 h-3.5" /> {r2Verified ? 'Upload File' : 'Storage not configured'}
+                  <div className="flex items-center gap-2">
+                    <label className="text-[11px] font-semibold text-gray-700 dark:text-gray-300">
+                      Attachments
+                    </label>
+                    <label className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-medium transition-colors ${r2Verified ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer' : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50'}`}>
+                      <Upload className="w-3 h-3" />
+                      {r2Verified ? 'Upload' : 'Storage N/A'}
                       <input
                         type="file"
                         multiple
@@ -932,12 +907,38 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
                         disabled={!r2Verified}
                       />
                     </label>
-                    {!r2Verified && (
-                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3 shrink-0" /> Admin must verify R2 credentials in Settings.
-                      </p>
-                    )}
+                    <span className="text-[10px] text-gray-400">(max 10MB)</span>
                   </div>
+                  {fileUploadErrors.length > 0 && (
+                    <div className="mt-1 p-1.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                      {fileUploadErrors.map((err, i) => (
+                        <p key={i} className="text-[10px] text-red-600 dark:text-red-400 flex items-center gap-1">
+                          <AlertCircle className="w-2.5 h-2.5 shrink-0" /> {err}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                  {form.files.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {form.files.map((file, idx) => (
+                        <span key={idx} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded text-[10px] text-gray-700 dark:text-gray-300">
+                          <FileText className="w-2.5 h-2.5 text-gray-400" />
+                          <span className="truncate max-w-[120px]">{file.name}</span>
+                          <button
+                            onClick={() => removeFile(form.id, idx)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {!r2Verified && (
+                    <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5 flex items-center gap-1">
+                      <AlertCircle className="w-2.5 h-2.5 shrink-0" /> Admin must verify R2 credentials in Settings.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -947,36 +948,36 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
           {!editTask && (
             <button
               onClick={addTaskForm}
-              className="w-full py-2.5 bg-[#b23a48] text-white rounded-xl text-xs font-semibold hover:bg-[#8f2e3a] transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+              className="w-full py-1.5 bg-[#b23a48] text-white rounded-lg text-[11px] font-semibold hover:bg-[#8f2e3a] transition-colors flex items-center justify-center gap-1 shadow-sm"
             >
-              <Plus className="w-3.5 h-3.5" /> Add Another Task
+              <Plus className="w-3 h-3" /> Add Another Task
             </button>
           )}
         </div>
 
         {/* Modal Footer */}
-        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between shrink-0 bg-gray-50 dark:bg-gray-900">
+        <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between shrink-0 bg-gray-50 dark:bg-gray-900">
           <button
             onClick={onClose}
-            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="px-2.5 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-[11px] font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             Cancel
           </button>
           <div className="flex items-center gap-2">
             {!editTask && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-[11px] text-gray-500 dark:text-gray-400">
                 {taskForms.length} task{taskForms.length !== 1 ? 's' : ''} to create
               </span>
             )}
             <button
               onClick={handleSubmit}
               disabled={createTask.isPending || updateTask.isPending || uploadingFiles}
-              className="px-4 py-1.5 bg-[#b23a48] text-white rounded-lg text-xs font-semibold hover:bg-[#8f2e3a] transition-colors shadow-sm disabled:opacity-70"
+              className="px-3 py-1 bg-[#b23a48] text-white rounded-lg text-[11px] font-semibold hover:bg-[#8f2e3a] transition-colors shadow-sm disabled:opacity-70"
             >
               {(createTask.isPending || updateTask.isPending) ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" />
+                <Loader2 className="w-3 h-3 animate-spin mx-auto" />
               ) : uploadingFiles ? (
-                <span className="flex items-center gap-1.5"><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading files...</span>
+                <span className="flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Uploading...</span>
               ) : editTask ? 'Update Task' : `Create Task${taskForms.length > 1 ? 's' : ''}`}
             </button>
           </div>

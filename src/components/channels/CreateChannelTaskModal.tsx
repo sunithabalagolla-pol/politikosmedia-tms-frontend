@@ -29,6 +29,10 @@ export default function CreateChannelTaskModal({
   const { data: employees = [] } = useLookupEmployees()
   const createTask = useCreateChannelTask()
 
+  // Determine if channel/subcategory should be frozen (pre-filled from context)
+  const isChannelFrozen = !!defaultChannelId
+  const isSubcategoryFrozen = !!defaultSubcategoryId
+
   useEffect(() => {
     setChannelId(defaultChannelId)
     setSubcategoryId(defaultSubcategoryId)
@@ -75,173 +79,201 @@ export default function CreateChannelTaskModal({
     onClose()
   }
 
-  const toggleAssignee = (userId: string) => {
-    setAssignedTo((prev) =>
-      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
-    )
-  }
-
   if (!isOpen) return null
+
+  // Get display names for frozen fields
+  const channelName = channels.find((c) => c.id === channelId)?.name || channelId
+  const subcategoryName = subcategories.find((s) => s.id === subcategoryId)?.name || subcategoryId
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Create Channel Task</h2>
-          <button
-            onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            <X className="w-5 h-5" />
+        <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700 shrink-0">
+          <h2 className="text-sm font-bold text-gray-900 dark:text-white">Create Channel Task</h2>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Channel */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Channel <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={channelId}
-              onChange={(e) => {
-                setChannelId(e.target.value)
-                setSubcategoryId('')
-              }}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent"
-              required
-            >
-              <option value="">Select a channel...</option>
-              {channels.map((channel) => (
-                <option key={channel.id} value={channel.id}>
-                  {channel.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Subcategory */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Subcategory <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={subcategoryId}
-              onChange={(e) => setSubcategoryId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent"
-              disabled={!channelId}
-              required
-            >
-              <option value="">Select a subcategory...</option>
-              {subcategories.map((subcategory) => (
-                <option key={subcategory.id} value={subcategory.id}>
-                  {subcategory.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Task Name */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Task Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={255}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent"
-              placeholder="e.g., Create 50 YouTube Shorts"
-              required
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Description
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              maxLength={1000}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent"
-              placeholder="Optional description..."
-            />
-          </div>
-
-          {/* Target Count */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Target Count <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              value={targetCount}
-              onChange={(e) => setTargetCount(e.target.value)}
-              min="1"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent"
-              placeholder="e.g., 50"
-              required
-            />
-          </div>
-
-          {/* Type */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Type <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              maxLength={100}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent"
-              placeholder="e.g., Video, Image, Post, Story"
-              required
-            />
-          </div>
-
-          {/* Assign To */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Assign To <span className="text-red-500">*</span>
-            </label>
-            <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
-              {employees.map((employee) => (
-                <label key={employee.id} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={assignedTo.includes(employee.id)}
-                    onChange={() => toggleAssignee(employee.id)}
-                    className="w-4 h-4 text-[#b23a48] border-gray-300 rounded focus:ring-[#b23a48]"
-                  />
-                  <span className="text-xs text-gray-700 dark:text-gray-300">{employee.name}</span>
+        <form onSubmit={handleSubmit} className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex-1 p-3 space-y-2 overflow-y-auto">
+            {/* Channel & Subcategory row */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                  Channel <span className="text-red-500">*</span>
                 </label>
-              ))}
+                {isChannelFrozen ? (
+                  <input
+                    type="text"
+                    value={channelName}
+                    disabled
+                    className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded-lg text-[11px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed"
+                  />
+                ) : (
+                  <select
+                    value={channelId}
+                    onChange={(e) => { setChannelId(e.target.value); setSubcategoryId('') }}
+                    className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                    required
+                  >
+                    <option value="">Select channel...</option>
+                    {channels.map((channel) => (
+                      <option key={channel.id} value={channel.id}>{channel.name}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                  Subcategory <span className="text-red-500">*</span>
+                </label>
+                {isSubcategoryFrozen ? (
+                  <input
+                    type="text"
+                    value={subcategoryName}
+                    disabled
+                    className="w-full px-2 py-1 border border-gray-200 dark:border-gray-700 rounded-lg text-[11px] text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed"
+                  />
+                ) : (
+                  <select
+                    value={subcategoryId}
+                    onChange={(e) => setSubcategoryId(e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                    disabled={!channelId}
+                    required
+                  >
+                    <option value="">Select subcategory...</option>
+                    {subcategories.map((subcategory) => (
+                      <option key={subcategory.id} value={subcategory.id}>{subcategory.name}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
             </div>
-            {assignedTo.length === 0 && (
-              <p className="text-xs text-red-500 mt-1">Select at least one assignee</p>
-            )}
+
+            {/* Task Name */}
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                Task Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                maxLength={255}
+                className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                placeholder="e.g., Create 50 YouTube Shorts"
+                required
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                Description
+              </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={1000}
+                rows={2}
+                className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors resize-none"
+                placeholder="Optional description..."
+              />
+            </div>
+
+            {/* Target Count + Type + Assign To row */}
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                  Target Count <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  value={targetCount}
+                  onChange={(e) => setTargetCount(e.target.value)}
+                  min="1"
+                  className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                  placeholder="e.g., 50"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                  Type <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                  maxLength={100}
+                  className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                  placeholder="e.g., Video, Image"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-700 dark:text-gray-300 mb-0.5">
+                  Assign To <span className="text-red-500">*</span> {assignedTo.length > 0 && <span className="font-normal text-gray-400">({assignedTo.length})</span>}
+                </label>
+                <select
+                  value=""
+                  onChange={(e) => {
+                    const userId = e.target.value
+                    if (!userId) return
+                    if (!assignedTo.includes(userId)) {
+                      setAssignedTo([...assignedTo, userId])
+                    }
+                  }}
+                  className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-colors"
+                >
+                  <option value="">Select assignee</option>
+                  {employees.filter((emp) => !assignedTo.includes(emp.id)).map((employee) => (
+                    <option key={employee.id} value={employee.id}>{employee.name}</option>
+                  ))}
+                </select>
+                {assignedTo.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {assignedTo.map((id) => {
+                      const person = employees.find((e) => e.id === id)
+                      return (
+                        <span key={id} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-[10px] font-medium">
+                          {person?.name || id}
+                          <button
+                            type="button"
+                            onClick={() => setAssignedTo(assignedTo.filter((a) => a !== id))}
+                            className="text-blue-500 hover:text-blue-700 ml-0.5"
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </span>
+                      )
+                    })}
+                  </div>
+                )}
+                {assignedTo.length === 0 && (
+                  <p className="text-[10px] text-red-500 mt-0.5">Select at least one</p>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-end gap-2 px-3 py-2 border-t border-gray-200 dark:border-gray-700 shrink-0 bg-gray-50 dark:bg-gray-900">
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="px-2.5 py-1 text-[11px] font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createTask.isPending}
-              className="px-4 py-2 text-xs font-medium text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg transition-colors disabled:opacity-50"
+              className="px-3 py-1 text-[11px] font-semibold text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg transition-colors disabled:opacity-50"
             >
               {createTask.isPending ? 'Creating...' : 'Create Task'}
             </button>

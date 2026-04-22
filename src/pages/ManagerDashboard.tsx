@@ -51,7 +51,7 @@ export default function ManagerDashboard() {
     { path: '/manager/tasks', icon: ListChecks, label: 'Tasks' },
     ...(shouldShowChannels ? [{ path: '/manager/channels', icon: Video, label: 'Channels' }] : []),
     { path: '/manager/shows', icon: Tv, label: 'Shows' },
-    { path: '/manager/kanban', icon: LayoutGrid, label: 'Board' },
+    { path: '/manager/kanban', icon: LayoutGrid, label: 'Task Board' },
     { path: '/manager/team', icon: Users, label: 'Workforce' },
   ]
   
@@ -62,8 +62,6 @@ export default function ManagerDashboard() {
     { path: '/manager/progress', icon: TrendingUp, label: 'Progress' },
     { path: '/manager/calendar', icon: Calendar, label: 'Calendar' },
     { path: '/manager/settings', icon: Settings, label: 'Settings' },
-    { path: '/manager/help', icon: HelpCircle, label: 'Help' },
-    { path: '/manager/profile', icon: User, label: 'Profile' },
   ]
 
   const getPageTitle = () => {
@@ -147,6 +145,13 @@ export default function ManagerDashboard() {
             <SearchBar />
           </div>
           <div className="flex items-center gap-2 flex-1 justify-end">
+            <Link
+              to="/manager/help"
+              className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title="Help & Support"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </Link>
             <button onClick={toggleTheme} className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}>
               {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
@@ -162,7 +167,7 @@ export default function ManagerDashboard() {
         </header>
 
         <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-2 sm:p-3 lg:p-4 transition-colors duration-300">
-          <div className="max-w-7xl mx-auto h-full"><Outlet /></div>
+          <div className="mx-auto h-full"><Outlet /></div>
         </div>
       </main>
 

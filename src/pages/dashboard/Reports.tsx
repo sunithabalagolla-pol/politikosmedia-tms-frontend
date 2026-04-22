@@ -309,8 +309,8 @@ export default function Reports() {
         </div>
 
         {/* Completion Trend Chart */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center justify-between">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="text-[11px] font-semibold text-gray-900 dark:text-white">Task Completion Trend</h3>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1">
@@ -325,13 +325,13 @@ export default function Reports() {
             </div>
           </div>
           {trendPoints.length > 0 ? (
-            <div className="relative h-[250px]">
-              <svg viewBox="0 0 700 250" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+            <div className="relative w-full" style={{ height: '220px' }}>
+              <svg viewBox="0 0 900 220" className="w-full h-full" preserveAspectRatio="none">
                 {(() => {
                   const maxVal = Math.max(...trendPoints.map((d: any) => Math.max(d.created || 0, d.completed || 0)), 1)
                   const max = Math.ceil(maxVal / 5) * 5 + 5
-                  const padL = 40, padR = 20, padT = 10, padB = 30
-                  const w = 700 - padL - padR, h = 250 - padT - padB
+                  const padL = 30, padR = 10, padT = 10, padB = 25
+                  const w = 900 - padL - padR, h = 220 - padT - padB
                   const n = Math.max(trendPoints.length - 1, 1)
                   const pts = trendPoints.map((d: any, i: number) => ({
                     x: padL + (w / n) * i,
@@ -341,18 +341,18 @@ export default function Reports() {
                   }))
                   return (
                     <>
-                      {[0, 1, 2, 3, 4].map(i => { const y = padT + (h / 4) * i; return <line key={i} x1={padL} y1={y} x2={700-padR} y2={y} stroke="#e5e7eb" strokeWidth="1" /> })}
+                      {[0, 1, 2, 3, 4].map(i => { const y = padT + (h / 4) * i; return <line key={i} x1={padL} y1={y} x2={900-padR} y2={y} stroke="#e5e7eb" strokeWidth="1" /> })}
                       <polyline fill="none" stroke="#0d9488" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" points={pts.map((p: any) => `${p.x},${p.cy}`).join(' ')} />
                       <polyline fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" points={pts.map((p: any) => `${p.x},${p.coy}`).join(' ')} />
                       {pts.map((p: any, i: number) => <g key={`pt${i}`}><circle cx={p.x} cy={p.cy} r="3" fill="#0d9488" /><circle cx={p.x} cy={p.coy} r="3" fill="#22C55E" /></g>)}
-                      {pts.map((p: any, i: number) => <text key={`l${i}`} x={p.x} y={250 - 5} textAnchor="middle" className="fill-gray-400" style={{ fontSize: '9px' }}>{p.label}</text>)}
+                      {pts.map((p: any, i: number) => <text key={`l${i}`} x={p.x} y={220 - 5} textAnchor="middle" className="fill-gray-400" style={{ fontSize: '9px' }}>{p.label}</text>)}
                     </>
                   )
                 })()}
               </svg>
             </div>
-          ) : <div className="h-[250px] flex items-center justify-center"><p className="text-[11px] text-gray-400">No data for this period</p></div>}
-          <div className="flex items-center gap-4 mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+          ) : <div className="h-[220px] flex items-center justify-center"><p className="text-[11px] text-gray-400">No data for this period</p></div>}
+          <div className="flex items-center gap-4 mt-1 pt-1.5 border-t border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-teal-500"></div><span className="text-[11px] text-gray-500">Created</span></div>
             <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500"></div><span className="text-[11px] text-gray-500">Completed</span></div>
           </div>

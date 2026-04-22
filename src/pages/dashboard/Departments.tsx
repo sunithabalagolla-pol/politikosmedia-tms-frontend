@@ -137,17 +137,17 @@ export default function Departments() {
           </div>
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-[#b23a48]"><Users className="w-4 h-4" /></div>
-              <div><h3 className="text-lg font-bold text-gray-900 dark:text-white">{stats.totalDepartments}</h3><p className="text-gray-500 text-xs">Departments</p></div>
+            <div className="bg-gradient-to-br from-[#b23a48]/10 to-[#b23a48]/5 dark:from-[#b23a48]/20 dark:to-gray-800 border border-[#b23a48]/20 dark:border-[#b23a48]/30 rounded-xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#b23a48]/15 flex items-center justify-center text-[#b23a48]"><Users className="w-4 h-4" /></div>
+              <div><h3 className="text-lg font-bold text-gray-900 dark:text-white">{stats.totalDepartments}</h3><p className="text-[#b23a48] text-xs font-medium">Departments</p></div>
             </div>
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-[#b23a48]"><Clipboard className="w-4 h-4" /></div>
-              <div><h3 className="text-lg font-bold text-gray-900 dark:text-white">{stats.totalTasks}</h3><p className="text-gray-500 text-xs">Total Tasks</p></div>
+            <div className="bg-gradient-to-br from-blue-50 to-blue-50/30 dark:from-blue-900/20 dark:to-gray-800 border border-blue-200/50 dark:border-blue-800/30 rounded-xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600"><Clipboard className="w-4 h-4" /></div>
+              <div><h3 className="text-lg font-bold text-gray-900 dark:text-white">{stats.totalTasks}</h3><p className="text-blue-600 text-xs font-medium">Total Tasks</p></div>
             </div>
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-[#b23a48]"><UserCircle className="w-4 h-4" /></div>
-              <div><h3 className="text-lg font-bold text-gray-900 dark:text-white">{stats.totalMembers}</h3><p className="text-gray-500 text-xs">Team Members</p></div>
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-50/30 dark:from-emerald-900/20 dark:to-gray-800 border border-emerald-200/50 dark:border-emerald-800/30 rounded-xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600"><UserCircle className="w-4 h-4" /></div>
+              <div><h3 className="text-lg font-bold text-gray-900 dark:text-white">{stats.totalMembers}</h3><p className="text-emerald-600 text-xs font-medium">Team Members</p></div>
             </div>
           </div>
           {/* Department List */}
@@ -160,30 +160,30 @@ export default function Departments() {
               <p className="text-gray-500 text-xs">Click "Add Department" to create your first department.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {departments.map((dept: any) => (
-                <div key={dept.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-xs font-bold text-gray-900 dark:text-white">{dept.name}</h3>
+                <div key={dept.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 border-l-4 border-l-[#b23a48] rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-[11px] font-bold text-gray-900 dark:text-white leading-tight">{dept.name}</h3>
                     {(canEdit || canDelete) && (
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-0.5 shrink-0 ml-1">
                         {canEdit && (
-                          <button onClick={() => openEdit(dept)} className="text-gray-400 hover:text-blue-600 p-1 hover:bg-blue-50 rounded" title="Edit">
-                            <Pen className="w-3.5 h-3.5" />
+                          <button onClick={() => openEdit(dept)} className="text-gray-400 hover:text-blue-600 p-0.5 hover:bg-blue-50 rounded" title="Edit">
+                            <Pen className="w-3 h-3" />
                           </button>
                         )}
                         {canDelete && (
-                          <button onClick={() => setShowDeleteConfirm(dept.id)} className="text-gray-400 hover:text-red-600 p-1 hover:bg-red-50 rounded" title="Delete">
-                            <Trash2 className="w-3.5 h-3.5" />
+                          <button onClick={() => setShowDeleteConfirm(dept.id)} className="text-gray-400 hover:text-red-600 p-0.5 hover:bg-red-50 rounded" title="Delete">
+                            <Trash2 className="w-3 h-3" />
                           </button>
                         )}
                       </div>
                     )}
                   </div>
-                  {dept.description && <p className="text-xs text-gray-500 mb-3 line-clamp-2">{dept.description}</p>}
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span className="flex items-center gap-1"><Users className="w-3 h-3" />{dept.member_count || 0} members</span>
-                    <span className="flex items-center gap-1"><Clipboard className="w-3 h-3" />{dept.task_count || 0} tasks</span>
+                  {dept.description && <p className="text-[10px] text-gray-500 mb-2 line-clamp-1">{dept.description}</p>}
+                  <div className="flex items-center gap-3 text-[10px] text-gray-500">
+                    <span className="flex items-center gap-0.5"><Users className="w-2.5 h-2.5" />{dept.member_count || 0} members</span>
+                    <span className="flex items-center gap-0.5"><Clipboard className="w-2.5 h-2.5" />{dept.task_count || 0} tasks</span>
                   </div>
                 </div>
               ))}
