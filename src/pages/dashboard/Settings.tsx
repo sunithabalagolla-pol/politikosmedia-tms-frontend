@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import { Save, Globe, Loader2, CheckCircle2, Shield, X, Check, Settings2, Wrench, Lock, FolderTree, Bell, User, Video, TrendingUp } from 'lucide-react'
 import { useTheme } from '../../hooks/useTheme'
@@ -13,6 +14,7 @@ import ProgressSettings from '../../components/settings/ProgressSettings'
 export default function Settings() {
   const { theme, toggleTheme } = useTheme()
   const { isAdmin, isAdminOrManager } = useRole()
+  const qc = useQueryClient()
   const { data: settings, isLoading } = useSettings()
   const updateSettings = useUpdateSettings()
   const { data: publicSettings } = usePublicSettings()
@@ -143,6 +145,9 @@ export default function Settings() {
       setR2BucketName(find('r2_bucket_name')?.value || '')
       setR2PublicUrl(find('r2_public_url')?.value || '')
       setR2Verified(find('r2_account_id')?.is_verified === true)
+      // Reset change flags — fields are now showing masked placeholders, not real values
+      setR2AccessKeyChanged(false)
+      setR2SecretKeyChanged(false)
     } catch {}
   }
 
@@ -386,8 +391,9 @@ export default function Settings() {
     setR2Verified(false)
     try {
       const body: Record<string, string> = { r2_account_id: r2AccountId, r2_bucket_name: r2BucketName, r2_public_url: r2PublicUrl }
-      if (r2AccessKeyChanged) body.r2_access_key_id = r2AccessKeyId
-      if (r2SecretKeyChanged) body.r2_secret_access_key = r2SecretAccessKey
+      // Only include key fields if they were explicitly changed AND are not the masked placeholder
+      if (r2AccessKeyChanged && r2AccessKeyId !== '••••••••') body.r2_access_key_id = r2AccessKeyId
+      if (r2SecretKeyChanged && r2SecretAccessKey !== '••••••••') body.r2_secret_access_key = r2SecretAccessKey
       await axiosInstance.put('/api/settings/r2/bulk', body)
       setR2TestStatus('loading')
       setR2TestMessage('Saved. Verifying connection...')
@@ -395,6 +401,9 @@ export default function Settings() {
         const res = await axiosInstance.post('/api/settings/r2/test')
         setR2TestStatus('success')
         setR2TestMessage(res.data?.message || 'R2 credentials saved and verified ✅')
+        // Invalidate public-settings cache so r2_verified propagates immediately
+        // to TaskDetailPanel, Profile, and CreateTaskModal without waiting 5 min
+        qc.invalidateQueries({ queryKey: ['public-settings'] })
       } catch {
         setR2TestStatus('error')
         setR2TestMessage('Credentials saved but R2 connection test failed. Please verify your Account ID and Access Keys.')
@@ -418,6 +427,7 @@ export default function Settings() {
       setR2TestStatus('success')
       setR2TestMessage(res.data?.message || 'R2 endpoint is reachable')
       await fetchAdminSettings()
+      qc.invalidateQueries({ queryKey: ['public-settings'] })
     } catch (err: any) {
       setR2TestStatus('error')
       setR2TestMessage(err.response?.data?.message || 'R2 connection failed. Check your credentials.')
