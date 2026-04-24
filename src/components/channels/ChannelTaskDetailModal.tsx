@@ -102,7 +102,9 @@ export default function ChannelTaskDetailModal({ taskId, isOpen, onClose }: Chan
               <div>
                 <h3 className="text-xs font-semibold text-gray-900 dark:text-white mb-3">Assignee Progress</h3>
                 <div className="space-y-3">
-                  {task.assignees.map((assignee) => (
+                  {task.assignees.map((assignee) => {
+                    const effectiveTarget = assignee.individual_target ?? task.target_count
+                    return (
                     <div
                       key={assignee.id}
                       className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4"
@@ -127,15 +129,16 @@ export default function ChannelTaskDetailModal({ taskId, isOpen, onClose }: Chan
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-gray-900 dark:text-white">
-                            {assignee.completed_count}/{task.target_count}
+                            {assignee.completed_count}/{effectiveTarget}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {Math.round((assignee.completed_count / task.target_count) * 100)}%
+                            {effectiveTarget > 0 ? Math.round((assignee.completed_count / effectiveTarget) * 100) : 0}%
                           </p>
                         </div>
                       </div>
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
-import { ArrowLeft, Plus, Loader2, Trash2 } from 'lucide-react'
+import { ArrowLeft, Plus, Loader2, Trash2, Pencil } from 'lucide-react'
 import { useChannel, useSubcategories, useChannelTasks, useDeleteChannelTask } from '../../hooks/api'
 import { usePermission } from '../../hooks/usePermission'
 import { Breadcrumb } from '../tasks/Breadcrumb'
@@ -15,6 +15,7 @@ export default function ChannelTasksListView() {
   const subcategoryId = searchParams.get('subcategory') || ''
 
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [editTaskId, setEditTaskId] = useState<string | null>(null)
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
 
   const { data: channel } = useChannel(channelId)
@@ -24,6 +25,7 @@ export default function ChannelTasksListView() {
 
   const canCreate = usePermission('channel:create')
   const canDelete = usePermission('channel:delete')
+  const canEdit = usePermission('channel:edit')
 
   const basePath = location.pathname.startsWith('/manager') ? '/manager/channels' : '/dashboard/channels'
   const subcategory = subcategories?.find((s) => s.id === subcategoryId)
@@ -162,6 +164,15 @@ export default function ChannelTasksListView() {
                     </div>
 
                     <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                      {canEdit && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setEditTaskId(task.id) }}
+                          className="text-gray-400 hover:text-amber-600 p-1 hover:bg-amber-50 dark:hover:bg-amber-900/30 rounded"
+                          title="Edit"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                       {canDelete && (
                         <button
                           onClick={(e) => handleDelete(e, task.id)}
@@ -181,13 +192,14 @@ export default function ChannelTasksListView() {
         )}
       </div>
 
-      {/* Create Task Modal */}
-      {showCreateModal && (
+      {/* Create / Edit Task Modal */}
+      {(showCreateModal || editTaskId) && (
         <CreateChannelTaskModal
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
+          isOpen={showCreateModal || !!editTaskId}
+          onClose={() => { setShowCreateModal(false); setEditTaskId(null) }}
           defaultChannelId={channelId}
           defaultSubcategoryId={subcategoryId}
+          editTaskId={editTaskId || undefined}
         />
       )}
 

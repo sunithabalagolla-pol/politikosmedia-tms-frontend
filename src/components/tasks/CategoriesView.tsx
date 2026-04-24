@@ -29,7 +29,7 @@ export default function CategoriesView() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-lg font-bold text-green-600 dark:text-green-400 mb-1">Tasks</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Tasks</h1>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             Select a category to view phases and tasks
           </p>
@@ -43,7 +43,7 @@ export default function CategoriesView() {
     <div className="h-full flex flex-col overflow-hidden space-y-3">
       {/* Header */}
       <div>
-        <h1 className="text-lg font-bold text-green-600 dark:text-green-400 mb-1">Tasks</h1>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Tasks</h1>
         <p className="text-xs text-gray-500 dark:text-gray-400">
           Select a category to view phases and tasks
         </p>

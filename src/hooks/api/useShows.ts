@@ -70,6 +70,50 @@ export interface ShowBoardView {
   impact: ShowEpisode[]
 }
 
+// Show Details (rich summary for popup)
+export interface ShowDetailsImpactNote {
+  id: string
+  notes: string | null
+  created_at: string
+  assigned_to_name: string
+  assigned_to_avatar: string | null
+}
+
+export interface ShowDetailsEpisode {
+  id: string
+  episode_number: number
+  title: string
+  target_duration: string | null
+  status: EpisodeStatus
+  approved_at: string | null
+  broadcasted_at: string | null
+  total_assets: number
+  checked_assets: number
+  all_assets_checked: boolean
+  impact_notes: ShowDetailsImpactNote[]
+}
+
+export interface ShowDetails {
+  id: string
+  name: string
+  description: string | null
+  created_by_name: string
+  created_at: string
+  episode_count: number
+  status_breakdown: {
+    production: number
+    approved: number
+    ready_for_broadcast: number
+    broadcasted: number
+  }
+  asset_summary: {
+    total: number
+    checked: number
+    completion_percentage: number
+  }
+  episodes: ShowDetailsEpisode[]
+}
+
 // Queries
 export function useShowBoard() {
   return useQuery({
@@ -87,6 +131,17 @@ export function useShow(showId: string) {
     queryFn: async () => {
       const { data } = await axiosInstance.get(`/api/v1/shows/${showId}`)
       return (data.data || data) as Show & { episodes?: ShowEpisode[] }
+    },
+    enabled: !!showId,
+  })
+}
+
+export function useShowDetails(showId: string) {
+  return useQuery({
+    queryKey: ['shows', showId, 'details'],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(`/api/v1/shows/${showId}/details`)
+      return (data.data || data) as ShowDetails
     },
     enabled: !!showId,
   })

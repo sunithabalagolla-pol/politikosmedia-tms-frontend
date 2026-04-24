@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
-import { Plus, Loader2, X, Tv, ChevronRight, CheckCircle2, Radio, BarChart3, Pencil, Trash2 } from 'lucide-react'
-import { useShowBoard, useCreateShow, useUpdateShow, useDeleteShow, useMarkReadyForBroadcast, useMarkBroadcasted, useCreateImpactTask, ShowEpisode } from '../../hooks/api/useShows'
+import { Plus, Loader2, X, Tv, ChevronRight, CheckCircle2, Radio, BarChart3, Pencil, Trash2, Check } from 'lucide-react'
+import { useShowBoard, useCreateShow, useUpdateShow, useDeleteShow, useMarkReadyForBroadcast, useMarkBroadcasted, useCreateImpactTask, useShowDetails, ShowEpisode } from '../../hooks/api/useShows'
 import { useLookupEmployees } from '../../hooks/api/useLookups'
 import ShowWorkspace from '../../components/shows/ShowWorkspace'
 
@@ -24,7 +24,7 @@ function ShowsBoard() {
   const [editShow, setEditShow] = useState<{ id: string; name: string; description: string } | null>(null)
   const [editName, setEditName] = useState('')
   const [editDesc, setEditDesc] = useState('')
-  const [showDetailEpisode, setShowDetailEpisode] = useState<any>(null)
+  const [showDetailEpisode, setShowDetailEpisode] = useState<string | null>(null)
 
   const { data: board, isLoading } = useShowBoard()
   const createShow = useCreateShow()
@@ -34,6 +34,7 @@ function ShowsBoard() {
   const markBroadcasted = useMarkBroadcasted()
   const createImpact = useCreateImpactTask()
   const { data: employees = [] } = useLookupEmployees()
+  const { data: showDetails, isLoading: isLoadingDetails } = useShowDetails(showDetailEpisode || '')
 
   const basePath = location.pathname.startsWith('/manager') ? '/manager/shows' : '/dashboard/shows'
 
@@ -150,7 +151,7 @@ function ShowsBoard() {
                       columnKey={col.key}
                       onClickCard={() => {
                         if (col.key === 'creation_production') navigate(`${basePath}?show=${ep.show_id}`)
-                        else setShowDetailEpisode(ep)
+                        else setShowDetailEpisode(ep.show_id)
                       }}
                       onMarkReady={() => markReady.mutateAsync(ep.id)}
                       onMarkBroadcasted={() => markBroadcasted.mutateAsync(ep.id)}
@@ -258,75 +259,211 @@ function ShowsBoard() {
         </div>
       )}
 
-      {/* Show Detail Modal - popup when clicking a tile */}
+      {/* Show Detail Modal - Rich Summary Popup */}
       {showDetailEpisode && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDetailEpisode(null)}>
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
               <h2 className="text-sm font-bold text-gray-900 dark:text-white">Show Details</h2>
               <button onClick={() => setShowDetailEpisode(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
-            <div className="p-4 space-y-3">
-              {/* Show Name */}
-              <div>
-                <h3 className="text-[11px] font-bold text-gray-900 dark:text-white">{showDetailEpisode.show_name}</h3>
-                {showDetailEpisode.show_description && (
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{showDetailEpisode.show_description}</p>
-                )}
-              </div>
 
-              {/* Episode Info */}
-              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
-                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1">Episode</p>
-                <p className="text-[11px] font-semibold text-gray-900 dark:text-white">
-                  Ep {String(showDetailEpisode.episode_number).padStart(2, '0')}: {showDetailEpisode.title}
-                </p>
-                {showDetailEpisode.target_duration && (
-                  <p className="text-[10px] text-gray-500 mt-0.5">Duration: {showDetailEpisode.target_duration} mins</p>
-                )}
+            {isLoadingDetails ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-5 h-5 text-[#b23a48] animate-spin" />
               </div>
-
-              {/* Status */}
-              <div>
-                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Status</p>
-                <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium ${
-                  showDetailEpisode.status === 'production' ? 'bg-blue-100 text-blue-700' :
-                  showDetailEpisode.status === 'approved' ? 'bg-orange-100 text-orange-700' :
-                  showDetailEpisode.status === 'ready_for_broadcast' ? 'bg-yellow-100 text-yellow-700' :
-                  showDetailEpisode.status === 'broadcasted' ? 'bg-green-100 text-green-700' :
-                  'bg-gray-100 text-gray-700'
-                }`}>
-                  {showDetailEpisode.status.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
-                </span>
-              </div>
-
-              {/* Impact Notes */}
-              {showDetailEpisode.impact_notes && showDetailEpisode.impact_notes.length > 0 && (
+            ) : !showDetails ? (
+              <div className="text-center py-12 text-[11px] text-gray-500">Failed to load show details</div>
+            ) : (
+              <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ scrollbarWidth: 'thin' }}>
+                {/* 1. Header Section */}
                 <div>
-                  <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1">Impact Notes</p>
-                  <div className="space-y-1">
-                    {showDetailEpisode.impact_notes.map((note: any) => (
-                      <div key={note.id} className="bg-gray-50 dark:bg-gray-700/50 rounded p-2 border border-gray-200 dark:border-gray-700">
-                        <p className="text-[10px] font-medium text-gray-900 dark:text-white">{note.assigned_to_name}</p>
-                        {note.notes && <p className="text-[10px] text-gray-500 mt-0.5">{note.notes}</p>}
-                      </div>
-                    ))}
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-bold text-gray-900 dark:text-white">{showDetails.name}</h3>
+                      {showDetails.description && (
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{showDetails.description}</p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => { handleOpenEdit(showDetails.id, showDetails.name, showDetails.description || ''); setShowDetailEpisode(null) }}
+                      className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors shrink-0 ml-3"
+                    >
+                      <Pencil className="w-3 h-3" /> Edit
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
+                    Created by {showDetails.created_by_name} on {new Date(showDetails.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                </div>
+
+                {/* 2. Status Breakdown Chips */}
+                <div>
+                  <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Episode Status</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {showDetails.status_breakdown.production > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                        Production <span className="font-bold">{showDetails.status_breakdown.production}</span>
+                      </span>
+                    )}
+                    {showDetails.status_breakdown.approved > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+                        Approved <span className="font-bold">{showDetails.status_breakdown.approved}</span>
+                      </span>
+                    )}
+                    {showDetails.status_breakdown.ready_for_broadcast > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+                        Ready for Broadcast <span className="font-bold">{showDetails.status_breakdown.ready_for_broadcast}</span>
+                      </span>
+                    )}
+                    {showDetails.status_breakdown.broadcasted > 0 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                        Broadcasted <span className="font-bold">{showDetails.status_breakdown.broadcasted}</span>
+                      </span>
+                    )}
+                    {showDetails.episode_count === 0 && (
+                      <span className="text-[10px] text-gray-400">No episodes yet</span>
+                    )}
                   </div>
                 </div>
-              )}
 
-              {/* Action: Go to workspace */}
-              <div className="flex justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
+                {/* 3. Asset Progress Bar */}
+                <div>
+                  <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Asset Progress</p>
+                  {showDetails.asset_summary.total === 0 ? (
+                    <p className="text-[10px] text-gray-400">No assets added yet</p>
+                  ) : (
+                    <div>
+                      <div className="flex items-center justify-between text-[10px] mb-1">
+                        <span className="text-gray-600 dark:text-gray-400">
+                          {showDetails.asset_summary.checked} of {showDetails.asset_summary.total} assets ready
+                        </span>
+                        <span className="font-bold text-gray-900 dark:text-white">{showDetails.asset_summary.completion_percentage}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-[#b23a48] to-[#d4515f] h-full rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min(showDetails.asset_summary.completion_percentage, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Episodes Table */}
+                {showDetails.episodes.length > 0 && (
+                  <div>
+                    <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
+                      Episodes ({showDetails.episode_count})
+                    </p>
+                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="bg-gray-50 dark:bg-gray-700/50">
+                            <th className="text-left text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-1.5">Episode</th>
+                            <th className="text-left text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-1.5">Duration</th>
+                            <th className="text-left text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-1.5">Status</th>
+                            <th className="text-left text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-1.5">Assets</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                          {showDetails.episodes.map((ep) => {
+                            const statusBadge: Record<string, string> = {
+                              production: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                              approved: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+                              ready_for_broadcast: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+                              broadcasted: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+                            }
+                            return (
+                              <tr key={ep.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                                <td className="px-3 py-2 text-[11px] font-medium text-gray-900 dark:text-white">
+                                  Ep {String(ep.episode_number).padStart(2, '0')}: {ep.title}
+                                </td>
+                                <td className="px-3 py-2 text-[11px] text-gray-500 dark:text-gray-400">
+                                  {ep.target_duration || '—'}
+                                </td>
+                                <td className="px-3 py-2">
+                                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium ${statusBadge[ep.status] || 'bg-gray-100 text-gray-700'}`}>
+                                    {ep.status.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-2">
+                                  <div className="flex items-center gap-1 text-[11px]">
+                                    <span className={`font-medium ${ep.all_assets_checked ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                                      {ep.checked_assets}/{ep.total_assets}
+                                    </span>
+                                    {ep.all_assets_checked && ep.total_assets > 0 && (
+                                      <Check className="w-3 h-3 text-green-500" />
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. Impact Analysis Section */}
+                {(() => {
+                  const episodesWithImpact = showDetails.episodes.filter((ep) => ep.impact_notes && ep.impact_notes.length > 0)
+                  if (episodesWithImpact.length === 0) return null
+                  return (
+                    <div>
+                      <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">Impact Analysis</p>
+                      <div className="space-y-2">
+                        {episodesWithImpact.map((ep) => (
+                          <div key={ep.id} className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                            <p className="text-[10px] font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                              Ep {String(ep.episode_number).padStart(2, '0')}: {ep.title}
+                            </p>
+                            <div className="space-y-1.5">
+                              {ep.impact_notes.map((note) => (
+                                <div key={note.id} className="flex items-start gap-2">
+                                  {note.assigned_to_avatar ? (
+                                    <img src={note.assigned_to_avatar} alt={note.assigned_to_name} className="w-5 h-5 rounded-full shrink-0 mt-0.5" />
+                                  ) : (
+                                    <div className="w-5 h-5 rounded-full bg-[#b23a48] flex items-center justify-center shrink-0 mt-0.5">
+                                      <span className="text-[9px] font-bold text-white">{note.assigned_to_name?.charAt(0).toUpperCase()}</span>
+                                    </div>
+                                  )}
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-[10px] font-medium text-gray-900 dark:text-white">{note.assigned_to_name}</p>
+                                      <p className="text-[9px] text-gray-400">
+                                        {new Date(note.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                      </p>
+                                    </div>
+                                    {note.notes && <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{note.notes}</p>}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {/* 6. Footer */}
+            {showDetails && (
+              <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-gray-200 dark:border-gray-700 shrink-0">
                 <button
-                  onClick={() => { navigate(`${basePath}?show=${showDetailEpisode.show_id}`); setShowDetailEpisode(null) }}
+                  onClick={() => { navigate(`${basePath}?show=${showDetails.id}`); setShowDetailEpisode(null) }}
                   className="px-3 py-1.5 text-[11px] font-semibold text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg transition-colors"
                 >
                   Open Show Workspace
                 </button>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}

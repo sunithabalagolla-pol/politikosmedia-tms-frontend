@@ -56,6 +56,7 @@ export interface ChannelTaskAssignee {
   email: string
   avatar_url: string | null
   completed_count: number
+  individual_target: number | null
   status: ChannelTaskStatus
   last_updated: string
 }
@@ -95,6 +96,8 @@ export interface UpdateSubcategoryInput {
   sort_order?: number
 }
 
+export type AssignedToEntry = string | { user_id: string; individual_target: number }
+
 export interface CreateChannelTaskInput {
   channel_id: string
   channel_subcategory_id: string
@@ -102,7 +105,15 @@ export interface CreateChannelTaskInput {
   description?: string
   target_count: number
   type: string
-  assigned_to: string[]
+  assigned_to: AssignedToEntry[]
+}
+
+export interface UpdateChannelTaskInput {
+  name?: string
+  description?: string
+  target_count?: number
+  type?: string
+  assigned_to?: AssignedToEntry[]
 }
 
 export interface UpdateProgressInput {
@@ -285,6 +296,20 @@ export function useCreateChannelTask() {
       queryClient.invalidateQueries({ 
         queryKey: ['channel-tasks', data.channel_id, data.channel_subcategory_id] 
       })
+    },
+  })
+}
+
+export function useUpdateChannelTask() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: async ({ id, input }: { id: string; input: UpdateChannelTaskInput }) => {
+      const { data } = await axiosInstance.put(`/api/v1/channels/tasks/${id}`, input)
+      return data.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['channel-tasks'] })
     },
   })
 }

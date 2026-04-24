@@ -142,20 +142,28 @@ export default function ChannelTaskDetailPanel({ isOpen, onClose, taskId, readOn
                   <div>
                     <p className="text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-0.5">My Progress</p>
                     <div className="bg-gray-50 dark:bg-gray-700/50 rounded p-1.5 border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-between text-[10px] mb-1">
-                        <span className={`px-1.5 py-0.5 rounded-full font-medium text-[10px] ${STATUS_BADGE[myAssignment.status || 'not_started']}`}>
-                          {STATUS_LABEL[myAssignment.status || 'not_started']}
-                        </span>
-                        <span className="font-bold text-gray-900 dark:text-white">
-                          {myAssignment.completed_count}/{task.target_count} ({Math.round((myAssignment.completed_count / task.target_count) * 100)}%)
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-300 ${STATUS_BAR_COLOR[myAssignment.status || 'not_started']}`}
-                          style={{ width: `${Math.min((myAssignment.completed_count / task.target_count) * 100, 100)}%` }}
-                        />
-                      </div>
+                      {(() => {
+                        const myTarget = myAssignment.individual_target ?? task.target_count
+                        const myPct = myTarget > 0 ? Math.round((myAssignment.completed_count / myTarget) * 100) : 0
+                        return (
+                          <>
+                            <div className="flex items-center justify-between text-[10px] mb-1">
+                              <span className={`px-1.5 py-0.5 rounded-full font-medium text-[10px] ${STATUS_BADGE[myAssignment.status || 'not_started']}`}>
+                                {STATUS_LABEL[myAssignment.status || 'not_started']}
+                              </span>
+                              <span className="font-bold text-gray-900 dark:text-white">
+                                {myAssignment.completed_count}/{myTarget} ({myPct}%)
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-300 ${STATUS_BAR_COLOR[myAssignment.status || 'not_started']}`}
+                                style={{ width: `${Math.min(myPct, 100)}%` }}
+                              />
+                            </div>
+                          </>
+                        )
+                      })()}
                     </div>
                   </div>
                 )}
@@ -183,29 +191,32 @@ export default function ChannelTaskDetailPanel({ isOpen, onClose, taskId, readOn
                 <div>
                   <p className="text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-0.5">Assignees</p>
                   <div className="space-y-1">
-                    {task.assignees.map((a) => (
-                      <div key={a.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded p-1.5 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center gap-1.5">
-                          {a.avatar_url ? (
-                            <img src={a.avatar_url} alt={a.name} className="w-5 h-5 rounded-full" />
-                          ) : (
-                            <div className="w-5 h-5 rounded-full bg-[#b23a48] flex items-center justify-center">
-                              <span className="text-[9px] font-bold text-white">{a.name?.charAt(0).toUpperCase()}</span>
+                    {task.assignees.map((a) => {
+                      const effectiveTarget = a.individual_target ?? task.target_count
+                      return (
+                        <div key={a.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded p-1.5 border border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center gap-1.5">
+                            {a.avatar_url ? (
+                              <img src={a.avatar_url} alt={a.name} className="w-5 h-5 rounded-full" />
+                            ) : (
+                              <div className="w-5 h-5 rounded-full bg-[#b23a48] flex items-center justify-center">
+                                <span className="text-[9px] font-bold text-white">{a.name?.charAt(0).toUpperCase()}</span>
+                              </div>
+                            )}
+                            <div>
+                              <p className="text-[10px] font-medium text-gray-900 dark:text-white">{a.name}</p>
+                              <p className="text-[9px] text-gray-500">{formatDistanceToNow(new Date(a.last_updated), { addSuffix: true })}</p>
                             </div>
-                          )}
-                          <div>
-                            <p className="text-[10px] font-medium text-gray-900 dark:text-white">{a.name}</p>
-                            <p className="text-[9px] text-gray-500">{formatDistanceToNow(new Date(a.last_updated), { addSuffix: true })}</p>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold text-gray-900 dark:text-white">{a.completed_count}/{effectiveTarget}</span>
+                            <span className={`text-[9px] px-1 py-0.5 rounded-full font-medium ${STATUS_BADGE[a.status || 'not_started']}`}>
+                              {STATUS_LABEL[a.status || 'not_started']}
+                            </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] font-bold text-gray-900 dark:text-white">{a.completed_count}/{task.target_count}</span>
-                          <span className={`text-[9px] px-1 py-0.5 rounded-full font-medium ${STATUS_BADGE[a.status || 'not_started']}`}>
-                            {STATUS_LABEL[a.status || 'not_started']}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
 
@@ -215,53 +226,58 @@ export default function ChannelTaskDetailPanel({ isOpen, onClose, taskId, readOn
                     <p className="text-[10px] font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-0.5 flex items-center gap-1">
                       <TrendingUp className="w-2.5 h-2.5" /> Update Progress
                     </p>
-                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded p-1.5 border border-gray-200 dark:border-gray-700 space-y-1.5">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-[10px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">
-                            Completed <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="number"
-                            value={completedCount}
-                            onChange={(e) => setCompletedCount(e.target.value)}
-                            min="0"
-                            max={task.target_count}
-                            className="w-full px-2 py-1 border border-gray-200 dark:border-gray-600 rounded text-[10px] text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48]"
-                            placeholder={`out of ${task.target_count}`}
-                          />
+                    {(() => {
+                      const myEffectiveTarget = myAssignment?.individual_target ?? task.target_count
+                      return (
+                        <div className="bg-gray-50 dark:bg-gray-700/50 rounded p-1.5 border border-gray-200 dark:border-gray-700 space-y-1.5">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-[10px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">
+                                Completed <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                type="number"
+                                value={completedCount}
+                                onChange={(e) => setCompletedCount(e.target.value)}
+                                min="0"
+                                max={myEffectiveTarget}
+                                className="w-full px-2 py-1 border border-gray-200 dark:border-gray-600 rounded text-[10px] text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48]"
+                                placeholder={`out of ${myEffectiveTarget}`}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">
+                                Note (optional)
+                              </label>
+                              <input
+                                type="text"
+                                value={note}
+                                onChange={(e) => setNote(e.target.value)}
+                                maxLength={2000}
+                                className="w-full px-2 py-1 border border-gray-200 dark:border-gray-600 rounded text-[10px] text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48]"
+                                placeholder="e.g., Done 5 today"
+                              />
+                            </div>
+                          </div>
+                          {showSuccess ? (
+                            <div className="flex items-center gap-1 text-green-600 dark:text-green-400 text-[10px] font-medium">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              Updated!
+                            </div>
+                          ) : (
+                            <button
+                              onClick={handleSaveProgress}
+                              disabled={updateProgress.isPending || completedCount === ''}
+                              className="w-full px-2 py-1 text-[10px] font-medium text-white bg-teal-600 hover:bg-teal-700 rounded transition-colors disabled:opacity-50"
+                            >
+                              {updateProgress.isPending ? 'Saving...' : 'Save Progress'}
+                            </button>
+                          )}
                         </div>
-                        <div>
-                          <label className="block text-[10px] font-medium text-gray-700 dark:text-gray-300 mb-0.5">
-                            Note (optional)
-                          </label>
-                          <input
-                            type="text"
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
-                            maxLength={2000}
-                            className="w-full px-2 py-1 border border-gray-200 dark:border-gray-600 rounded text-[10px] text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48]"
-                            placeholder="e.g., Done 5 today"
-                          />
-                        </div>
-                      </div>
-                      {showSuccess ? (
-                        <div className="flex items-center gap-1 text-green-600 dark:text-green-400 text-[10px] font-medium">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          Updated!
-                        </div>
-                      ) : (
-                        <button
-                          onClick={handleSaveProgress}
-                          disabled={updateProgress.isPending || completedCount === ''}
-                          className="w-full px-2 py-1 text-[10px] font-medium text-white bg-teal-600 hover:bg-teal-700 rounded transition-colors disabled:opacity-50"
-                        >
-                          {updateProgress.isPending ? 'Saving...' : 'Save Progress'}
-                        </button>
-                      )}
-                    </div>
+                      )
+                    })()}
                   </div>
                 )}
 

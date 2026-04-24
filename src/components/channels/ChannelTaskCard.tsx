@@ -1,4 +1,4 @@
-import { Eye, Trash2, TrendingUp } from 'lucide-react'
+import { Eye, Pencil, Trash2 } from 'lucide-react'
 import { ChannelTask } from '../../hooks/api'
 import { usePermission } from '../../hooks/usePermission'
 import { useDeleteChannelTask } from '../../hooks/api'
@@ -7,10 +7,12 @@ import { formatDistanceToNow } from 'date-fns'
 interface ChannelTaskCardProps {
   task: ChannelTask
   onViewDetails: () => void
+  onEdit?: () => void
 }
 
-export default function ChannelTaskCard({ task, onViewDetails }: ChannelTaskCardProps) {
+export default function ChannelTaskCard({ task, onViewDetails, onEdit }: ChannelTaskCardProps) {
   const canDelete = usePermission('channel:delete')
+  const canEdit = usePermission('channel:edit')
   const deleteTask = useDeleteChannelTask()
 
   const handleDelete = async () => {
@@ -60,32 +62,35 @@ export default function ChannelTaskCard({ task, onViewDetails }: ChannelTaskCard
       {task.assignees && task.assignees.length > 0 && (
         <div className="mb-4 space-y-2">
           <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Assignees:</p>
-          {task.assignees.map((assignee) => (
-            <div key={assignee.id} className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                {assignee.avatar_url ? (
-                  <img
-                    src={assignee.avatar_url}
-                    alt={assignee.name}
-                    className="w-6 h-6 rounded-full"
-                  />
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs font-medium">
-                    {assignee.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <span className="text-gray-700 dark:text-gray-300">{assignee.name}</span>
+          {task.assignees.map((assignee) => {
+            const effectiveTarget = assignee.individual_target ?? task.target_count
+            return (
+              <div key={assignee.id} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  {assignee.avatar_url ? (
+                    <img
+                      src={assignee.avatar_url}
+                      alt={assignee.name}
+                      className="w-6 h-6 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-xs font-medium">
+                      {assignee.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="text-gray-700 dark:text-gray-300">{assignee.name}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-gray-900 dark:text-white font-medium">
+                    {assignee.completed_count}/{effectiveTarget}
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400 text-xs ml-2">
+                    {formatDistanceToNow(new Date(assignee.last_updated), { addSuffix: true })}
+                  </span>
+                </div>
               </div>
-              <div className="text-right">
-                <span className="text-gray-900 dark:text-white font-medium">
-                  {assignee.completed_count}/{task.target_count}
-                </span>
-                <span className="text-gray-500 dark:text-gray-400 text-xs ml-2">
-                  {formatDistanceToNow(new Date(assignee.last_updated), { addSuffix: true })}
-                </span>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
@@ -98,6 +103,15 @@ export default function ChannelTaskCard({ task, onViewDetails }: ChannelTaskCard
           <Eye className="w-4 h-4" />
           View Details
         </button>
+        {canEdit && (
+          <button
+            onClick={onEdit}
+            className="flex items-center gap-2 px-3 py-1.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-lg hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors"
+          >
+            <Pencil className="w-4 h-4" />
+            Edit
+          </button>
+        )}
         {canDelete && (
           <button
             onClick={handleDelete}
