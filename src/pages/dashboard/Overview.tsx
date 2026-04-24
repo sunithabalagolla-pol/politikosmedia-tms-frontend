@@ -358,7 +358,7 @@ export default function Overview() {
         {/* Left Column */}
         <div className="lg:col-span-2 flex flex-col gap-3">
 
-          {/* Tasks by Status Donut */}
+          {/* Tasks by Status Donut - unchanged */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xs font-semibold text-gray-900 dark:text-white">Tasks by Status</h2>
@@ -446,6 +446,30 @@ export default function Overview() {
               )}
             </div>
           </div>
+
+          {/* Department Progress - below Activity Timeline, scrollable */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
+            <h2 className="text-xs font-semibold text-gray-900 dark:text-white mb-3">Department Progress</h2>
+            {deptProgress && deptProgress.length > 0 ? (
+              <div className="h-[200px] overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin' }}>
+                <div className="space-y-4">
+                  {deptProgress.map((dept: any, i: number) => (
+                    <div key={i}>
+                      <div className="flex justify-between text-xs mb-1.5">
+                        <span className="font-medium text-gray-700 dark:text-gray-300">{dept.name}</span>
+                        <span className="text-gray-500">{dept.progress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
+                        <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${dept.progress}%`, backgroundColor: dept.color || '#b23a48' }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-4"><p className="text-xs text-gray-400">No departments yet</p></div>
+            )}
+          </div>
         </div>
 
         {/* Right Column */}
@@ -484,28 +508,6 @@ export default function Overview() {
             </div>
           </div>
 
-          {/* Department Progress */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
-            <h2 className="text-xs font-semibold text-gray-900 dark:text-white mb-3">Department Progress</h2>
-            {deptProgress && deptProgress.length > 0 ? (
-              <div className="space-y-4">
-                {deptProgress.map((dept: any, i: number) => (
-                  <div key={i}>
-                    <div className="flex justify-between text-xs mb-1.5">
-                      <span className="font-medium text-gray-700 dark:text-gray-300">{dept.name}</span>
-                      <span className="text-gray-500">{dept.progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
-                      <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${dept.progress}%`, backgroundColor: dept.color || '#b23a48' }}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-4"><p className="text-xs text-gray-400">No departments yet</p></div>
-            )}
-          </div>
-
           {/* Upcoming Deadlines */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
             <div className="flex items-center justify-between mb-3">
@@ -513,7 +515,8 @@ export default function Overview() {
               <CalendarClock className="w-4 h-4 text-gray-400" />
             </div>
             {deadlines && deadlines.length > 0 ? (
-              <div className="space-y-2.5">
+              <div className="h-[200px] overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin' }}>
+                <div className="space-y-2.5">
                 {deadlines.map((item: any) => (
                   <div key={item.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
@@ -530,6 +533,7 @@ export default function Overview() {
                     </span>
                   </div>
                 ))}
+                </div>
               </div>
             ) : (
               <div className="text-center py-4"><p className="text-xs text-gray-400">No upcoming deadlines</p></div>
@@ -560,6 +564,8 @@ export default function Overview() {
           </div>
         </div>
       </div>
+      {/* Bottom spacer */}
+      <div className="pb-6" />
       </>
       )}
     </div>
