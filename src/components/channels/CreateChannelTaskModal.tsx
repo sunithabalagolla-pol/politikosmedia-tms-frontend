@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { X } from 'lucide-react'
+import { useState, useEffect, useMemo } from 'react'
+import { X, AlertTriangle } from 'lucide-react'
 import {
   useChannels,
   useSubcategories,
@@ -105,6 +105,27 @@ export default function CreateChannelTaskModal({
     )
   }
 
+  // --- Target allocation validation ---
+  const parsedTargetCount = parseInt(targetCount)
+  const hasValidTargetCount = !isNaN(parsedTargetCount) && parsedTargetCount > 0
+
+  const { totalAllocated, hasAnyIndividualTarget } = useMemo(() => {
+    let sum = 0
+    let hasAny = false
+    for (const entry of individualTargets) {
+      const val = entry.target ? parseInt(entry.target) : NaN
+      if (!isNaN(val) && val > 0) {
+        sum += val
+        hasAny = true
+      }
+    }
+    return { totalAllocated: sum, hasAnyIndividualTarget: hasAny }
+  }, [individualTargets])
+
+  const isOverAllocated = hasValidTargetCount && hasAnyIndividualTarget && totalAllocated > parsedTargetCount
+  const remaining = hasValidTargetCount ? parsedTargetCount - totalAllocated : 0
+  const overBy = hasValidTargetCount ? totalAllocated - parsedTargetCount : 0
+
   const buildAssignedToPayload = (): AssignedToEntry[] => {
     return assignedTo.map((userId) => {
       const entry = individualTargets.find((t) => t.userId === userId)
@@ -151,9 +172,12 @@ export default function CreateChannelTaskModal({
       }
       onClose()
       resetForm()
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to ${isEditMode ? 'update' : 'create'} task:`, error)
-      alert(`Failed to ${isEditMode ? 'update' : 'create'} task`)
+      const errorMessage =
+        error?.response?.data?.message ||
+        `Failed to ${isEditMode ? 'update' : 'create'} task`
+      alert(errorMessage)
     }
   }
 
@@ -377,6 +401,29 @@ export default function CreateChannelTaskModal({
                     <p className="text-[9px] text-gray-400 dark:text-gray-500">
                       Leave target empty to use the task-level Target Count as default.
                     </p>
+
+                    {/* Allocation indicator */}
+                    {hasAnyIndividualTarget && hasValidTargetCount && (
+                      <div className="mt-1">
+                        {isOverAllocated ? (
+                          <div className="flex items-center gap-1 text-[10px] font-medium text-red-600 dark:text-red-400">
+                            <AlertTriangle className="w-3 h-3 shrink-0" />
+                            <span>Allocated: {totalAllocated} / {parsedTargetCount} — Exceeds target by {overBy}</span>
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                            Allocated: {totalAllocated} / {parsedTargetCount} | Remaining: {remaining}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Over-allocation error message */}
+                    {isOverAllocated && (
+                      <p className="text-[10px] text-red-600 dark:text-red-400 mt-0.5">
+                        Total assigned targets cannot exceed the target count. Please reduce individual targets or increase the target count.
+                      </p>
+                    )}
                   </div>
                 )}
                 {assignedTo.length === 0 && (
@@ -396,7 +443,7 @@ export default function CreateChannelTaskModal({
               </button>
               <button
                 type="submit"
-                disabled={isPending}
+                disabled={isPending || isOverAllocated}
                 className="px-3 py-1 text-[11px] font-semibold text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg transition-colors disabled:opacity-50"
               >
                 {isPending

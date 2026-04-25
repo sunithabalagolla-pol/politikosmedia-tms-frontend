@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Edit2, Trash2, ChevronRight } from 'lucide-react'
+import { Plus, Edit2, Trash2, ChevronRight, Video } from 'lucide-react'
 import { useChannels, useDeleteChannel } from '../../hooks/api'
 import { usePermission } from '../../hooks/usePermission'
 import CreateChannelModal from './CreateChannelModal'
@@ -18,7 +18,8 @@ export default function ChannelSettings() {
   const canEdit = usePermission('channel:edit')
   const canDelete = usePermission('channel:delete')
 
-  const handleDelete = async (id: string, subcategoryCount: number) => {
+  const handleDelete = async (e: React.MouseEvent, id: string, subcategoryCount: number) => {
+    e.stopPropagation()
     if (subcategoryCount > 0) {
       alert('Cannot delete channel with subcategories. Please delete all subcategories first.')
       return
@@ -62,7 +63,7 @@ export default function ChannelSettings() {
         )}
       </div>
 
-      {/* Channels Grid */}
+      {/* Error */}
       {error && (
         <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
           <p className="text-sm text-red-700 dark:text-red-400 font-medium mb-2">
@@ -79,73 +80,79 @@ export default function ChannelSettings() {
           </ul>
         </div>
       )}
+
+      {/* Channels Grid */}
       {isLoading ? (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">Loading channels...</div>
       ) : channels.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          No channels yet. {canCreate && 'Create your first channel!'}
+        <div className="text-center py-12 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+          <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+            <Video className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">No Channels Yet</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 max-w-sm mx-auto">
+            {canCreate ? 'Create your first channel!' : 'No channels have been created yet.'}
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {channels.map((channel) => (
             <div
               key={channel.id}
-              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
+              onClick={() => setSelectedChannelId(channel.id)}
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer p-3 group"
             >
-              {/* Logo */}
-              {channel.logo_url && (
-                <div className="mb-3">
+              <div className="flex flex-col items-center text-center space-y-1.5">
+                {/* Channel Logo or Fallback Icon */}
+                {channel.logo_url ? (
                   <img
                     src={channel.logo_url}
                     alt={channel.name}
-                    className="w-16 h-16 object-contain rounded-lg"
+                    className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
                   />
-                </div>
-              )}
+                ) : (
+                  <Video className="w-8 h-8 text-[#b23a48] group-hover:scale-110 transition-transform" />
+                )}
 
-              {/* Name & Description */}
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                {channel.name}
-              </h3>
-              {channel.description && (
-                <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                  {channel.description}
+                {/* Name */}
+                <h3 className="text-[11px] font-bold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors leading-tight">
+                  {channel.name}
+                </h3>
+
+                {/* Subcategory count */}
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                  {channel.subcategory_count || 0} subcategories
                 </p>
-              )}
 
-              {/* Subcategory Count */}
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                {channel.subcategory_count || 0} subcategories
-              </p>
-
-              {/* Actions */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setSelectedChannelId(channel.id)}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 text-sm bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 rounded-lg hover:bg-teal-200 dark:hover:bg-teal-900/50 transition-colors"
-                >
-                  <span>Subcategories</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-                {canEdit && (
+                {/* Actions row */}
+                <div className="flex items-center gap-1 pt-1.5 border-t border-gray-100 dark:border-gray-700 w-full justify-center">
                   <button
-                    onClick={() => setEditingChannel(channel.id)}
-                    className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                    title="Edit"
+                    onClick={(e) => { e.stopPropagation(); setSelectedChannelId(channel.id) }}
+                    className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 rounded hover:bg-teal-200 dark:hover:bg-teal-900/50 transition-colors"
                   >
-                    <Edit2 className="w-4 h-4" />
+                    Subcategories
+                    <ChevronRight className="w-3 h-3" />
                   </button>
-                )}
-                {canDelete && (
-                  <button
-                    onClick={() => handleDelete(channel.id, channel.subcategory_count || 0)}
-                    disabled={deleteChannel.isPending}
-                    className="p-1.5 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
+                  {canEdit && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setEditingChannel(channel.id) }}
+                      className="p-1 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded transition-colors"
+                      title="Edit"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </button>
+                  )}
+                  {canDelete && (
+                    <button
+                      onClick={(e) => handleDelete(e, channel.id, channel.subcategory_count || 0)}
+                      disabled={deleteChannel.isPending}
+                      className="p-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors disabled:opacity-50"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}

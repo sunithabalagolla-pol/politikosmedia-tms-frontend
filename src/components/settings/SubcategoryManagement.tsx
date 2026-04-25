@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, Plus, Edit2, Trash2 } from 'lucide-react'
+import { ArrowLeft, Plus, Edit2, Trash2, Layers } from 'lucide-react'
 import { useChannel, useSubcategories, useDeleteSubcategory } from '../../hooks/api'
 import { usePermission } from '../../hooks/usePermission'
 import CreateSubcategoryModal from './CreateSubcategoryModal'
@@ -22,7 +22,8 @@ export default function SubcategoryManagement({ channelId, onBack }: Subcategory
   const canEdit = usePermission('channel:edit')
   const canDelete = usePermission('channel:delete')
 
-  const handleDelete = async (id: string, taskCount: number) => {
+  const handleDelete = async (e: React.MouseEvent, id: string, taskCount: number) => {
+    e.stopPropagation()
     if (taskCount > 0) {
       alert('Cannot delete subcategory with tasks. Please delete all tasks first.')
       return
@@ -51,7 +52,7 @@ export default function SubcategoryManagement({ channelId, onBack }: Subcategory
           </button>
           <div>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-              {channel?.name} - Subcategories
+              {channel?.name} — Subcategories
             </h2>
             <p className="text-xs text-gray-500 dark:text-gray-400">Manage subcategories for this channel</p>
           </div>
@@ -67,54 +68,69 @@ export default function SubcategoryManagement({ channelId, onBack }: Subcategory
         )}
       </div>
 
-      {/* Subcategories List */}
+      {/* Subcategories Grid */}
       {isLoading ? (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">Loading subcategories...</div>
       ) : subcategories.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          No subcategories yet. {canCreate && 'Create your first subcategory!'}
+        <div className="text-center py-12 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+          <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+            <Layers className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+          </div>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">No Subcategories Yet</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 max-w-sm mx-auto">
+            {canCreate ? 'Create your first subcategory!' : 'No subcategories have been created yet.'}
+          </p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {subcategories.map((subcategory) => (
             <div
               key={subcategory.id}
-              className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all p-3 group"
             >
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+              <div className="flex flex-col items-center text-center space-y-1.5">
+                {/* Icon */}
+                <Layers className="w-8 h-8 text-[#b23a48] group-hover:scale-110 transition-transform" />
+
+                {/* Name */}
+                <h3 className="text-[11px] font-bold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors leading-tight">
                   {subcategory.name}
                 </h3>
+
+                {/* Description */}
                 {subcategory.description && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">
                     {subcategory.description}
                   </p>
                 )}
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {subcategory.task_count || 0} tasks
-                </p>
-              </div>
 
-              <div className="flex items-center gap-2">
-                {canEdit && (
-                  <button
-                    onClick={() => setEditingSubcategoryId(subcategory.id)}
-                    className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                    title="Edit"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                )}
-                {canDelete && (
-                  <button
-                    onClick={() => handleDelete(subcategory.id, subcategory.task_count || 0)}
-                    disabled={deleteSubcategory.isPending}
-                    className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
+                {/* Task count */}
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                  {subcategory.task_count || 0} {(subcategory.task_count || 0) === 1 ? 'task' : 'tasks'}
+                </p>
+
+                {/* Actions */}
+                <div className="flex items-center gap-1 pt-1.5 border-t border-gray-100 dark:border-gray-700 w-full justify-center">
+                  {canEdit && (
+                    <button
+                      onClick={() => setEditingSubcategoryId(subcategory.id)}
+                      className="p-1 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded transition-colors"
+                      title="Edit"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </button>
+                  )}
+                  {canDelete && (
+                    <button
+                      onClick={(e) => handleDelete(e, subcategory.id, subcategory.task_count || 0)}
+                      disabled={deleteSubcategory.isPending}
+                      className="p-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors disabled:opacity-50"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}

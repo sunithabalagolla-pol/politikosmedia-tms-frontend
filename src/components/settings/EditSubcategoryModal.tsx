@@ -12,7 +12,6 @@ interface EditSubcategoryModalProps {
 export default function EditSubcategoryModal({ subcategoryId, channelId, isOpen, onClose }: EditSubcategoryModalProps) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
-  const [sortOrder, setSortOrder] = useState('')
 
   const { data: subcategories = [] } = useSubcategories(channelId)
   const updateSubcategory = useUpdateSubcategory()
@@ -23,7 +22,6 @@ export default function EditSubcategoryModal({ subcategoryId, channelId, isOpen,
     if (subcategory) {
       setName(subcategory.name)
       setDescription(subcategory.description || '')
-      setSortOrder(subcategory.sort_order?.toString() || '')
     }
   }, [subcategory])
 
@@ -41,7 +39,6 @@ export default function EditSubcategoryModal({ subcategoryId, channelId, isOpen,
         input: {
           name,
           description: description || undefined,
-          sort_order: sortOrder ? parseInt(sortOrder) : undefined,
         },
       })
       onClose()
@@ -94,19 +91,6 @@ export default function EditSubcategoryModal({ subcategoryId, channelId, isOpen,
               onChange={(e) => setDescription(e.target.value)}
               maxLength={1000}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent"
-            />
-          </div>
-
-          {/* Sort Order */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Sort Order
-            </label>
-            <input
-              type="number"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent"
             />
           </div>

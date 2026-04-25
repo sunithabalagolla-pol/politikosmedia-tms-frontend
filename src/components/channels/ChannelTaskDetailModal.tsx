@@ -227,15 +227,19 @@ export default function ChannelTaskDetailModal({ taskId, isOpen, onClose }: Chan
       </div>
 
       {/* Update Progress Modal */}
-      {showUpdateProgress && task && (
-        <UpdateProgressModal
-          taskId={task.id}
-          isOpen={showUpdateProgress}
-          onClose={() => setShowUpdateProgress(false)}
-          currentCount={task.assignees.find((a) => a.id === authData?.user.id)?.completed_count ?? 0}
-          targetCount={task.target_count}
-        />
-      )}
+      {showUpdateProgress && task && (() => {
+        const myAssignee = task.assignees.find((a) => a.id === authData?.user.id)
+        const effectiveTarget = myAssignee?.individual_target ?? task.target_count
+        return (
+          <UpdateProgressModal
+            taskId={task.id}
+            isOpen={showUpdateProgress}
+            onClose={() => setShowUpdateProgress(false)}
+            currentCount={myAssignee?.completed_count ?? 0}
+            targetCount={effectiveTarget}
+          />
+        )
+      })()}
     </>
   )
 }

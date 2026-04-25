@@ -243,9 +243,8 @@ export default function MyTasks() {
         </div>
       )}
 
-      {/* View Toggle and Filters */}
+      {/* Task Type Tabs */}
       <div className="flex items-center justify-between mb-3 border-b border-gray-200 dark:border-gray-700 pb-2">
-        {/* Task Type Tabs - Only if employee has BOTH types */}
         {showTabs && (
         <div className="flex gap-2 bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
             <button
@@ -285,71 +284,6 @@ export default function MyTasks() {
             )}
           </div>
         )}
-
-        {/* View Mode Toggle - Only show for regular tasks */}
-        {taskType === 'regular' && (
-          <div className="flex items-center space-x-1 bg-gray-50 dark:bg-gray-900 p-0.5 rounded-lg w-max border border-gray-200 dark:border-gray-700">
-            <button onClick={() => setViewMode('grid')}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center transition-colors ${viewMode === 'grid' ? 'bg-white dark:bg-gray-800 shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900'}`}>
-              <LayoutGrid className="w-3.5 h-3.5 mr-1" />Grid
-            </button>
-            <button onClick={() => setViewMode('list')}
-              className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center transition-colors ${viewMode === 'list' ? 'bg-white dark:bg-gray-800 shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900'}`}>
-              <List className="w-3.5 h-3.5 mr-1" />List
-            </button>
-          </div>
-        )}
-        
-        {/* Filters - Only show for regular tasks */}
-        {taskType === 'regular' && (
-          <div className="relative">
-          <button data-filter-button onClick={() => setShowFilterPanel(!showFilterPanel)}
-            className="flex items-center px-2 py-1 border border-gray-200 dark:border-gray-700 rounded-lg text-xs font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 hover:bg-gray-50 transition-colors">
-            <Filter className="w-3 h-3 mr-1 text-gray-500" />Filters
-            {getActiveFilterCount() > 0 && <span className="ml-1 bg-[#b23a48] text-white text-xs font-semibold px-1 py-0.5 rounded-full">{getActiveFilterCount()}</span>}
-          </button>
-          {showFilterPanel && (
-            <div ref={filterRef} className="absolute right-0 mt-2 w-[280px] bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50">
-              <div className="p-3">
-                <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide">Filters</h3>
-                  <button onClick={() => setShowFilterPanel(false)} className="text-gray-400 hover:text-gray-600"><X className="w-3.5 h-3.5" /></button>
-                </div>
-                <div className="mb-2.5">
-                  <div className="flex items-center gap-1.5 mb-1.5"><CircleDot className="w-3 h-3 text-gray-600" /><span className="text-xs font-semibold text-gray-900 dark:text-white">Status</span></div>
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2 border border-gray-100 dark:border-gray-700">
-                    <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
-                      {[['todo','To Do'],['in-progress','In Progress'],['completed','Completed'],['hold','Hold']].map(([val,label]) => (
-                        <label key={val} className="flex items-center gap-1.5 cursor-pointer">
-                          <input type="checkbox" checked={filters.status[val as keyof typeof filters.status]} onChange={() => handleFilterChange('status', val)} className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded" />
-                          <span className="text-xs text-gray-700 dark:text-gray-300">{label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="mb-2.5">
-                  <div className="flex items-center gap-1.5 mb-1.5"><Flag className="w-3 h-3 text-gray-600" /><span className="text-xs font-semibold text-gray-900 dark:text-white">Priority</span></div>
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2 border border-gray-100 dark:border-gray-700">
-                    <div className="grid grid-cols-3 gap-x-2 gap-y-1.5">
-                      {[['high','High'],['medium','Medium'],['low','Low']].map(([val,label]) => (
-                        <label key={val} className="flex items-center gap-1.5 cursor-pointer">
-                          <input type="checkbox" checked={filters.priority[val as keyof typeof filters.priority]} onChange={() => handleFilterChange('priority', val)} className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded" />
-                          <span className="text-xs text-gray-700 dark:text-gray-300">{label}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between pt-2.5 border-t border-gray-200 dark:border-gray-700">
-                  <button onClick={handleClearAll} className="text-xs text-gray-600 hover:text-gray-900 font-medium">Clear All</button>
-                  <button onClick={handleApplyFilters} className="px-4 py-1.5 bg-[#b23a48] text-white rounded-lg text-xs font-semibold hover:bg-[#8f2e3a]">Apply ({getActiveFilterCount()})</button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-        )}
       </div>
 
       {/* Show Channel Tasks View */}
@@ -365,6 +299,67 @@ export default function MyTasks() {
       {/* Show Regular Tasks View */}
       {taskType === 'regular' && (
         <>
+          {/* View Toggle & Filters */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-1 bg-gray-50 dark:bg-gray-900 p-0.5 rounded-lg w-max border border-gray-200 dark:border-gray-700">
+              <button onClick={() => setViewMode('grid')}
+                className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center transition-colors ${viewMode === 'grid' ? 'bg-white dark:bg-gray-800 shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900'}`}>
+                <LayoutGrid className="w-3.5 h-3.5 mr-1" />Grid
+              </button>
+              <button onClick={() => setViewMode('list')}
+                className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center transition-colors ${viewMode === 'list' ? 'bg-white dark:bg-gray-800 shadow-sm text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900'}`}>
+                <List className="w-3.5 h-3.5 mr-1" />List
+              </button>
+            </div>
+            <div className="relative">
+              <button data-filter-button onClick={() => setShowFilterPanel(!showFilterPanel)}
+                className="flex items-center px-2 py-1 border border-gray-200 dark:border-gray-700 rounded-lg text-xs font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 hover:bg-gray-50 transition-colors">
+                <Filter className="w-3 h-3 mr-1 text-gray-500" />Filters
+                {getActiveFilterCount() > 0 && <span className="ml-1 bg-[#b23a48] text-white text-xs font-semibold px-1 py-0.5 rounded-full">{getActiveFilterCount()}</span>}
+              </button>
+              {showFilterPanel && (
+                <div ref={filterRef} className="absolute right-0 mt-2 w-[280px] bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                  <div className="p-3">
+                    <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-200 dark:border-gray-700">
+                      <h3 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide">Filters</h3>
+                      <button onClick={() => setShowFilterPanel(false)} className="text-gray-400 hover:text-gray-600"><X className="w-3.5 h-3.5" /></button>
+                    </div>
+                    <div className="mb-2.5">
+                      <div className="flex items-center gap-1.5 mb-1.5"><CircleDot className="w-3 h-3 text-gray-600" /><span className="text-xs font-semibold text-gray-900 dark:text-white">Status</span></div>
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2 border border-gray-100 dark:border-gray-700">
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+                          {[['todo','To Do'],['in-progress','In Progress'],['completed','Completed'],['hold','Hold']].map(([val,label]) => (
+                            <label key={val} className="flex items-center gap-1.5 cursor-pointer">
+                              <input type="checkbox" checked={filters.status[val as keyof typeof filters.status]} onChange={() => handleFilterChange('status', val)} className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded" />
+                              <span className="text-xs text-gray-700 dark:text-gray-300">{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mb-2.5">
+                      <div className="flex items-center gap-1.5 mb-1.5"><Flag className="w-3 h-3 text-gray-600" /><span className="text-xs font-semibold text-gray-900 dark:text-white">Priority</span></div>
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2 border border-gray-100 dark:border-gray-700">
+                        <div className="grid grid-cols-3 gap-x-2 gap-y-1.5">
+                          {[['high','High'],['medium','Medium'],['low','Low']].map(([val,label]) => (
+                            <label key={val} className="flex items-center gap-1.5 cursor-pointer">
+                              <input type="checkbox" checked={filters.priority[val as keyof typeof filters.priority]} onChange={() => handleFilterChange('priority', val)} className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded" />
+                              <span className="text-xs text-gray-700 dark:text-gray-300">{label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-2.5 border-t border-gray-200 dark:border-gray-700">
+                      <button onClick={handleClearAll} className="text-xs text-gray-600 hover:text-gray-900 font-medium">Clear All</button>
+                      <button onClick={handleApplyFilters} className="px-4 py-1.5 bg-[#b23a48] text-white rounded-lg text-xs font-semibold hover:bg-[#8f2e3a]">Apply ({getActiveFilterCount()})</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Stats Cards */}
           <div className="grid grid-cols-6 gap-2 mb-3">
         {statCards.map((stat, index) => (
@@ -393,7 +388,7 @@ export default function MyTasks() {
         <>
           {/* Task List / Grid */}
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
               {tasks.map((task: any) => {
                 const borderColor = task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
                 return (
@@ -402,32 +397,32 @@ export default function MyTasks() {
                       selectedTaskId === String(task.id) ? 'border-l-[3px] border-l-[#b23a48] bg-red-50/30 dark:bg-red-900/10' : ''
                     }`}>
                     <div className={`absolute top-0 left-0 w-1 h-full ${borderColor}`}></div>
-                    <div className="p-2.5 flex-1 flex flex-col gap-1.5">
+                    <div className="p-2.5 pl-3 flex-1 flex flex-col gap-1">
                       <div className="flex items-start justify-between">
-                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${getStatusColor(task.status)}`}>
-                          {task.status === 'completed' && <Check className="w-2.5 h-2.5 mr-0.5" />}{formatStatus(task.status)}
+                        <span className={`inline-flex items-center px-1 py-0.5 rounded text-[10px] font-medium ${getStatusColor(task.status)}`}>
+                          {task.status === 'completed' && <Check className="w-2 h-2 mr-0.5" />}{formatStatus(task.status)}
                         </span>
-                        {task.is_overdue && <span className="inline-flex items-center px-1 py-0.5 rounded text-[10px] font-semibold bg-red-100 text-red-600">Overdue</span>}
+                        {task.is_overdue && <span className="inline-flex items-center px-1 py-0.5 rounded text-[9px] font-semibold bg-red-100 text-red-600">Overdue</span>}
                       </div>
-                      <h3 className={`text-[11px] font-semibold group-hover:text-[#b23a48] transition-colors leading-snug ${task.status === 'completed' ? 'text-gray-400 line-through' : 'text-gray-900 dark:text-white'}`}>{task.title}</h3>
+                      <h3 className={`text-[11px] font-semibold group-hover:text-[#b23a48] transition-colors leading-tight line-clamp-2 ${task.status === 'completed' ? 'text-gray-400 line-through' : 'text-gray-900 dark:text-white'}`}>{task.title}</h3>
                       <p className="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">{task.description || 'No description'}</p>
                       <div className="mt-auto pt-1.5 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
                         <div className="flex items-center gap-1">
                           <span className={`w-1.5 h-1.5 rounded-full ${task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'}`} />
                           <span className="text-[10px] text-gray-500">{task.priority?.charAt(0).toUpperCase() + task.priority?.slice(1)}</span>
                         </div>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1">
                           <span className={`text-[10px] flex items-center gap-0.5 ${task.is_overdue ? 'text-rose-500' : 'text-gray-400'}`}>
                             <Calendar className="w-2.5 h-2.5" />{task.due_date ? fmtDate(task.due_date) : 'No date'}
                           </span>
                           {canEditTask && (
                             <button onClick={(e) => { e.stopPropagation(); handleEdit(task) }} className="text-gray-400 hover:text-blue-600 p-0.5 rounded">
-                              <Pencil className="w-3 h-3" />
+                              <Pencil className="w-2.5 h-2.5" />
                             </button>
                           )}
                           {canDeleteTask && (
                             <button onClick={(e) => { e.stopPropagation(); handleDeleteClick(task.id) }} className="text-gray-400 hover:text-red-600 p-0.5 rounded">
-                              <Trash2 className="w-3 h-3" />
+                              <Trash2 className="w-2.5 h-2.5" />
                             </button>
                           )}
                         </div>

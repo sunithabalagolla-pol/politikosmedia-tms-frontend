@@ -55,6 +55,12 @@ export default function ChannelTaskDetailPanel({ isOpen, onClose, taskId, readOn
     const count = parseInt(completedCount)
     if (isNaN(count) || count < 0) return
 
+    const myEffectiveTarget = myAssignment?.individual_target ?? task?.target_count
+    if (myEffectiveTarget && count > myEffectiveTarget) {
+      alert(`Cannot exceed your target of ${myEffectiveTarget}`)
+      return
+    }
+
     try {
       await updateProgress.mutateAsync({
         taskId,
@@ -66,9 +72,10 @@ export default function ChannelTaskDetailPanel({ isOpen, onClose, taskId, readOn
       setNote('')
       setShowSuccess(true)
       setTimeout(() => setShowSuccess(false), 2000)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update progress:', error)
-      alert('Failed to update progress. Please try again.')
+      const message = error?.response?.data?.message || 'Failed to update progress. Please try again.'
+      alert(message)
     }
   }
 

@@ -21,7 +21,6 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editName, setEditName] = useState('')
   const [editDesc, setEditDesc] = useState('')
-  const [editEpisodeModal, setEditEpisodeModal] = useState<ShowEpisode | null>(null)
   const [editEpTitle, setEditEpTitle] = useState('')
   const [editEpNumber, setEditEpNumber] = useState('')
   const [editEpDuration, setEditEpDuration] = useState('')
@@ -79,27 +78,6 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
     } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete') }
   }
 
-  const handleOpenEditEpisode = (ep: ShowEpisode) => {
-    setEditEpisodeModal(ep)
-    setEditEpTitle(ep.title)
-    setEditEpNumber(String(ep.episode_number))
-    setEditEpDuration(ep.target_duration || '')
-  }
-
-  const handleSaveEditEpisode = async () => {
-    if (!editEpisodeModal || !editEpTitle.trim() || !editEpNumber) return
-    try {
-      const input: { title?: string; episode_number?: number; target_duration?: string } = {}
-      if (editEpTitle !== editEpisodeModal.title) input.title = editEpTitle
-      if (parseInt(editEpNumber) !== editEpisodeModal.episode_number) input.episode_number = parseInt(editEpNumber)
-      if (editEpDuration !== (editEpisodeModal.target_duration || '')) input.target_duration = editEpDuration || undefined
-      if (Object.keys(input).length > 0) {
-        await updateEpisode.mutateAsync({ episodeId: editEpisodeModal.id, input })
-      }
-      setEditEpisodeModal(null)
-    } catch (e: any) { alert(e?.response?.data?.message || 'Failed to update episode') }
-  }
-
   const handleStartRenameAsset = (assetId: string, currentName: string) => {
     setRenamingAssetId(assetId)
     setRenameAssetValue(currentName)
@@ -115,7 +93,7 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   }
 
   const canEditEpisode = (status: string) => status === 'production'
-  const canModifyAssets = (status: string) => status === 'production' || status === 'approved'
+  const canModifyAssets = (status: string) => status === 'production'
 
   const showName = show?.name || episodes[0]?.show_name || 'Show'
   const showDescription = show?.description || ''
@@ -123,15 +101,49 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   const handleOpenEditShow = () => {
     setEditName(show?.name || '')
     setEditDesc(show?.description || '')
+    // Pre-fill episode fields if a production episode is selected
+    if (selectedEpisode && canEditEpisode(selectedEpisode.status)) {
+      setEditEpTitle(selectedEpisode.title)
+      setEditEpNumber(String(selectedEpisode.episode_number))
+      setEditEpDuration(selectedEpisode.target_duration || '')
+    } else {
+      setEditEpTitle('')
+      setEditEpNumber('')
+      setEditEpDuration('')
+    }
     setShowEditModal(true)
   }
 
-  const handleSaveEditShow = async () => {
+  const handleOpenEditFromSidebar = (ep: ShowEpisode) => {
+    setSelectedEpisodeId(ep.id)
+    setEditName(show?.name || '')
+    setEditDesc(show?.description || '')
+    setEditEpTitle(ep.title)
+    setEditEpNumber(String(ep.episode_number))
+    setEditEpDuration(ep.target_duration || '')
+    setShowEditModal(true)
+  }
+
+  const handleSaveUnified = async () => {
     if (!editName.trim()) return
     try {
-      await updateShow.mutateAsync({ showId, input: { name: editName, description: editDesc || undefined } })
+      // Save show details if changed
+      const showChanged = editName !== (show?.name || '') || editDesc !== (show?.description || '')
+      if (showChanged) {
+        await updateShow.mutateAsync({ showId, input: { name: editName, description: editDesc || undefined } })
+      }
+      // Save episode details if editable and changed
+      if (selectedEpisode && canEditEpisode(selectedEpisode.status) && editEpTitle.trim() && editEpNumber) {
+        const epInput: { title?: string; episode_number?: number; target_duration?: string } = {}
+        if (editEpTitle !== selectedEpisode.title) epInput.title = editEpTitle
+        if (parseInt(editEpNumber) !== selectedEpisode.episode_number) epInput.episode_number = parseInt(editEpNumber)
+        if (editEpDuration !== (selectedEpisode.target_duration || '')) epInput.target_duration = editEpDuration || undefined
+        if (Object.keys(epInput).length > 0) {
+          await updateEpisode.mutateAsync({ episodeId: selectedEpisode.id, input: epInput })
+        }
+      }
       setShowEditModal(false)
-    } catch (e: any) { alert(e?.response?.data?.message || 'Failed to update show') }
+    } catch (e: any) { alert(e?.response?.data?.message || 'Failed to save changes') }
   }
 
   const handleDeleteShowAction = async () => {
@@ -186,7 +198,7 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                   <p className="text-[11px] font-semibold text-gray-900 dark:text-white">Ep {String(ep.episode_number).padStart(2, '0')}: {ep.title}</p>
                   <div className="flex items-center gap-0.5">
                     {canEditEpisode(ep.status) && (
-                      <button onClick={(e) => { e.stopPropagation(); handleOpenEditEpisode(ep) }}
+                      <button onClick={(e) => { e.stopPropagation(); handleOpenEditFromSidebar(ep) }}
                         className="opacity-0 group-hover:opacity-100 p-0.5 text-gray-400 hover:text-blue-500"><Pencil className="w-3 h-3" /></button>
                     )}
                     {canEditEpisode(ep.status) && (
@@ -209,19 +221,9 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
           {selectedEpisode ? (
             <div className="space-y-6">
               <div>
-                <div className="flex items-center justify-between">
-                  <h2 className="text-[11px] font-bold text-gray-900 dark:text-white mb-1">
-                    Ep {String(selectedEpisode.episode_number).padStart(2, '0')}: {selectedEpisode.title}
-                  </h2>
-                  {canEditEpisode(selectedEpisode.status) ? (
-                    <button onClick={() => handleOpenEditEpisode(selectedEpisode)}
-                      className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
-                      <Pencil className="w-3 h-3" /> Edit
-                    </button>
-                  ) : (
-                    <span className="text-[10px] text-gray-400 italic" title="Episode is locked after approval">Locked</span>
-                  )}
-                </div>
+                <h2 className="text-[11px] font-bold text-gray-900 dark:text-white mb-1">
+                  Ep {String(selectedEpisode.episode_number).padStart(2, '0')}: {selectedEpisode.title}
+                </h2>
                 {selectedEpisode.target_duration && (
                   <p className="text-[11px] text-gray-500">Duration: {selectedEpisode.target_duration} mins</p>
                 )}
@@ -255,17 +257,27 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                     const Icon = ASSET_ICONS[asset.name] || FileText
                     return (
                       <div key={asset.id}
-                        className={`relative rounded-xl border-2 p-4 text-center transition-all ${
+                        className={`relative rounded-xl border-2 p-4 text-center transition-all group/card ${
                           asset.is_checked
                             ? 'border-green-400 bg-green-50 dark:bg-green-900/20'
                             : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900'
                         }`}>
-                        {/* Remove button — production or approved */}
+                        {/* Action icons — top-right, visible on card hover */}
                         {canModifyAssets(selectedEpisode.status) && (
-                          <button onClick={() => removeAsset.mutateAsync(asset.id)}
-                            className="absolute top-1 right-1 p-0.5 text-gray-400 hover:text-red-500 opacity-0 hover:opacity-100 transition-opacity">
-                            <X className="w-3 h-3" />
-                          </button>
+                          <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                            <button onClick={() => handleStartRenameAsset(asset.id, asset.name)}
+                              className="p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors" title="Rename asset">
+                              <Pencil className="w-3 h-3" />
+                            </button>
+                            <button onClick={async () => {
+                              if (!confirm(`Are you sure you want to remove "${asset.name}"?`)) return
+                              try { await removeAsset.mutateAsync(asset.id) }
+                              catch (e: any) { alert(e?.response?.data?.message || 'Failed to remove asset') }
+                            }}
+                              className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors" title="Delete asset">
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
                         )}
                         <Icon className={`w-8 h-8 mx-auto mb-2 ${asset.is_checked ? 'text-green-600' : 'text-gray-400'}`} />
                         {/* Asset name — inline rename */}
@@ -281,15 +293,7 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                               className="p-0.5 text-gray-400 hover:text-gray-600"><X className="w-3 h-3" /></button>
                           </div>
                         ) : (
-                          <div className="flex items-center justify-center gap-1 mb-1 group/name">
-                            <p className="text-[11px] font-semibold text-gray-900 dark:text-white">{asset.name}</p>
-                            {canModifyAssets(selectedEpisode.status) && (
-                              <button onClick={() => handleStartRenameAsset(asset.id, asset.name)}
-                                className="opacity-0 group-hover/name:opacity-100 p-0.5 text-gray-400 hover:text-blue-500 transition-opacity">
-                                <Pencil className="w-2.5 h-2.5" />
-                              </button>
-                            )}
-                          </div>
+                          <p className="text-[11px] font-semibold text-gray-900 dark:text-white mb-1">{asset.name}</p>
                         )}
                         {/* Toggle — works in all statuses */}
                         <button onClick={() => toggleAsset.mutateAsync(asset.id)}
@@ -384,68 +388,78 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
         </div>
       )}
 
-      {/* Edit Show Modal */}
+      {/* Unified Edit Modal — Show Details + Episode Details */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-[11px] font-bold text-gray-900 dark:text-white">Edit Show</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 shrink-0">
+              <h2 className="text-[11px] font-bold text-gray-900 dark:text-white">Edit Details</h2>
               <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-5" style={{ scrollbarWidth: 'thin' }}>
+              {/* Show Details Section */}
               <div>
-                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Show Title <span className="text-red-500">*</span></label>
-                <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} maxLength={500}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
+                <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Show Details</p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Show Title <span className="text-red-500">*</span></label>
+                    <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} maxLength={500}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                    <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} maxLength={2000} rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-                <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} maxLength={2000} rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
-              </div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button onClick={() => setShowEditModal(false)} className="px-4 py-2 text-[11px] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
-                <button onClick={handleSaveEditShow} disabled={updateShow.isPending || !editName.trim()}
-                  className="px-4 py-2 text-[11px] text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg disabled:opacity-50">
-                  {updateShow.isPending ? 'Saving...' : 'Save Changes'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Edit Episode Modal */}
-      {editEpisodeModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-[11px] font-bold text-gray-900 dark:text-white">Edit Episode</h2>
-              <button onClick={() => setEditEpisodeModal(null)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+              {/* Episode Details Section — only if a production episode is selected */}
+              {selectedEpisode && canEditEpisode(selectedEpisode.status) && (
+                <div>
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                      Episode Details — Ep {String(selectedEpisode.episode_number).padStart(2, '0')}
+                    </p>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode Title <span className="text-red-500">*</span></label>
+                        <input type="text" value={editEpTitle} onChange={(e) => setEditEpTitle(e.target.value)} maxLength={500}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode # <span className="text-red-500">*</span></label>
+                          <input type="number" value={editEpNumber} onChange={(e) => setEditEpNumber(e.target.value)} min="1"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Duration (mins)</label>
+                          <input type="text" value={editEpDuration} onChange={(e) => setEditEpDuration(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" placeholder="e.g., 22:00" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Locked episode notice */}
+              {selectedEpisode && !canEditEpisode(selectedEpisode.status) && (
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                  <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                    Episode Details — Ep {String(selectedEpisode.episode_number).padStart(2, '0')}
+                  </p>
+                  <p className="text-[10px] text-gray-400 italic">Episode is locked after approval and cannot be edited.</p>
+                </div>
+              )}
             </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode Title <span className="text-red-500">*</span></label>
-                <input type="text" value={editEpTitle} onChange={(e) => setEditEpTitle(e.target.value)} maxLength={500}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" placeholder="Episode title" />
-              </div>
-              <div>
-                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode # <span className="text-red-500">*</span></label>
-                <input type="number" value={editEpNumber} onChange={(e) => setEditEpNumber(e.target.value)} min="1"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
-              </div>
-              <div>
-                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Target Duration (mins)</label>
-                <input type="text" value={editEpDuration} onChange={(e) => setEditEpDuration(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" placeholder="e.g., 22:00" />
-              </div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button onClick={() => setEditEpisodeModal(null)} className="px-4 py-2 text-[11px] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
-                <button onClick={handleSaveEditEpisode} disabled={updateEpisode.isPending || !editEpTitle.trim() || !editEpNumber}
-                  className="px-4 py-2 text-[11px] text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg disabled:opacity-50">
-                  {updateEpisode.isPending ? 'Saving...' : 'Save Changes'}
-                </button>
-              </div>
+            <div className="flex justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700 shrink-0">
+              <button onClick={() => setShowEditModal(false)} className="px-4 py-2 text-[11px] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
+              <button onClick={handleSaveUnified} disabled={(updateShow.isPending || updateEpisode.isPending) || !editName.trim()}
+                className="px-4 py-2 text-[11px] text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg disabled:opacity-50">
+                {(updateShow.isPending || updateEpisode.isPending) ? 'Saving...' : 'Save Changes'}
+              </button>
             </div>
           </div>
         </div>

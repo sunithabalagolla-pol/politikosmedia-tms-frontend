@@ -14,6 +14,7 @@ export default function UpdateProgressModal({ taskId, isOpen, onClose, currentCo
   const [completedCount, setCompletedCount] = useState(currentCount.toString())
   const [comment, setComment] = useState('')
   const [showSuccess, setShowSuccess] = useState(false)
+  const [validationError, setValidationError] = useState('')
 
   const updateProgress = useUpdateProgress()
 
@@ -23,8 +24,19 @@ export default function UpdateProgressModal({ taskId, isOpen, onClose, currentCo
       setCompletedCount(currentCount.toString())
       setComment('')
       setShowSuccess(false)
+      setValidationError('')
     }
   }, [isOpen, currentCount])
+
+  const handleCountChange = (value: string) => {
+    setCompletedCount(value)
+    const count = parseInt(value)
+    if (!isNaN(count) && targetCount && count > targetCount) {
+      setValidationError(`Cannot exceed your target of ${targetCount}`)
+    } else {
+      setValidationError('')
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,6 +44,11 @@ export default function UpdateProgressModal({ taskId, isOpen, onClose, currentCo
     const count = parseInt(completedCount)
     if (isNaN(count) || count < 0) {
       alert('Please enter a valid number (0 or more)')
+      return
+    }
+
+    if (targetCount && count > targetCount) {
+      setValidationError(`Cannot exceed your target of ${targetCount}`)
       return
     }
 
@@ -49,9 +66,10 @@ export default function UpdateProgressModal({ taskId, isOpen, onClose, currentCo
         setShowSuccess(false)
         onClose()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update progress:', error)
-      alert('Failed to update progress. Please try again.')
+      const message = error?.response?.data?.message || 'Failed to update progress. Please try again.'
+      alert(message)
     }
   }
 
@@ -81,19 +99,23 @@ export default function UpdateProgressModal({ taskId, isOpen, onClose, currentCo
             <input
               type="number"
               value={completedCount}
-              onChange={(e) => setCompletedCount(e.target.value)}
+              onChange={(e) => handleCountChange(e.target.value)}
               min="0"
               max={targetCount}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent"
+              className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent ${validationError ? 'border-red-400' : 'border-gray-300 dark:border-gray-600'}`}
               placeholder="Enter your total (e.g., 5)"
               required
               autoFocus
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {targetCount
-                ? `Enter your total completed count out of ${targetCount}`
-                : 'Enter your total completed count'}
-            </p>
+            {validationError ? (
+              <p className="text-xs text-red-500 mt-1">{validationError}</p>
+            ) : (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {targetCount
+                  ? `Enter your total completed count out of ${targetCount}`
+                  : 'Enter your total completed count'}
+              </p>
+            )}
           </div>
 
           {/* Comment */}
@@ -131,7 +153,7 @@ export default function UpdateProgressModal({ taskId, isOpen, onClose, currentCo
                 </button>
                 <button
                   type="submit"
-                  disabled={updateProgress.isPending}
+                  disabled={updateProgress.isPending || !!validationError}
                   className="px-4 py-2 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors disabled:opacity-50"
                 >
                   {updateProgress.isPending ? 'Updating...' : 'Update Progress'}

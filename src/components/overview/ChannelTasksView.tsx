@@ -90,7 +90,7 @@ export default function ChannelTasksView({ tasks, isLoading }: ChannelTasksViewP
           </div>
         ) : viewMode === 'grid' ? (
           /* Grid View — matching Regular Tasks card style */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {tasks.map((task) => {
               const myStatus = task.my_status || 'not_started'
               const pct = Math.round((task.my_completed_count / task.target_count) * 100)
@@ -98,14 +98,14 @@ export default function ChannelTasksView({ tasks, isLoading }: ChannelTasksViewP
                 <div key={task.id} onClick={() => setViewTaskId(task.id)}
                   className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer group relative overflow-hidden flex flex-col ${viewTaskId === task.id ? 'border-l-[3px] border-l-[#b23a48] bg-red-50/30 dark:bg-red-900/10' : ''}`}>
                   <div className={`absolute top-0 left-0 w-1 h-full ${STATUS_BORDER[myStatus]}`} />
-                  <div className="p-2.5 flex-1 flex flex-col gap-1.5">
+                  <div className="p-2.5 pl-3 flex-1 flex flex-col gap-1">
                     <div className="flex items-start justify-between">
-                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${STATUS_BADGE[myStatus]}`}>
+                      <span className={`inline-flex items-center px-1 py-0.5 rounded text-[10px] font-medium ${STATUS_BADGE[myStatus]}`}>
                         {STATUS_LABEL[myStatus]}
                       </span>
-                      <span className="text-[11px] font-bold text-gray-900 dark:text-white">{task.my_completed_count}/{task.target_count}</span>
+                      <span className="text-[10px] font-bold text-gray-900 dark:text-white">{task.my_completed_count}/{task.target_count}</span>
                     </div>
-                    <h3 className="text-[11px] font-semibold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors leading-snug">{task.name}</h3>
+                    <h3 className="text-[11px] font-semibold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors leading-tight line-clamp-2">{task.name}</h3>
                     <p className="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">{task.channel_name} → {task.subcategory_name}</p>
                     <p className="text-[10px] text-gray-500 dark:text-gray-400">Type: {task.type}</p>
                     <div className="mt-auto pt-1.5 border-t border-gray-100 dark:border-gray-700">

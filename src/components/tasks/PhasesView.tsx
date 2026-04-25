@@ -86,25 +86,25 @@ export default function PhasesView() {
 
       {/* Phases Grid */}
       {category.phases && category.phases.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {category.phases.map((phase) => (
             <div
               key={phase.id}
               onClick={() => handlePhaseClick(phase.id)}
-              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer p-6 group"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer p-3 group"
             >
-              <div className="flex flex-col items-center text-center space-y-3">
-                <Layers className="w-12 h-12 text-[#b23a48] group-hover:scale-110 transition-transform" />
-                <h3 className="text-xs font-bold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors">
+              <div className="flex flex-col items-center text-center space-y-1.5">
+                <Layers className="w-8 h-8 text-[#b23a48] group-hover:scale-110 transition-transform" />
+                <h3 className="text-[11px] font-bold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors leading-tight">
                   {phase.name}
                 </h3>
                 {phase.description && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">
                     {phase.description}
                   </p>
                 )}
                 {phase.task_count !== undefined && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-700 w-full text-center">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 pt-1.5 border-t border-gray-100 dark:border-gray-700 w-full text-center">
                     <span className="font-medium">
                       {phase.task_count} {phase.task_count === 1 ? 'task' : 'tasks'}
                     </span>

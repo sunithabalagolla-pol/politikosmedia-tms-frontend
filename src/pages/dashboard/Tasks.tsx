@@ -303,54 +303,54 @@ const handleHoldCancel = () => {
           <>
 
             {/* Task Grid/List */}
-            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4' : 'flex flex-col gap-2 mb-4'}>
+            <div className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-4' : 'flex flex-col gap-2 mb-4'}>
               {tasks.map((task: any) => (
                 viewMode === 'grid' ? (
                   <div key={task.id} onClick={() => setSelectedTaskId(task.id)}
-                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group relative overflow-hidden flex flex-col h-full">
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer group relative overflow-hidden flex flex-col h-full">
                     <div className={`absolute top-0 left-0 w-1 h-full ${getBorderColor(task.priority)}`}></div>
-                    <div className="p-3 flex-1 flex flex-col gap-2">
+                    <div className="p-2.5 pl-3 flex-1 flex flex-col gap-1.5">
                       <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1">
                           <select
                             value={task.status}
                             onClick={(e) => e.stopPropagation()}
                             onChange={(e) => { e.stopPropagation(); handleStatusChange(task.id, e.target.value) }}
-                            className={`px-2 py-0.5 rounded text-xs font-medium border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-offset-0 ${getStatusColor(task.status)}`}
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-medium border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-offset-0 ${getStatusColor(task.status)}`}
                           >
                             <option value="todo">To Do</option>
                             <option value="in-progress">In Progress</option>
                             <option value="completed">Completed</option>
                             <option value="hold">Hold</option>
                           </select>
-                          {task.is_overdue && <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-red-100 text-red-600">Overdue</span>}
+                          {task.is_overdue && <span className="inline-flex items-center px-1 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-600">Overdue</span>}
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-0.5">
                           {canEditTask && (
-                            <button onClick={(e) => { e.stopPropagation(); handleEdit(task) }} className="text-gray-400 hover:text-blue-600 p-1 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded" title="Edit"><Pencil className="w-3.5 h-3.5" /></button>
+                            <button onClick={(e) => { e.stopPropagation(); handleEdit(task) }} className="text-gray-400 hover:text-blue-600 p-0.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded" title="Edit"><Pencil className="w-3 h-3" /></button>
                           )}
                           {canDeleteTask && (
-                            <button onClick={(e) => { e.stopPropagation(); handleDeleteClick(task.id) }} className="text-gray-400 hover:text-red-600 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={(e) => { e.stopPropagation(); handleDeleteClick(task.id) }} className="text-gray-400 hover:text-red-600 p-0.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded" title="Delete"><Trash2 className="w-3 h-3" /></button>
                           )}
                         </div>
                       </div>
-                      <h3 className="text-[11px] font-semibold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors mb-1">{task.title}</h3>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mb-2">{task.description || 'No description'}</p>
-                      <div className="mt-auto space-y-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {task.department_name && <span className="inline-flex items-center px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-semibold">{task.department_name}</span>}
-                          <span className="inline-flex items-center px-1.5 py-0.5 bg-red-50 text-red-700 rounded text-xs font-semibold"><Flag className="w-2.5 h-2.5 mr-0.5" />{task.priority?.charAt(0).toUpperCase() + task.priority?.slice(1)}</span>
+                      <h3 className="text-[11px] font-semibold text-gray-900 dark:text-white group-hover:text-[#b23a48] transition-colors leading-tight line-clamp-2">{task.title}</h3>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1">{task.description || 'No description'}</p>
+                      <div className="mt-auto space-y-1.5">
+                        <div className="flex items-center gap-1 flex-wrap">
+                          {task.department_name && <span className="inline-flex items-center px-1 py-0.5 bg-blue-50 text-blue-700 rounded text-[10px] font-semibold truncate max-w-[80px]">{task.department_name}</span>}
+                          <span className="inline-flex items-center px-1 py-0.5 bg-red-50 text-red-700 rounded text-[10px] font-semibold"><Flag className="w-2 h-2 mr-0.5" />{task.priority?.charAt(0).toUpperCase() + task.priority?.slice(1)}</span>
                         </div>
-                        <div className="flex items-center justify-between pt-1.5 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between pt-1.5 border-t border-gray-100 dark:border-gray-700">
                           <div className="flex -space-x-1">
-                            {(task.assignees || []).slice(0, 3).map((a: any) => (
-                              a.avatar_url ? <img key={a.id} src={a.avatar_url} alt="" className="w-5 h-5 rounded-full border border-white dark:border-gray-800" /> :
-                              <div key={a.id} className="w-5 h-5 rounded-full bg-[#b23a48] flex items-center justify-center border border-white dark:border-gray-800"><span className="text-xs font-bold text-white">{a.name?.split(' ').map((n: string) => n[0]).join('')}</span></div>
+                            {(task.assignees || []).slice(0, 2).map((a: any) => (
+                              a.avatar_url ? <img key={a.id} src={a.avatar_url} alt="" className="w-4 h-4 rounded-full border border-white dark:border-gray-800" /> :
+                              <div key={a.id} className="w-4 h-4 rounded-full bg-[#b23a48] flex items-center justify-center border border-white dark:border-gray-800"><span className="text-[8px] font-bold text-white">{a.name?.split(' ').map((n: string) => n[0]).join('')}</span></div>
                             ))}
-                            {(task.assignees || []).length > 3 && <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center border border-white text-xs font-medium text-gray-600">+{task.assignees.length - 3}</div>}
-                            {(task.assignees || []).length === 0 && <span className="text-xs text-gray-400">Unassigned</span>}
+                            {(task.assignees || []).length > 2 && <div className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center border border-white text-[8px] font-medium text-gray-600">+{task.assignees.length - 2}</div>}
+                            {(task.assignees || []).length === 0 && <span className="text-[10px] text-gray-400">Unassigned</span>}
                           </div>
-                          <div className="flex items-center text-xs text-gray-500 font-medium">
+                          <div className="flex items-center text-[10px] text-gray-500 font-medium">
                             {task.status === 'completed' ? <Check className="w-2.5 h-2.5 mr-0.5 text-green-500" /> : <Calendar className="w-2.5 h-2.5 mr-0.5" />}
                             {task.due_date ? fmtDate(task.due_date) : 'No date'}
                           </div>

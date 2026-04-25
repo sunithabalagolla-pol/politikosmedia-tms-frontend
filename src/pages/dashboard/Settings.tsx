@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
-import { Save, Globe, Loader2, CheckCircle2, Shield, X, Check, Settings2, Wrench, Lock, FolderTree, Bell, User, Video, TrendingUp } from 'lucide-react'
+import { Save, Loader2, CheckCircle2, Shield, X, Check, Settings2, Wrench, Lock, FolderTree, Bell, User, Video, TrendingUp } from 'lucide-react'
 import { useTheme } from '../../hooks/useTheme'
 import { useSettings, useUpdateSettings, usePublicSettings, useUpdateDepartmentsMenuManagerSetting, useUpdateDepartmentsMenuEmployeeSetting, useUpdateTicketsCreateManagerSetting, useUpdateTicketsCreateEmployeeSetting, useUpdateTicketsUpdateManagerSetting, useUpdateTicketsUpdateEmployeeSetting, useUpdateTicketsViewManagerSetting, useUpdateTicketsViewEmployeeSetting, useUpdateTicketsDeleteManagerSetting, useUpdateTicketsDeleteEmployeeSetting, useUpdateTeamAddManagerSetting, useUpdateTeamAddEmployeeSetting, useUpdateTeamEditManagerSetting, useUpdateTeamEditEmployeeSetting, useUpdateTeamDeactivateManagerSetting, useUpdateTeamDeactivateEmployeeSetting } from '../../hooks/api/useSettings'
 import { usePermissions, useUpdatePermissions } from '../../hooks/api/usePermissions'
@@ -37,7 +37,6 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState<'general' | 'notifications' | 'app' | 'permissions' | 'categories' | 'channels' | 'progress'>('general')
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [pushNotifications, setPushNotifications] = useState(true)
-  const [language, setLanguage] = useState('en')
   const [saved, setSaved] = useState(false)
   const [showDepartmentsMenuManager, setShowDepartmentsMenuManager] = useState(true)
   const [showDepartmentsMenuEmployee, setShowDepartmentsMenuEmployee] = useState(true)
@@ -161,7 +160,6 @@ export default function Settings() {
     if (settings) {
       setEmailNotifications(settings.email_notifications ?? true)
       setPushNotifications(settings.push_notifications ?? true)
-      setLanguage(settings.language || 'en')
     }
   }, [settings])
 
@@ -197,7 +195,7 @@ export default function Settings() {
   }, [publicSettings])
 
   const handleSave = async () => {
-    await updateSettings.mutateAsync({ language, email_notifications: emailNotifications, push_notifications: pushNotifications })
+    await updateSettings.mutateAsync({ email_notifications: emailNotifications, push_notifications: pushNotifications })
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -548,19 +546,18 @@ export default function Settings() {
       </aside>
 
       {/* Content Area */}
-      <main className="flex-1 overflow-auto p-6 lg:p-8">
-        <div className="max-w-3xl mx-auto">
+      <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <div>
 
           {/* ═══════ TAB: General ═══════ */}
           {activeTab === 'general' && (
-            <div className="space-y-6">
-              {/* General */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
-                <div className="mb-6">
+            <div className="space-y-4">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-5">
+                <div className="mb-4">
                   <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">General</h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Manage your application preferences</p>
                 </div>
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <label className="block text-xs font-medium text-gray-900 dark:text-white">Dark Mode</label>
@@ -571,23 +568,9 @@ export default function Settings() {
                       <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${theme === 'dark' ? 'translate-x-6' : 'translate-x-1'}`} />
                     </button>
                   </div>
-                  <div className="h-px bg-gray-200 dark:bg-gray-700 w-full"></div>
-                  <div className="space-y-2">
-                    <label className="block text-xs font-medium text-gray-900 dark:text-white">Language</label>
-                    <div className="relative">
-                      <select value={language} onChange={e => setLanguage(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 appearance-none bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48]">
-                        <option value="en">English (US)</option>
-                        <option value="es">Español</option>
-                        <option value="fr">Français</option>
-                      </select>
-                      <Globe className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                    </div>
-                  </div>
                 </div>
               </div>
 
-              {/* Save */}
               <div className="flex justify-end">
                 <button onClick={handleSave} disabled={updateSettings.isPending}
                   className={`flex items-center gap-2 px-6 py-2.5 text-white rounded-lg text-xs font-medium transition-colors shadow-sm disabled:opacity-70 ${saved ? 'bg-green-500 hover:bg-green-600' : 'bg-[#b23a48] hover:bg-[#8f2e3a]'}`}>
@@ -600,13 +583,13 @@ export default function Settings() {
 
           {/* ═══════ TAB: Notifications ═══════ */}
           {activeTab === 'notifications' && (
-            <div className="space-y-6">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
-                <div className="mb-6">
+            <div className="space-y-4">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-5">
+                <div className="mb-4">
                   <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Notifications</h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Manage how you receive notifications</p>
                 </div>
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <label className="block text-xs font-medium text-gray-900 dark:text-white">Email Notifications</label>
@@ -1001,29 +984,17 @@ export default function Settings() {
 
           {/* ═══════ TAB: Categories & Phases (Admin & Manager) ═══════ */}
           {activeTab === 'categories' && isAdminOrManager() && (
-            <div className="space-y-6">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
-                <CategoriesPhasesSettings />
-              </div>
-            </div>
+            <CategoriesPhasesSettings />
           )}
 
           {/* ═══════ TAB: Channels (Admin & Manager) ═══════ */}
           {activeTab === 'channels' && isAdminOrManager() && (
-            <div className="space-y-6">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
-                <ChannelSettings />
-              </div>
-            </div>
+            <ChannelSettings />
           )}
 
           {/* ═══════ TAB: Progress (Admin & Manager) ═══════ */}
           {activeTab === 'progress' && isAdminOrManager() && (
-            <div className="space-y-6">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
-                <ProgressSettings />
-              </div>
-            </div>
+            <ProgressSettings />
           )}
 
         </div>
