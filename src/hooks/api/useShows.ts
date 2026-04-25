@@ -302,6 +302,28 @@ export function useUpdateImpactNotes() {
   })
 }
 
+export function useUpdateEpisode() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ episodeId, input }: { episodeId: string; input: { title?: string; episode_number?: number; target_duration?: string } }) => {
+      const { data } = await axiosInstance.put(`/api/v1/shows/episodes/${episodeId}`, input)
+      return data.data
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['shows'] }) },
+  })
+}
+
+export function useRenameAsset() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ assetId, name }: { assetId: string; name: string }) => {
+      const { data } = await axiosInstance.put(`/api/v1/shows/assets/${assetId}`, { name })
+      return data.data
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['shows'] }) },
+  })
+}
+
 export function useDeleteEpisode() {
   const qc = useQueryClient()
   return useMutation({

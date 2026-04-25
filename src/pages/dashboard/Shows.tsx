@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { Plus, Loader2, X, Tv, ChevronRight, CheckCircle2, Radio, BarChart3, Pencil, Trash2, Check } from 'lucide-react'
-import { useShowBoard, useCreateShow, useUpdateShow, useDeleteShow, useMarkReadyForBroadcast, useMarkBroadcasted, useCreateImpactTask, useShowDetails, ShowEpisode } from '../../hooks/api/useShows'
+import { useShowBoard, useCreateShow, useUpdateShow, useDeleteShow, useMarkReadyForBroadcast, useMarkBroadcasted, useCreateImpactTask, useShowDetails, useCreateEpisode, useDeleteEpisode, useUpdateEpisode, ShowEpisode, EpisodeStatus } from '../../hooks/api/useShows'
 import { useLookupEmployees } from '../../hooks/api/useLookups'
 import ShowWorkspace from '../../components/shows/ShowWorkspace'
 
@@ -25,6 +25,15 @@ function ShowsBoard() {
   const [editName, setEditName] = useState('')
   const [editDesc, setEditDesc] = useState('')
   const [showDetailEpisode, setShowDetailEpisode] = useState<string | null>(null)
+  const [showDetailColumn, setShowDetailColumn] = useState<string | null>(null)
+  const [addEpShowId, setAddEpShowId] = useState<string | null>(null)
+  const [addEpTitle, setAddEpTitle] = useState('')
+  const [addEpNumber, setAddEpNumber] = useState('')
+  const [addEpDuration, setAddEpDuration] = useState('')
+  const [editEpModal, setEditEpModal] = useState<{ id: string; title: string; episode_number: number; target_duration: string | null; status: EpisodeStatus } | null>(null)
+  const [editEpTitle, setEditEpTitle] = useState('')
+  const [editEpNumber, setEditEpNumber] = useState('')
+  const [editEpDuration, setEditEpDuration] = useState('')
 
   const { data: board, isLoading } = useShowBoard()
   const createShow = useCreateShow()
@@ -33,6 +42,9 @@ function ShowsBoard() {
   const markReady = useMarkReadyForBroadcast()
   const markBroadcasted = useMarkBroadcasted()
   const createImpact = useCreateImpactTask()
+  const createEpisode = useCreateEpisode()
+  const deleteEpisode = useDeleteEpisode()
+  const updateEpisode = useUpdateEpisode()
   const { data: employees = [] } = useLookupEmployees()
   const { data: showDetails, isLoading: isLoadingDetails } = useShowDetails(showDetailEpisode || '')
 
@@ -83,6 +95,48 @@ function ShowsBoard() {
     } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete show') }
   }
 
+  const handleAddEpisodeFromModal = async () => {
+    if (!addEpShowId || !addEpTitle.trim() || !addEpNumber) return
+    try {
+      await createEpisode.mutateAsync({
+        showId: addEpShowId,
+        input: { title: addEpTitle, episode_number: parseInt(addEpNumber), target_duration: addEpDuration || undefined },
+      })
+      setAddEpShowId(null)
+      setAddEpTitle('')
+      setAddEpNumber('')
+      setAddEpDuration('')
+    } catch (e: any) { alert(e?.response?.data?.message || 'Failed to create episode') }
+  }
+
+  const handleDeleteEpisodeFromModal = async (epId: string) => {
+    if (!confirm('Delete this episode?')) return
+    try {
+      await deleteEpisode.mutateAsync(epId)
+    } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete episode') }
+  }
+
+  const handleOpenEditEpisode = (ep: { id: string; title: string; episode_number: number; target_duration: string | null; status: EpisodeStatus }) => {
+    setEditEpModal(ep)
+    setEditEpTitle(ep.title)
+    setEditEpNumber(String(ep.episode_number))
+    setEditEpDuration(ep.target_duration || '')
+  }
+
+  const handleSaveEditEpisode = async () => {
+    if (!editEpModal || !editEpTitle.trim() || !editEpNumber) return
+    try {
+      const input: { title?: string; episode_number?: number; target_duration?: string } = {}
+      if (editEpTitle !== editEpModal.title) input.title = editEpTitle
+      if (parseInt(editEpNumber) !== editEpModal.episode_number) input.episode_number = parseInt(editEpNumber)
+      if (editEpDuration !== (editEpModal.target_duration || '')) input.target_duration = editEpDuration || undefined
+      if (Object.keys(input).length > 0) {
+        await updateEpisode.mutateAsync({ episodeId: editEpModal.id, input })
+      }
+      setEditEpModal(null)
+    } catch (e: any) { alert(e?.response?.data?.message || 'Failed to update episode') }
+  }
+
   if (isLoading) return <div className="h-full flex items-center justify-center"><Loader2 className="w-6 h-6 text-[#b23a48] animate-spin" /></div>
 
   const columns = [
@@ -120,7 +174,7 @@ function ShowsBoard() {
               {/* Cards */}
               <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-2" style={{ scrollbarWidth: 'thin' }}>
                 {col.items.map((ep: any) => {
-                  // Show-only card (no episodes yet)
+                  // Show-only card (always visible in creation_production)
                   if (ep.is_show_only && col.key === 'creation_production') {
                     return (
                       <div key={`show-${ep.show_id}`}
@@ -136,7 +190,8 @@ function ShowsBoard() {
                           </div>
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className="text-[10px] text-orange-500 font-medium">No episodes yet</span>
+                          <Plus className="w-2.5 h-2.5 text-orange-400" />
+                          <span className="text-[10px] text-orange-500 font-medium">Add Episode</span>
                           <ChevronRight className="w-2.5 h-2.5 text-orange-400" />
                         </div>
                       </div>
@@ -151,7 +206,7 @@ function ShowsBoard() {
                       columnKey={col.key}
                       onClickCard={() => {
                         if (col.key === 'creation_production') navigate(`${basePath}?show=${ep.show_id}`)
-                        else setShowDetailEpisode(ep.show_id)
+                        else { setShowDetailEpisode(ep.show_id); setShowDetailColumn(col.key) }
                       }}
                       onMarkReady={() => markReady.mutateAsync(ep.id)}
                       onMarkBroadcasted={() => markBroadcasted.mutateAsync(ep.id)}
@@ -288,12 +343,14 @@ function ShowsBoard() {
                         <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{showDetails.description}</p>
                       )}
                     </div>
-                    <button
-                      onClick={() => { handleOpenEdit(showDetails.id, showDetails.name, showDetails.description || ''); setShowDetailEpisode(null) }}
-                      className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors shrink-0 ml-3"
-                    >
-                      <Pencil className="w-3 h-3" /> Edit
-                    </button>
+                    {showDetailColumn === 'creation_production' && (
+                      <button
+                        onClick={() => { handleOpenEdit(showDetails.id, showDetails.name, showDetails.description || ''); setShowDetailEpisode(null) }}
+                        className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors shrink-0 ml-3"
+                      >
+                        <Pencil className="w-3 h-3" /> Edit
+                      </button>
+                    )}
                   </div>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
                     Created by {showDetails.created_by_name} on {new Date(showDetails.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -356,9 +413,19 @@ function ShowsBoard() {
                 {/* 4. Episodes Table */}
                 {showDetails.episodes.length > 0 && (
                   <div>
-                    <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">
-                      Episodes ({showDetails.episode_count})
-                    </p>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        Episodes ({showDetails.episode_count})
+                      </p>
+                      {showDetailColumn !== 'broadcasted' && (
+                        <button
+                          onClick={() => { setAddEpShowId(showDetails.id) }}
+                          className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg transition-colors"
+                        >
+                          <Plus className="w-3 h-3" /> Add Episode
+                        </button>
+                      )}
+                    </div>
                     <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                       <table className="w-full">
                         <thead>
@@ -367,6 +434,7 @@ function ShowsBoard() {
                             <th className="text-left text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-1.5">Duration</th>
                             <th className="text-left text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-1.5">Status</th>
                             <th className="text-left text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-1.5">Assets</th>
+                            <th className="text-right text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-1.5">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -377,6 +445,7 @@ function ShowsBoard() {
                               ready_for_broadcast: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
                               broadcasted: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
                             }
+                            const canEdit = ep.status === 'production'
                             return (
                               <tr key={ep.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                                 <td className="px-3 py-2 text-[11px] font-medium text-gray-900 dark:text-white">
@@ -400,12 +469,43 @@ function ShowsBoard() {
                                     )}
                                   </div>
                                 </td>
+                                <td className="px-3 py-2 text-right">
+                                  {showDetailColumn === 'broadcasted' ? (
+                                    <span className="text-[10px] text-gray-400 italic" title="Show is locked in broadcasted stage">Locked</span>
+                                  ) : canEdit ? (
+                                    <div className="flex items-center justify-end gap-1">
+                                      <button onClick={() => handleOpenEditEpisode({ id: ep.id, title: ep.title, episode_number: ep.episode_number, target_duration: ep.target_duration, status: ep.status })}
+                                        className="p-1 text-gray-400 hover:text-blue-600 rounded transition-colors" title="Edit episode">
+                                        <Pencil className="w-3 h-3" />
+                                      </button>
+                                      <button onClick={() => handleDeleteEpisodeFromModal(ep.id)}
+                                        className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors" title="Delete episode">
+                                        <Trash2 className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <span className="text-[10px] text-gray-400 italic" title="Episode is locked after approval">Locked</span>
+                                  )}
+                                </td>
                               </tr>
                             )
                           })}
                         </tbody>
                       </table>
                     </div>
+                  </div>
+                )}
+
+                {/* Add Episode button when no episodes exist */}
+                {showDetails.episodes.length === 0 && showDetailColumn !== 'broadcasted' && (
+                  <div className="text-center py-6">
+                    <p className="text-[11px] text-gray-400 mb-3">No episodes yet</p>
+                    <button
+                      onClick={() => { setAddEpShowId(showDetails.id) }}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-medium text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg transition-colors"
+                    >
+                      <Plus className="w-3 h-3" /> Add Episode
+                    </button>
                   </div>
                 )}
 
@@ -464,6 +564,78 @@ function ShowsBoard() {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Add Episode Modal (from Show Details) */}
+      {addEpShowId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-[11px] font-bold text-gray-900 dark:text-white">Add Episode</h2>
+              <button onClick={() => { setAddEpShowId(null); setAddEpTitle(''); setAddEpNumber(''); setAddEpDuration('') }} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode Title <span className="text-red-500">*</span></label>
+                <input type="text" value={addEpTitle} onChange={(e) => setAddEpTitle(e.target.value)} maxLength={500}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" placeholder="e.g., Election Prep 2024" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode # <span className="text-red-500">*</span></label>
+                <input type="number" value={addEpNumber} onChange={(e) => setAddEpNumber(e.target.value)} min="1"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" placeholder="1" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Target Duration (mins)</label>
+                <input type="text" value={addEpDuration} onChange={(e) => setAddEpDuration(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" placeholder="e.g., 22:00" />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button onClick={() => { setAddEpShowId(null); setAddEpTitle(''); setAddEpNumber(''); setAddEpDuration('') }} className="px-4 py-2 text-[11px] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
+                <button onClick={handleAddEpisodeFromModal} disabled={createEpisode.isPending || !addEpTitle.trim() || !addEpNumber}
+                  className="px-4 py-2 text-[11px] text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg disabled:opacity-50">
+                  {createEpisode.isPending ? 'Creating...' : 'Add Episode'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Episode Modal (from Show Details table) */}
+      {editEpModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-[11px] font-bold text-gray-900 dark:text-white">Edit Episode</h2>
+              <button onClick={() => setEditEpModal(null)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode Title <span className="text-red-500">*</span></label>
+                <input type="text" value={editEpTitle} onChange={(e) => setEditEpTitle(e.target.value)} maxLength={500}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode # <span className="text-red-500">*</span></label>
+                <input type="number" value={editEpNumber} onChange={(e) => setEditEpNumber(e.target.value)} min="1"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Target Duration (mins)</label>
+                <input type="text" value={editEpDuration} onChange={(e) => setEditEpDuration(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" placeholder="e.g., 22:00" />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button onClick={() => setEditEpModal(null)} className="px-4 py-2 text-[11px] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
+                <button onClick={handleSaveEditEpisode} disabled={updateEpisode.isPending || !editEpTitle.trim() || !editEpNumber}
+                  className="px-4 py-2 text-[11px] text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg disabled:opacity-50">
+                  {updateEpisode.isPending ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

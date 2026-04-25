@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Plus, X, Trash2, Check, Lock, Loader2, FileText, Image, Mic, Video, Pencil } from 'lucide-react'
 import {
   useShow, useShowEpisodes, useCreateEpisode, useUpdateShow, useDeleteShow,
-  useAddAsset, useRemoveAsset, useToggleAsset, useApproveEpisode, useDeleteEpisode, ShowEpisode
+  useAddAsset, useRemoveAsset, useToggleAsset, useApproveEpisode, useDeleteEpisode,
+  useUpdateEpisode, useRenameAsset, ShowEpisode
 } from '../../hooks/api/useShows'
 
 const ASSET_ICONS: Record<string, any> = { Script: FileText, Visuals: Image, 'Voice Over': Mic, Video: Video }
@@ -20,6 +21,12 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editName, setEditName] = useState('')
   const [editDesc, setEditDesc] = useState('')
+  const [editEpisodeModal, setEditEpisodeModal] = useState<ShowEpisode | null>(null)
+  const [editEpTitle, setEditEpTitle] = useState('')
+  const [editEpNumber, setEditEpNumber] = useState('')
+  const [editEpDuration, setEditEpDuration] = useState('')
+  const [renamingAssetId, setRenamingAssetId] = useState<string | null>(null)
+  const [renameAssetValue, setRenameAssetValue] = useState('')
 
   const { data: show } = useShow(showId)
   const { data: episodes = [], isLoading } = useShowEpisodes(showId)
@@ -31,6 +38,8 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   const toggleAsset = useToggleAsset()
   const approveEpisode = useApproveEpisode()
   const deleteEpisode = useDeleteEpisode()
+  const updateEpisode = useUpdateEpisode()
+  const renameAsset = useRenameAsset()
 
   const basePath = location.pathname.startsWith('/manager') ? '/manager/shows' : '/dashboard/shows'
   const selectedEpisode = episodes.find((e) => e.id === selectedEpisodeId) || episodes[0]
@@ -69,6 +78,44 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
       if (selectedEpisodeId === epId) setSelectedEpisodeId(null)
     } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete') }
   }
+
+  const handleOpenEditEpisode = (ep: ShowEpisode) => {
+    setEditEpisodeModal(ep)
+    setEditEpTitle(ep.title)
+    setEditEpNumber(String(ep.episode_number))
+    setEditEpDuration(ep.target_duration || '')
+  }
+
+  const handleSaveEditEpisode = async () => {
+    if (!editEpisodeModal || !editEpTitle.trim() || !editEpNumber) return
+    try {
+      const input: { title?: string; episode_number?: number; target_duration?: string } = {}
+      if (editEpTitle !== editEpisodeModal.title) input.title = editEpTitle
+      if (parseInt(editEpNumber) !== editEpisodeModal.episode_number) input.episode_number = parseInt(editEpNumber)
+      if (editEpDuration !== (editEpisodeModal.target_duration || '')) input.target_duration = editEpDuration || undefined
+      if (Object.keys(input).length > 0) {
+        await updateEpisode.mutateAsync({ episodeId: editEpisodeModal.id, input })
+      }
+      setEditEpisodeModal(null)
+    } catch (e: any) { alert(e?.response?.data?.message || 'Failed to update episode') }
+  }
+
+  const handleStartRenameAsset = (assetId: string, currentName: string) => {
+    setRenamingAssetId(assetId)
+    setRenameAssetValue(currentName)
+  }
+
+  const handleSaveRenameAsset = async () => {
+    if (!renamingAssetId || !renameAssetValue.trim()) return
+    try {
+      await renameAsset.mutateAsync({ assetId: renamingAssetId, name: renameAssetValue.trim() })
+      setRenamingAssetId(null)
+      setRenameAssetValue('')
+    } catch (e: any) { alert(e?.response?.data?.message || 'Failed to rename asset') }
+  }
+
+  const canEditEpisode = (status: string) => status === 'production'
+  const canModifyAssets = (status: string) => status === 'production' || status === 'approved'
 
   const showName = show?.name || episodes[0]?.show_name || 'Show'
   const showDescription = show?.description || ''
@@ -137,10 +184,16 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                 className={`p-2.5 rounded-lg cursor-pointer transition-colors group ${selectedEpisode?.id === ep.id ? 'bg-[#b23a48]/10 border border-[#b23a48]/30' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
                 <div className="flex items-center justify-between">
                   <p className="text-[11px] font-semibold text-gray-900 dark:text-white">Ep {String(ep.episode_number).padStart(2, '0')}: {ep.title}</p>
-                  {ep.status === 'production' && (
-                    <button onClick={(e) => { e.stopPropagation(); handleDeleteEpisode(ep.id) }}
-                      className="opacity-0 group-hover:opacity-100 p-0.5 text-gray-400 hover:text-red-500"><Trash2 className="w-3 h-3" /></button>
-                  )}
+                  <div className="flex items-center gap-0.5">
+                    {canEditEpisode(ep.status) && (
+                      <button onClick={(e) => { e.stopPropagation(); handleOpenEditEpisode(ep) }}
+                        className="opacity-0 group-hover:opacity-100 p-0.5 text-gray-400 hover:text-blue-500"><Pencil className="w-3 h-3" /></button>
+                    )}
+                    {canEditEpisode(ep.status) && (
+                      <button onClick={(e) => { e.stopPropagation(); handleDeleteEpisode(ep.id) }}
+                        className="opacity-0 group-hover:opacity-100 p-0.5 text-gray-400 hover:text-red-500"><Trash2 className="w-3 h-3" /></button>
+                    )}
+                  </div>
                 </div>
                 <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium mt-1 inline-block ${
                   ep.status === 'production' ? 'bg-blue-100 text-blue-700' : ep.status === 'approved' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'
@@ -156,9 +209,19 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
           {selectedEpisode ? (
             <div className="space-y-6">
               <div>
-                <h2 className="text-[11px] font-bold text-gray-900 dark:text-white mb-1">
-                  Ep {String(selectedEpisode.episode_number).padStart(2, '0')}: {selectedEpisode.title}
-                </h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[11px] font-bold text-gray-900 dark:text-white mb-1">
+                    Ep {String(selectedEpisode.episode_number).padStart(2, '0')}: {selectedEpisode.title}
+                  </h2>
+                  {canEditEpisode(selectedEpisode.status) ? (
+                    <button onClick={() => handleOpenEditEpisode(selectedEpisode)}
+                      className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors">
+                      <Pencil className="w-3 h-3" /> Edit
+                    </button>
+                  ) : (
+                    <span className="text-[10px] text-gray-400 italic" title="Episode is locked after approval">Locked</span>
+                  )}
+                </div>
                 {selectedEpisode.target_duration && (
                   <p className="text-[11px] text-gray-500">Duration: {selectedEpisode.target_duration} mins</p>
                 )}
@@ -170,7 +233,7 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-4">Verify required components before managerial review</p>
 
                 {/* Add Custom Asset */}
-                {selectedEpisode.status === 'production' && (
+                {canModifyAssets(selectedEpisode.status) && (
                   <div className="flex items-center gap-2 mb-4">
                     <input type="text" value={newAssetName} onChange={(e) => setNewAssetName(e.target.value)}
                       placeholder="Asset name (e.g., Script, Poster Art)" maxLength={255}
@@ -181,6 +244,9 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                       + Add Asset
                     </button>
                   </div>
+                )}
+                {!canModifyAssets(selectedEpisode.status) && (
+                  <p className="text-[10px] text-gray-400 italic mb-4">Assets are locked after episode is marked ready for broadcast</p>
                 )}
 
                 {/* Asset Cards Grid */}
@@ -194,28 +260,44 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                             ? 'border-green-400 bg-green-50 dark:bg-green-900/20'
                             : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900'
                         }`}>
-                        {/* Remove button */}
-                        {selectedEpisode.status === 'production' && (
+                        {/* Remove button — production or approved */}
+                        {canModifyAssets(selectedEpisode.status) && (
                           <button onClick={() => removeAsset.mutateAsync(asset.id)}
                             className="absolute top-1 right-1 p-0.5 text-gray-400 hover:text-red-500 opacity-0 hover:opacity-100 transition-opacity">
                             <X className="w-3 h-3" />
                           </button>
                         )}
                         <Icon className={`w-8 h-8 mx-auto mb-2 ${asset.is_checked ? 'text-green-600' : 'text-gray-400'}`} />
-                        <p className="text-[11px] font-semibold text-gray-900 dark:text-white mb-1">{asset.name}</p>
-                        {/* Toggle */}
-                        {selectedEpisode.status === 'production' ? (
-                          <button onClick={() => toggleAsset.mutateAsync(asset.id)}
-                            className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
-                              asset.is_checked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                            }`}>
-                            {asset.is_checked ? 'READY ✅' : 'PENDING'}
-                          </button>
+                        {/* Asset name — inline rename */}
+                        {renamingAssetId === asset.id ? (
+                          <div className="flex items-center gap-1 mb-1">
+                            <input type="text" value={renameAssetValue} onChange={(e) => setRenameAssetValue(e.target.value)}
+                              className="w-full px-1.5 py-0.5 border border-gray-300 dark:border-gray-600 rounded text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-center"
+                              onKeyDown={(e) => { if (e.key === 'Enter') handleSaveRenameAsset(); if (e.key === 'Escape') setRenamingAssetId(null) }}
+                              autoFocus maxLength={255} />
+                            <button onClick={handleSaveRenameAsset} disabled={renameAsset.isPending || !renameAssetValue.trim()}
+                              className="p-0.5 text-green-600 hover:text-green-700 disabled:opacity-50"><Check className="w-3 h-3" /></button>
+                            <button onClick={() => setRenamingAssetId(null)}
+                              className="p-0.5 text-gray-400 hover:text-gray-600"><X className="w-3 h-3" /></button>
+                          </div>
                         ) : (
-                          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${asset.is_checked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}`}>
-                            {asset.is_checked ? 'READY ✅' : 'PENDING'}
-                          </span>
+                          <div className="flex items-center justify-center gap-1 mb-1 group/name">
+                            <p className="text-[11px] font-semibold text-gray-900 dark:text-white">{asset.name}</p>
+                            {canModifyAssets(selectedEpisode.status) && (
+                              <button onClick={() => handleStartRenameAsset(asset.id, asset.name)}
+                                className="opacity-0 group-hover/name:opacity-100 p-0.5 text-gray-400 hover:text-blue-500 transition-opacity">
+                                <Pencil className="w-2.5 h-2.5" />
+                              </button>
+                            )}
+                          </div>
                         )}
+                        {/* Toggle — works in all statuses */}
+                        <button onClick={() => toggleAsset.mutateAsync(asset.id)}
+                          className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                            asset.is_checked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                          }`}>
+                          {asset.is_checked ? 'READY ✅' : 'PENDING'}
+                        </button>
                       </div>
                     )
                   })}
@@ -326,6 +408,42 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                 <button onClick={handleSaveEditShow} disabled={updateShow.isPending || !editName.trim()}
                   className="px-4 py-2 text-[11px] text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg disabled:opacity-50">
                   {updateShow.isPending ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Episode Modal */}
+      {editEpisodeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-[11px] font-bold text-gray-900 dark:text-white">Edit Episode</h2>
+              <button onClick={() => setEditEpisodeModal(null)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode Title <span className="text-red-500">*</span></label>
+                <input type="text" value={editEpTitle} onChange={(e) => setEditEpTitle(e.target.value)} maxLength={500}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" placeholder="Episode title" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Episode # <span className="text-red-500">*</span></label>
+                <input type="number" value={editEpNumber} onChange={(e) => setEditEpNumber(e.target.value)} min="1"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-gray-700 dark:text-gray-300 mb-1">Target Duration (mins)</label>
+                <input type="text" value={editEpDuration} onChange={(e) => setEditEpDuration(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-[11px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#b23a48] focus:border-transparent" placeholder="e.g., 22:00" />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button onClick={() => setEditEpisodeModal(null)} className="px-4 py-2 text-[11px] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
+                <button onClick={handleSaveEditEpisode} disabled={updateEpisode.isPending || !editEpTitle.trim() || !editEpNumber}
+                  className="px-4 py-2 text-[11px] text-white bg-[#b23a48] hover:bg-[#8e2e39] rounded-lg disabled:opacity-50">
+                  {updateEpisode.isPending ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </div>
