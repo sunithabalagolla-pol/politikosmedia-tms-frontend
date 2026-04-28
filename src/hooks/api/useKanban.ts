@@ -22,7 +22,7 @@ export function useKanban(filters?: KanbanFilters) {
 export function useKanbanReorder() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (payload: { taskId: string; fromColumn: string; toColumn: string; newIndex: number }) => {
+    mutationFn: async (payload: { taskId: string; fromColumn: string; toColumn: string; newIndex: number; hold_note?: string }) => {
       const { data } = await axiosInstance.patch(API.KANBAN_REORDER, payload)
       return data
     },
@@ -30,6 +30,10 @@ export function useKanbanReorder() {
       qc.invalidateQueries({ queryKey: ['kanban'] })
       qc.invalidateQueries({ queryKey: ['tasks'] })
       qc.invalidateQueries({ queryKey: ['my-tasks'] })
+    },
+    onError: () => {
+      // Refetch kanban to snap card back to original column
+      qc.invalidateQueries({ queryKey: ['kanban'] })
     },
   })
 }

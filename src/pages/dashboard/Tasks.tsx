@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Filter, Calendar, Check, X, Pencil, Trash2, CircleDot, Flag, Loader2 } from 'lucide-react'
+import { Filter, Calendar, Check, X, Pencil, Trash2, CircleDot, Flag, Loader2, AlertCircle } from 'lucide-react'
 import CreateTaskModal from '../../components/CreateTaskModal'
 import TaskDetailPanel from '../../components/TaskDetailPanel'
 import { useDeleteTask, useUpdateTaskStatus } from '../../hooks/api/useTasks'
@@ -47,6 +47,7 @@ function TaskListContent({ phaseId }: { phaseId: string }) {
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [statusError, setStatusError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const filterRef = useRef<HTMLDivElement>(null)
 
@@ -202,23 +203,36 @@ function TaskListContent({ phaseId }: { phaseId: string }) {
   }
 
 
-  const handleStatusChange = (taskId:string ,newStatus:string)=>{
+  const handleStatusChange = async (taskId: string, newStatus: string) => {
     if (newStatus === 'hold') {
       setPendingHoldTaskId(taskId)
       setShowHoldModal(true)
-      
-    }else{
-      updateStatus.mutate({id:taskId,status:newStatus})
+    } else {
+      setStatusError(null)
+      try {
+        await updateStatus.mutateAsync({ id: taskId, status: newStatus })
+      } catch (err: any) {
+        const message = err?.response?.data?.message || 'Failed to update status'
+        setStatusError(message)
+        setTimeout(() => setStatusError(null), 5000)
+      }
     }
   }
 
-  const handleHoldSubmit = () => {
-  if (!pendingHoldTaskId || !holdNote.trim()) return
-  updateStatus.mutate({ id: pendingHoldTaskId, status: 'hold', hold_note: holdNote.trim() })
-  setShowHoldModal(false)
-  setHoldNote('')
-  setPendingHoldTaskId(null)
-}
+  const handleHoldSubmit = async () => {
+    if (!pendingHoldTaskId || !holdNote.trim()) return
+    setStatusError(null)
+    try {
+      await updateStatus.mutateAsync({ id: pendingHoldTaskId, status: 'hold', hold_note: holdNote.trim() })
+    } catch (err: any) {
+      const message = err?.response?.data?.message || 'Failed to update status'
+      setStatusError(message)
+      setTimeout(() => setStatusError(null), 5000)
+    }
+    setShowHoldModal(false)
+    setHoldNote('')
+    setPendingHoldTaskId(null)
+  }
  
 const handleHoldCancel = () => {
   setShowHoldModal(false)
@@ -289,6 +303,17 @@ const handleHoldCancel = () => {
             )}
           </div>
         </div>
+
+        {/* Status Error Toast */}
+        {statusError && (
+          <div className="mb-2 p-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+            <p className="text-[11px] font-medium text-red-700 dark:text-red-400 flex-1">{statusError}</p>
+            <button onClick={() => setStatusError(null)} className="text-red-400 hover:text-red-600 shrink-0">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
         {/* Loading */}
         {isLoading ? (

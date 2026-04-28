@@ -100,9 +100,12 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
   const [commentText, setCommentText] = useState('')
   const [commentError, setCommentError] = useState<string | null>(null)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [statusError, setStatusError] = useState<string | null>(null)
   const [showCompletionNoteModal, setShowCompletionNoteModal] = useState(false)
   const [completionNote, setCompletionNote] = useState('')
   const [selectedSubtaskId, setSelectedSubtaskId] = useState<number | null>(null)
+  const [showHoldModal, setShowHoldModal] = useState(false)
+  const [holdNote, setHoldNote] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const statusRef = useRef<HTMLDivElement>(null)
   const priorityRef = useRef<HTMLDivElement>(null)
@@ -144,7 +147,7 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
 
   if (!isOpen) return null
 
-  const handleStatusSelect = (s: string) => {
+  const handleStatusSelect = async (s: string) => {
     if (!task) return
     const statusMap: Record<string, string> = {
       'To Do': 'todo',
@@ -152,8 +155,42 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
       'Completed': 'completed',
       'Hold': 'hold',
     }
-    updateStatus.mutate({ id: task.id, status: statusMap[s] || s.toLowerCase() })
+    const newStatus = statusMap[s] || s.toLowerCase()
     setStatusOpen(false)
+
+    if (newStatus === 'hold') {
+      setHoldNote('')
+      setShowHoldModal(true)
+      return
+    }
+
+    setStatusError(null)
+    try {
+      await updateStatus.mutateAsync({ id: task.id, status: newStatus })
+    } catch (err: any) {
+      const message = err?.response?.data?.message || 'Failed to update status'
+      setStatusError(message)
+      setTimeout(() => setStatusError(null), 5000)
+    }
+  }
+
+  const handleHoldSubmit = async () => {
+    if (!task || !holdNote.trim()) return
+    setStatusError(null)
+    setShowHoldModal(false)
+    try {
+      await updateStatus.mutateAsync({ id: task.id, status: 'hold', hold_note: holdNote.trim() })
+    } catch (err: any) {
+      const message = err?.response?.data?.message || 'Failed to update status'
+      setStatusError(message)
+      setTimeout(() => setStatusError(null), 5000)
+    }
+    setHoldNote('')
+  }
+
+  const handleHoldCancel = () => {
+    setShowHoldModal(false)
+    setHoldNote('')
   }
 
   const handlePrioritySelect = (p: string) => {
@@ -237,6 +274,19 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
           {task && (
             <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
               <h3 className="text-[11px] font-semibold text-gray-900 dark:text-white">{task.title}</h3>
+
+              {/* Status Error Toast */}
+              {statusError && (
+                <div className="flex items-start gap-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <AlertCircle className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-medium text-red-700 dark:text-red-400">{statusError}</p>
+                  </div>
+                  <button onClick={() => setStatusError(null)} className="text-red-400 hover:text-red-600 shrink-0">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
 
               {/* Description */}
               <div>
@@ -379,6 +429,17 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
                 </div>
               </div>
 
+              {/* Hold Note Display */}
+              {raw.status === 'hold' && raw.hold_note && (
+                <div className="flex items-start gap-1.5 p-1.5 bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800 rounded-lg">
+                  <AlertCircle className="w-3 h-3 text-orange-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-[10px] font-semibold text-orange-700 dark:text-orange-400">On Hold</p>
+                    <p className="text-[10px] text-orange-600 dark:text-orange-300">{raw.hold_note}</p>
+                  </div>
+                </div>
+              )}
+
               {/* File Attachments - Compact */}
               <div>
                 <div className="flex items-center gap-1.5 mb-0.5">
@@ -502,6 +563,42 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
                 ) : (
                   <><Check className="w-3.5 h-3.5" /> Mark Complete</>
                 )}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+      {/* Hold Note Modal */}
+      {showHoldModal && (
+        <>
+          <div className="fixed inset-0 bg-gray-900/50 dark:bg-black/70 z-[60]" onClick={handleHoldCancel} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white dark:bg-gray-800 rounded-xl shadow-2xl z-[70] p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Hold Reason</h3>
+                <p className="text-xs text-gray-500">Required before setting task on hold</p>
+              </div>
+            </div>
+            <textarea
+              value={holdNote}
+              onChange={(e) => setHoldNote(e.target.value)}
+              maxLength={1000}
+              rows={4}
+              placeholder="Explain why this task is being put on hold..."
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white dark:bg-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400 placeholder-gray-400 mb-1"
+            />
+            <p className="text-xs text-gray-400 text-right mb-4">{holdNote.length} / 1000</p>
+            <div className="flex items-center gap-3">
+              <button onClick={handleHoldCancel}
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
+                Cancel
+              </button>
+              <button onClick={handleHoldSubmit} disabled={!holdNote.trim() || updateStatus.isPending}
+                className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg text-xs font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                {updateStatus.isPending ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Confirm Hold'}
               </button>
             </div>
           </div>

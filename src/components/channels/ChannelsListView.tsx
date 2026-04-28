@@ -25,7 +25,7 @@ export default function ChannelsListView() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Channel & Platform</h1>
+          <h1 className="text-[11px] font-bold text-gray-900 dark:text-white mb-1">Channel & Platform</h1>
           <p className="text-xs text-gray-500 dark:text-gray-400">Select a channel to view subcategories and tasks</p>
         </div>
         <div className="flex items-center justify-center py-12">
@@ -39,7 +39,7 @@ export default function ChannelsListView() {
     <div className="h-full flex flex-col overflow-hidden space-y-3">
       {/* Header */}
       <div>
-        <h1 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Channel & Platform</h1>
+        <h1 className="text-[11px] font-bold text-gray-900 dark:text-white mb-1">Channel & Platform</h1>
         <p className="text-xs text-gray-500 dark:text-gray-400">Select a channel to view subcategories and tasks</p>
       </div>
 

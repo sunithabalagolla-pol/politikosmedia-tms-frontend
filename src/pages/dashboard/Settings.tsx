@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
-import { Save, Loader2, CheckCircle2, Shield, X, Check, Settings2, Wrench, Lock, FolderTree, Bell, User, Video, TrendingUp } from 'lucide-react'
-import { useTheme } from '../../hooks/useTheme'
+import { Save, Loader2, CheckCircle2, Shield, X, Check, Wrench, Lock, FolderTree, Bell, User, Video, TrendingUp } from 'lucide-react'
 import { useSettings, useUpdateSettings, usePublicSettings, useUpdateDepartmentsMenuManagerSetting, useUpdateDepartmentsMenuEmployeeSetting, useUpdateTicketsCreateManagerSetting, useUpdateTicketsCreateEmployeeSetting, useUpdateTicketsUpdateManagerSetting, useUpdateTicketsUpdateEmployeeSetting, useUpdateTicketsViewManagerSetting, useUpdateTicketsViewEmployeeSetting, useUpdateTicketsDeleteManagerSetting, useUpdateTicketsDeleteEmployeeSetting, useUpdateTeamAddManagerSetting, useUpdateTeamAddEmployeeSetting, useUpdateTeamEditManagerSetting, useUpdateTeamEditEmployeeSetting, useUpdateTeamDeactivateManagerSetting, useUpdateTeamDeactivateEmployeeSetting } from '../../hooks/api/useSettings'
 import { usePermissions, useUpdatePermissions } from '../../hooks/api/usePermissions'
 import { useRole } from '../../hooks/useRole'
@@ -12,7 +11,6 @@ import ChannelSettings from '../../components/settings/ChannelSettings'
 import ProgressSettings from '../../components/settings/ProgressSettings'
 
 export default function Settings() {
-  const { theme, toggleTheme } = useTheme()
   const { isAdmin, isAdminOrManager } = useRole()
   const qc = useQueryClient()
   const { data: settings, isLoading } = useSettings()
@@ -34,7 +32,7 @@ export default function Settings() {
   const updateTeamEditEmployee = useUpdateTeamEditEmployeeSetting()
   const updateTeamDeactivateManager = useUpdateTeamDeactivateManagerSetting()
   const updateTeamDeactivateEmployee = useUpdateTeamDeactivateEmployeeSetting()
-  const [activeTab, setActiveTab] = useState<'general' | 'notifications' | 'app' | 'permissions' | 'categories' | 'channels' | 'progress'>('general')
+  const [activeTab, setActiveTab] = useState<'notifications' | 'app' | 'permissions' | 'categories' | 'channels' | 'progress'>('notifications')
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [pushNotifications, setPushNotifications] = useState(true)
   const [saved, setSaved] = useState(false)
@@ -90,14 +88,14 @@ export default function Settings() {
   const [searchParams, setSearchParams] = useSearchParams()
   useEffect(() => {
     const section = searchParams.get('section')
-    if (section && ['general', 'notifications', 'categories', 'channels', 'app', 'permissions', 'progress'].includes(section)) {
+    if (section && ['notifications', 'categories', 'channels', 'app', 'permissions', 'progress'].includes(section)) {
       setActiveTab(section as any)
     }
   }, [])
 
   const handleSectionChange = (section: string) => {
     setActiveTab(section as any)
-    if (section === 'general') {
+    if (section === 'notifications') {
       setSearchParams({}, { replace: true })
     } else {
       setSearchParams({ section }, { replace: true })
@@ -491,10 +489,6 @@ export default function Settings() {
             <User className="w-3 h-3" /> Personal
           </p>
           <nav className="space-y-0.5">
-            <button onClick={() => handleSectionChange('general')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${activeTab === 'general' ? 'bg-[#b23a48]/10 text-[#b23a48]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
-              <Settings2 className="w-3.5 h-3.5" /> General
-            </button>
             <button onClick={() => handleSectionChange('notifications')}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${activeTab === 'notifications' ? 'bg-[#b23a48]/10 text-[#b23a48]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
               <Bell className="w-3.5 h-3.5" /> Notifications
@@ -548,38 +542,6 @@ export default function Settings() {
       {/* Content Area */}
       <main className="flex-1 overflow-y-auto p-4 lg:p-6">
         <div>
-
-          {/* ═══════ TAB: General ═══════ */}
-          {activeTab === 'general' && (
-            <div className="space-y-4">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-5">
-                <div className="mb-4">
-                  <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">General</h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Manage your application preferences</p>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-900 dark:text-white">Dark Mode</label>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Toggle dark theme for the dashboard</p>
-                    </div>
-                    <button onClick={toggleTheme}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${theme === 'dark' ? 'bg-[#b23a48]' : 'bg-gray-200 dark:bg-gray-600'}`}>
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${theme === 'dark' ? 'translate-x-6' : 'translate-x-1'}`} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <button onClick={handleSave} disabled={updateSettings.isPending}
-                  className={`flex items-center gap-2 px-6 py-2.5 text-white rounded-lg text-xs font-medium transition-colors shadow-sm disabled:opacity-70 ${saved ? 'bg-green-500 hover:bg-green-600' : 'bg-[#b23a48] hover:bg-[#8f2e3a]'}`}>
-                  {updateSettings.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : saved ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
-                  {saved ? 'Saved!' : 'Save Changes'}
-                </button>
-              </div>
-            </div>
-          )}
 
           {/* ═══════ TAB: Notifications ═══════ */}
           {activeTab === 'notifications' && (

@@ -123,6 +123,8 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({})
   const [uploadingFiles, setUploadingFiles] = useState(false)
   const [fileUploadErrors, setFileUploadErrors] = useState<string[]>([])
+  const [showHoldModal, setShowHoldModal] = useState(false)
+  const [holdNote, setHoldNote] = useState('')
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
@@ -290,7 +292,7 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
     return errors
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (overrideHoldNote?: string) => {
     // Validate all forms
     const errors: Record<string, string[]> = {}
     taskForms.forEach(form => {
@@ -308,11 +310,22 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
     try {
       if (editTask) {
         const form = taskForms[0]
+
+        // If status changed to hold and no hold_note provided yet, show modal
+        if (form.status === 'hold' && !overrideHoldNote) {
+          setHoldNote('')
+          setShowHoldModal(true)
+          return
+        }
+
         const body: Record<string, any> = {
           title: form.title,
           description: form.description,
           priority: form.priority,
           status: form.status,
+        }
+        if (form.status === 'hold' && overrideHoldNote) {
+          body.hold_note = overrideHoldNote
         }
         if (form.assigned.length > 0) body.assigned_to = form.assigned
         if (form.department) body.department_id = form.department
@@ -970,7 +983,7 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
               </span>
             )}
             <button
-              onClick={handleSubmit}
+              onClick={() => handleSubmit()}
               disabled={createTask.isPending || updateTask.isPending || uploadingFiles}
               className="px-3 py-1 bg-[#b23a48] text-white rounded-lg text-[11px] font-semibold hover:bg-[#8f2e3a] transition-colors shadow-sm disabled:opacity-70"
             >
@@ -996,6 +1009,43 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
         message={`Are you sure you want to delete "${subtaskToDelete?.title}"? This action cannot be undone.`}
         isDeleting={isDeletingSubtask}
       />
+
+      {/* Hold Note Modal */}
+      {showHoldModal && (
+        <>
+          <div className="fixed inset-0 bg-gray-900/50 dark:bg-black/70 z-[80]" onClick={() => { setShowHoldModal(false); setHoldNote('') }} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white dark:bg-gray-800 rounded-xl shadow-2xl z-[90] p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Hold Reason</h3>
+                <p className="text-xs text-gray-500">Required before setting task on hold</p>
+              </div>
+            </div>
+            <textarea
+              value={holdNote}
+              onChange={(e) => setHoldNote(e.target.value)}
+              maxLength={1000}
+              rows={4}
+              placeholder="Explain why this task is being put on hold..."
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white dark:bg-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400 placeholder-gray-400 mb-1"
+            />
+            <p className="text-xs text-gray-400 text-right mb-4">{holdNote.length} / 1000</p>
+            <div className="flex items-center gap-3">
+              <button onClick={() => { setShowHoldModal(false); setHoldNote('') }}
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
+                Cancel
+              </button>
+              <button onClick={() => { setShowHoldModal(false); handleSubmit(holdNote.trim()) }} disabled={!holdNote.trim() || updateTask.isPending}
+                className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg text-xs font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                {updateTask.isPending ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Confirm Hold'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

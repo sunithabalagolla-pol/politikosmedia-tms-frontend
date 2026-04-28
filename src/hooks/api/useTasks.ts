@@ -84,14 +84,8 @@ export function useUpdateTaskStatus() {
     mutationFn: async ({ id, status, hold_note }: { id: string | number; status: string; hold_note?: string }) => {
       const body: any = { status }
       if (hold_note) body.hold_note = hold_note
-      console.log('🔄 Status update payload:', body)
-      try {
-        const { data } = await axiosInstance.patch(API.TASK_STATUS(id), body)
-        return data.data || data
-      } catch (err: any) {
-        console.error('❌ Status update error:', err?.response?.data)
-        throw err
-      }
+      const { data } = await axiosInstance.patch(API.TASK_STATUS(id), body)
+      return data.data || data
     },
     onSuccess: (updatedTask, { id }) => {
       const taskId = String(id)
@@ -104,7 +98,7 @@ export function useUpdateTaskStatus() {
         const updated = list.map((t: any) => String(t.id) === taskId ? { ...t, ...updatedTask } : t)
         return old.tasks ? { ...old, tasks: updated } : updated
       })
-      qc.invalidateQueries({ queryKey: ['phases'] }) // Invalidate phase tasks
+      qc.invalidateQueries({ queryKey: ['phases'] })
       qc.invalidateQueries({ queryKey: ['kanban'] })
       qc.invalidateQueries({ queryKey: ['my-tasks'] })
       qc.invalidateQueries({ queryKey: ['dashboard'] })

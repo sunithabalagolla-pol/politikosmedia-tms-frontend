@@ -113,37 +113,37 @@ export default function Profile() {
   }
 
   return (
-    <div className="h-full overflow-auto bg-gray-50 dark:bg-gray-900 p-3 lg:p-4">
-      <div className="max-w-3xl mx-auto space-y-3">
+    <div className="h-full bg-gray-50 dark:bg-gray-900 p-3 lg:p-4 overflow-hidden">
+      <div className="h-full flex gap-3">
 
-        {/* Profile Information Section */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4">
-          <div className="mb-4">
+        {/* Left Column — Profile Information */}
+        <div className="flex-1 min-w-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4 overflow-y-auto">
+          <div className="mb-3">
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">Profile Information</h2>
             <p className="text-xs text-gray-500 dark:text-gray-400">Update your personal details</p>
           </div>
 
           {/* Avatar */}
-          <div className="flex items-start gap-4 mb-6">
+          <div className="flex items-start gap-4 mb-4">
             <div className="relative">
               {uploadAvatar.isPending ? (
-                <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-4 border-gray-100 dark:border-gray-700">
-                  <Loader2 className="w-5 h-5 text-[#b23a48] animate-spin" />
+                <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center border-3 border-gray-100 dark:border-gray-700">
+                  <Loader2 className="w-4 h-4 text-[#b23a48] animate-spin" />
                 </div>
               ) : profile.avatar_url ? (
-                <img src={profile.avatar_url} alt="Profile" className="w-16 h-16 rounded-full object-cover border-4 border-gray-100 dark:border-gray-700" />
+                <img src={profile.avatar_url} alt="Profile" className="w-12 h-12 rounded-full object-cover border-3 border-gray-100 dark:border-gray-700" />
               ) : (
-                <div className="w-16 h-16 rounded-full bg-[#b23a48] flex items-center justify-center border-4 border-gray-100 dark:border-gray-700">
-                  <span className="text-white font-bold text-lg">{profile.name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?'}</span>
+                <div className="w-12 h-12 rounded-full bg-[#b23a48] flex items-center justify-center border-3 border-gray-100 dark:border-gray-700">
+                  <span className="text-white font-bold text-sm">{profile.name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?'}</span>
                 </div>
               )}
               <button
                 onClick={() => avatarInputRef.current?.click()}
                 disabled={uploadAvatar.isPending || !r2Verified}
-                className="absolute bottom-0 right-0 w-6 h-6 bg-[#b23a48] hover:bg-[#8f2e3a] text-white rounded-full flex items-center justify-center shadow-lg transition-colors disabled:opacity-50"
+                className="absolute bottom-0 right-0 w-5 h-5 bg-[#b23a48] hover:bg-[#8f2e3a] text-white rounded-full flex items-center justify-center shadow-lg transition-colors disabled:opacity-50"
                 title={!r2Verified ? 'Storage not configured. Admin must verify R2 credentials in Settings.' : 'Upload avatar'}
               >
-                <Upload className="w-3 h-3" />
+                <Upload className="w-2.5 h-2.5" />
               </button>
               <input
                 ref={avatarInputRef}
@@ -175,74 +175,74 @@ export default function Profile() {
           </div>
 
           {/* Profile Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
-            {/* Name — editable */}
-            <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-900 dark:text-white">Full Name</label>
-              <div className="relative">
-                <User className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-shadow dark:bg-gray-700" />
+          <form onSubmit={handleSubmit} className="space-y-2.5">
+            <div className="grid grid-cols-2 gap-2.5">
+              {/* Name */}
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-gray-900 dark:text-white">Full Name</label>
+                <div className="relative">
+                  <User className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-shadow dark:bg-gray-700" />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-gray-900 dark:text-white">Email</label>
+                <div className="relative">
+                  <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                  <input type="email" value={profile.email} disabled
+                    className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed" />
+                </div>
+              </div>
+
+              {/* Role */}
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-gray-900 dark:text-white">Role</label>
+                <div className="relative">
+                  <Shield className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                  <input type="text" value={profile.role.charAt(0).toUpperCase() + profile.role.slice(1)} disabled
+                    className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed" />
+                </div>
+              </div>
+
+              {/* Department */}
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-gray-900 dark:text-white">Department</label>
+                <div className="relative">
+                  <Building2 className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                  <input type="text" value={profile.department || 'Not assigned'} disabled
+                    className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed" />
+                </div>
+              </div>
+
+              {/* Job Title */}
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-gray-900 dark:text-white">Job Title</label>
+                <div className="relative">
+                  <Briefcase className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                  <input type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. Senior Product Manager"
+                    className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-shadow dark:bg-gray-700 placeholder-gray-400" />
+                </div>
+              </div>
+
+              {/* Location */}
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
+                <div className="relative">
+                  <MapPin className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                  <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Hyderabad, India"
+                    className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-shadow dark:bg-gray-700 placeholder-gray-400" />
+                </div>
               </div>
             </div>
 
-            {/* Email — read-only */}
-            <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-900 dark:text-white">Email</label>
-              <div className="relative">
-                <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-                <input type="email" value={profile.email} disabled
-                  className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed" />
-              </div>
-              <p className="text-xs text-gray-400 dark:text-gray-500">Email is managed by your organization</p>
-            </div>
-
-            {/* Role — read-only */}
-            <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-900 dark:text-white">Role</label>
-              <div className="relative">
-                <Shield className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-                <input type="text" value={profile.role.charAt(0).toUpperCase() + profile.role.slice(1)} disabled
-                  className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed" />
-              </div>
-              <p className="text-xs text-gray-400 dark:text-gray-500">Role is assigned by your administrator</p>
-            </div>
-
-            {/* Department — read-only */}
-            <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-900 dark:text-white">Department</label>
-              <div className="relative">
-                <Building2 className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-                <input type="text" value={profile.department || 'Not assigned'} disabled
-                  className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed" />
-              </div>
-            </div>
-
-            {/* Job Title — editable */}
-            <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-900 dark:text-white">Job Title</label>
-              <div className="relative">
-                <Briefcase className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-                <input type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. Senior Product Manager"
-                  className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-shadow dark:bg-gray-700 placeholder-gray-400" />
-              </div>
-            </div>
-
-            {/* Location — editable */}
-            <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-900 dark:text-white">Location</label>
-              <div className="relative">
-                <MapPin className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-                <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Hyderabad, India"
-                  className="w-full pl-9 pr-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-shadow dark:bg-gray-700 placeholder-gray-400" />
-              </div>
-            </div>
-
-            {/* Bio — editable */}
+            {/* Bio — full width */}
             <div className="space-y-1">
               <label className="block text-xs font-medium text-gray-900 dark:text-white">Bio</label>
-              <textarea rows={3} value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Tell us about yourself..."
-                className="w-full px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-shadow resize-y dark:bg-gray-700 placeholder-gray-400" />
+              <textarea rows={2} value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Tell us about yourself..."
+                className="w-full px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] transition-shadow resize-none dark:bg-gray-700 placeholder-gray-400" />
             </div>
 
             <div className="flex justify-end pt-1">
@@ -255,35 +255,35 @@ export default function Profile() {
           </form>
         </div>
 
-        {/* Activity Log Section */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4">
-          <div className="mb-4">
+        {/* Right Column — Activity Log */}
+        <div className="w-80 shrink-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4 flex flex-col overflow-hidden">
+          <div className="mb-3">
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">Activity Log</h2>
             <p className="text-xs text-gray-500 dark:text-gray-400">Your recent actions and login history</p>
           </div>
 
           {activitiesLoading ? (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex-1 flex items-center justify-center">
               <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
             </div>
           ) : activities && activities.length > 0 ? (
-            <div className="space-y-0 divide-y divide-gray-200 dark:divide-gray-700">
+            <div className="flex-1 overflow-y-auto space-y-0 divide-y divide-gray-200 dark:divide-gray-700" style={{ scrollbarWidth: 'thin' }}>
               {activities.map((activity) => (
-                <div key={activity.id} className="py-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium tracking-wide uppercase ${ACTION_COLORS[activity.action_type] || 'bg-gray-100 text-gray-600'}`}>
+                <div key={activity.id} className="py-2 space-y-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium tracking-wide uppercase shrink-0 ${ACTION_COLORS[activity.action_type] || 'bg-gray-100 text-gray-600'}`}>
                       {activity.action_type}
                     </span>
-                    <span className="text-xs text-gray-900 dark:text-white">{activity.description}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1 shrink-0">
+                      <Clock className="w-2.5 h-2.5" /> {timeAgo(activity.created_at)}
+                    </span>
                   </div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 shrink-0 ml-2">
-                    <Clock className="w-3 h-3" /> {timeAgo(activity.created_at)}
-                  </span>
+                  <p className="text-xs text-gray-900 dark:text-white leading-tight">{activity.description}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
+            <div className="flex-1 flex items-center justify-center">
               <p className="text-xs text-gray-400 dark:text-gray-500">No activity yet</p>
             </div>
           )}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
-import { Loader2, Pencil, Trash2, FolderTree, Layers, X } from 'lucide-react'
+import { Loader2, Pencil, Trash2, FolderTree, Layers, X, AlertCircle } from 'lucide-react'
 import TaskDetailPanel from './TaskDetailPanel'
 import CreateTaskModal from './CreateTaskModal'
 import { useKanban, useKanbanReorder } from '../hooks/api/useKanban'
@@ -77,6 +77,10 @@ export default function KanbanDnd() {
   const [editingTask, setEditingTask] = useState<any>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null)
+  const [reorderError, setReorderError] = useState<string | null>(null)
+  const [showHoldModal, setShowHoldModal] = useState(false)
+  const [holdNote, setHoldNote] = useState('')
+  const [pendingHoldDrop, setPendingHoldDrop] = useState<{ taskId: string; fromColumn: string; newIndex: number } | null>(null)
 
   // Permission checks
   const canEditTask = usePermission('task:edit')
@@ -114,12 +118,60 @@ export default function KanbanDnd() {
     const { source, destination, draggableId } = result
     if (!destination) return
     if (source.droppableId === destination.droppableId && source.index === destination.index) return
-    reorder.mutate({
-      taskId: draggableId,
-      fromColumn: source.droppableId,
-      toColumn: destination.droppableId,
-      newIndex: destination.index,
-    })
+    setReorderError(null)
+
+    // Intercept drag to "hold" column — show hold note modal
+    if (destination.droppableId === 'hold' && source.droppableId !== 'hold') {
+      setPendingHoldDrop({ taskId: draggableId, fromColumn: source.droppableId, newIndex: destination.index })
+      setHoldNote('')
+      setShowHoldModal(true)
+      return
+    }
+
+    reorder.mutate(
+      {
+        taskId: draggableId,
+        fromColumn: source.droppableId,
+        toColumn: destination.droppableId,
+        newIndex: destination.index,
+      },
+      {
+        onError: (err: any) => {
+          const message = err?.response?.data?.message || 'Failed to move task'
+          setReorderError(message)
+          setTimeout(() => setReorderError(null), 5000)
+        },
+      }
+    )
+  }
+
+  const handleHoldConfirm = () => {
+    if (!pendingHoldDrop || !holdNote.trim()) return
+    setShowHoldModal(false)
+    reorder.mutate(
+      {
+        taskId: pendingHoldDrop.taskId,
+        fromColumn: pendingHoldDrop.fromColumn,
+        toColumn: 'hold',
+        newIndex: pendingHoldDrop.newIndex,
+        hold_note: holdNote.trim(),
+      } as any,
+      {
+        onError: (err: any) => {
+          const message = err?.response?.data?.message || 'Failed to move task'
+          setReorderError(message)
+          setTimeout(() => setReorderError(null), 5000)
+        },
+      }
+    )
+    setHoldNote('')
+    setPendingHoldDrop(null)
+  }
+
+  const handleHoldCancel = () => {
+    setShowHoldModal(false)
+    setHoldNote('')
+    setPendingHoldDrop(null)
   }
 
   const formatStatus = (s: string) => {
@@ -210,6 +262,17 @@ export default function KanbanDnd() {
         hidePriorityDropdown={true}
       />
 
+      {/* Reorder Error Toast */}
+      {reorderError && (
+        <div className="mx-4 mb-2 p-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+          <p className="text-[11px] font-medium text-red-700 dark:text-red-400 flex-1">{reorderError}</p>
+          <button onClick={() => setReorderError(null)} className="text-red-400 hover:text-red-600 shrink-0">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid grid-cols-4 gap-4 h-full p-4 overflow-hidden">
           {COLUMN_ORDER.map(colKey => {
@@ -284,6 +347,43 @@ export default function KanbanDnd() {
           })}
         </div>
       </DragDropContext>
+
+      {/* Hold Note Modal */}
+      {showHoldModal && (
+        <>
+          <div className="fixed inset-0 bg-gray-900/50 dark:bg-black/70 z-[60]" onClick={handleHoldCancel} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white dark:bg-gray-800 rounded-xl shadow-2xl z-[70] p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Hold Reason</h3>
+                <p className="text-xs text-gray-500">Required before setting task on hold</p>
+              </div>
+            </div>
+            <textarea
+              value={holdNote}
+              onChange={(e) => setHoldNote(e.target.value)}
+              maxLength={1000}
+              rows={4}
+              placeholder="Explain why this task is being put on hold..."
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white dark:bg-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400 placeholder-gray-400 mb-1"
+            />
+            <p className="text-xs text-gray-400 text-right mb-4">{holdNote.length} / 1000</p>
+            <div className="flex items-center gap-3">
+              <button onClick={handleHoldCancel}
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
+                Cancel
+              </button>
+              <button onClick={handleHoldConfirm} disabled={!holdNote.trim() || reorder.isPending}
+                className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg text-xs font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                {reorder.isPending ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Confirm Hold'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
