@@ -4,6 +4,7 @@ import { Plus, Loader2, X, Tv, ChevronRight, CheckCircle2, Radio, BarChart3, Pen
 import { useShowBoard, useCreateShow, useUpdateShow, useDeleteShow, useMarkReadyForBroadcast, useMarkBroadcasted, useCreateImpactTask, useShowDetails, useCreateEpisode, useDeleteEpisode, useUpdateEpisode, ShowEpisode, EpisodeStatus } from '../../hooks/api/useShows'
 import { useLookupEmployees } from '../../hooks/api/useLookups'
 import ShowWorkspace from '../../components/shows/ShowWorkspace'
+import ConfirmDeleteModal from '../../components/ConfirmDeleteModal'
 
 export default function Shows() {
   const [searchParams] = useSearchParams()
@@ -34,6 +35,8 @@ function ShowsBoard() {
   const [editEpTitle, setEditEpTitle] = useState('')
   const [editEpNumber, setEditEpNumber] = useState('')
   const [editEpDuration, setEditEpDuration] = useState('')
+  const [deleteShowConfirm, setDeleteShowConfirm] = useState<{ id: string; name: string } | null>(null)
+  const [deleteEpisodeConfirm, setDeleteEpisodeConfirm] = useState<string | null>(null)
 
   const { data: board, isLoading } = useShowBoard()
   const createShow = useCreateShow()
@@ -89,9 +92,14 @@ function ShowsBoard() {
   }
 
   const handleDeleteShow = async (showId: string, showName: string) => {
-    if (!confirm(`Are you sure you want to delete "${showName}"?\n\nThis action cannot be undone.`)) return
+    setDeleteShowConfirm({ id: showId, name: showName })
+  }
+
+  const handleDeleteShowConfirm = async () => {
+    if (!deleteShowConfirm) return
     try {
-      await deleteShow.mutateAsync(showId)
+      await deleteShow.mutateAsync(deleteShowConfirm.id)
+      setDeleteShowConfirm(null)
     } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete show') }
   }
 
@@ -110,9 +118,14 @@ function ShowsBoard() {
   }
 
   const handleDeleteEpisodeFromModal = async (epId: string) => {
-    if (!confirm('Delete this episode?')) return
+    setDeleteEpisodeConfirm(epId)
+  }
+
+  const handleDeleteEpisodeConfirm = async () => {
+    if (!deleteEpisodeConfirm) return
     try {
-      await deleteEpisode.mutateAsync(epId)
+      await deleteEpisode.mutateAsync(deleteEpisodeConfirm)
+      setDeleteEpisodeConfirm(null)
     } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete episode') }
   }
 
@@ -639,6 +652,24 @@ function ShowsBoard() {
           </div>
         </div>
       )}
+      
+      <ConfirmDeleteModal
+        isOpen={!!deleteShowConfirm}
+        onClose={() => setDeleteShowConfirm(null)}
+        onConfirm={handleDeleteShowConfirm}
+        title="Delete Show"
+        message={`Are you sure you want to permanently delete "${deleteShowConfirm?.name}"? All episodes and assets will be removed. This action cannot be undone.`}
+        isDeleting={deleteShow.isPending}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={!!deleteEpisodeConfirm}
+        onClose={() => setDeleteEpisodeConfirm(null)}
+        onConfirm={handleDeleteEpisodeConfirm}
+        title="Delete Episode"
+        message="Are you sure you want to permanently delete this episode? This action cannot be undone."
+        isDeleting={deleteEpisode.isPending}
+      />
     </div>
   )
 }

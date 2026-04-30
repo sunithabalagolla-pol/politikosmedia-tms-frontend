@@ -5,11 +5,13 @@ import { usePermission } from '../../hooks/usePermission'
 import CreateChannelModal from './CreateChannelModal'
 import EditChannelModal from './EditChannelModal'
 import SubcategoryManagement from './SubcategoryManagement'
+import ConfirmDeleteModal from '../ConfirmDeleteModal'
 
 export default function ChannelSettings() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingChannel, setEditingChannel] = useState<string | null>(null)
   const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null)
+  const [deleteChannelId, setDeleteChannelId] = useState<string | null>(null)
 
   const { data: channels = [], isLoading, error } = useChannels()
   const deleteChannel = useDeleteChannel()
@@ -25,10 +27,14 @@ export default function ChannelSettings() {
       return
     }
 
-    if (!confirm('Are you sure you want to delete this channel?')) return
+    setDeleteChannelId(id)
+  }
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteChannelId) return
     try {
-      await deleteChannel.mutateAsync(id)
+      await deleteChannel.mutateAsync(deleteChannelId)
+      setDeleteChannelId(null)
     } catch (error) {
       console.error('Failed to delete channel:', error)
       alert('Failed to delete channel')
@@ -174,6 +180,15 @@ export default function ChannelSettings() {
           onClose={() => setEditingChannel(null)}
         />
       )}
+
+      <ConfirmDeleteModal
+        isOpen={!!deleteChannelId}
+        onClose={() => setDeleteChannelId(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Channel"
+        message="Are you sure you want to permanently delete this channel? This action cannot be undone."
+        isDeleting={deleteChannel.isPending}
+      />
     </div>
   )
 }

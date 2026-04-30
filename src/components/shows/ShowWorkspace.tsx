@@ -6,6 +6,7 @@ import {
   useAddAsset, useRemoveAsset, useToggleAsset, useApproveEpisode, useDeleteEpisode,
   useUpdateEpisode, useRenameAsset, ShowEpisode
 } from '../../hooks/api/useShows'
+import ConfirmDeleteModal from '../ConfirmDeleteModal'
 
 const ASSET_ICONS: Record<string, any> = { Script: FileText, Visuals: Image, 'Voice Over': Mic, Video: Video }
 
@@ -26,6 +27,9 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   const [editEpDuration, setEditEpDuration] = useState('')
   const [renamingAssetId, setRenamingAssetId] = useState<string | null>(null)
   const [renameAssetValue, setRenameAssetValue] = useState('')
+  const [deleteEpisodeConfirm, setDeleteEpisodeConfirm] = useState<string | null>(null)
+  const [showDeleteShowConfirm, setShowDeleteShowConfirm] = useState(false)
+  const [deleteAssetConfirm, setDeleteAssetConfirm] = useState<{ id: string; name: string } | null>(null)
 
   const { data: show } = useShow(showId)
   const { data: episodes = [], isLoading } = useShowEpisodes(showId)
@@ -71,10 +75,15 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   }
 
   const handleDeleteEpisode = async (epId: string) => {
-    if (!confirm('Delete this episode?')) return
+    setDeleteEpisodeConfirm(epId)
+  }
+
+  const handleDeleteEpisodeConfirm = async () => {
+    if (!deleteEpisodeConfirm) return
     try {
-      await deleteEpisode.mutateAsync(epId)
-      if (selectedEpisodeId === epId) setSelectedEpisodeId(null)
+      await deleteEpisode.mutateAsync(deleteEpisodeConfirm)
+      if (selectedEpisodeId === deleteEpisodeConfirm) setSelectedEpisodeId(null)
+      setDeleteEpisodeConfirm(null)
     } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete') }
   }
 
@@ -147,9 +156,13 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   }
 
   const handleDeleteShowAction = async () => {
-    if (!confirm(`Are you sure you want to delete "${showName}"?\n\nThis action cannot be undone.`)) return
+    setShowDeleteShowConfirm(true)
+  }
+
+  const handleDeleteShowConfirm = async () => {
     try {
       await deleteShowMut.mutateAsync(showId)
+      setShowDeleteShowConfirm(false)
       navigate(basePath)
     } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete show') }
   }
@@ -269,11 +282,7 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                               className="p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors" title="Rename asset">
                               <Pencil className="w-3 h-3" />
                             </button>
-                            <button onClick={async () => {
-                              if (!confirm(`Are you sure you want to remove "${asset.name}"?`)) return
-                              try { await removeAsset.mutateAsync(asset.id) }
-                              catch (e: any) { alert(e?.response?.data?.message || 'Failed to remove asset') }
-                            }}
+                            <button onClick={() => setDeleteAssetConfirm({ id: asset.id, name: asset.name })}
                               className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors" title="Delete asset">
                               <Trash2 className="w-3 h-3" />
                             </button>
@@ -464,6 +473,39 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
           </div>
         </div>
       )}
+
+      <ConfirmDeleteModal
+        isOpen={!!deleteEpisodeConfirm}
+        onClose={() => setDeleteEpisodeConfirm(null)}
+        onConfirm={handleDeleteEpisodeConfirm}
+        title="Delete Episode"
+        message="Are you sure you want to permanently delete this episode? This action cannot be undone."
+        isDeleting={deleteEpisode.isPending}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={showDeleteShowConfirm}
+        onClose={() => setShowDeleteShowConfirm(false)}
+        onConfirm={handleDeleteShowConfirm}
+        title="Delete Show"
+        message={`Are you sure you want to permanently delete "${showName}"? All episodes and assets will be removed. This action cannot be undone.`}
+        isDeleting={deleteShowMut.isPending}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={!!deleteAssetConfirm}
+        onClose={() => setDeleteAssetConfirm(null)}
+        onConfirm={async () => {
+          if (!deleteAssetConfirm) return
+          try {
+            await removeAsset.mutateAsync(deleteAssetConfirm.id)
+            setDeleteAssetConfirm(null)
+          } catch (e: any) { alert(e?.response?.data?.message || 'Failed to remove asset') }
+        }}
+        title="Remove Asset"
+        message={`Are you sure you want to remove "${deleteAssetConfirm?.name}"? This action cannot be undone.`}
+        isDeleting={removeAsset.isPending}
+      />
     </div>
   )
 }

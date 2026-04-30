@@ -4,6 +4,7 @@ import { useChannel, useSubcategories, useDeleteSubcategory } from '../../hooks/
 import { usePermission } from '../../hooks/usePermission'
 import CreateSubcategoryModal from './CreateSubcategoryModal'
 import EditSubcategoryModal from './EditSubcategoryModal'
+import ConfirmDeleteModal from '../ConfirmDeleteModal'
 
 interface SubcategoryManagementProps {
   channelId: string
@@ -13,6 +14,7 @@ interface SubcategoryManagementProps {
 export default function SubcategoryManagement({ channelId, onBack }: SubcategoryManagementProps) {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingSubcategoryId, setEditingSubcategoryId] = useState<string | null>(null)
+  const [deleteSubcategoryId, setDeleteSubcategoryId] = useState<string | null>(null)
 
   const { data: channel } = useChannel(channelId)
   const { data: subcategories = [], isLoading } = useSubcategories(channelId)
@@ -29,10 +31,14 @@ export default function SubcategoryManagement({ channelId, onBack }: Subcategory
       return
     }
 
-    if (!confirm('Are you sure you want to delete this subcategory?')) return
+    setDeleteSubcategoryId(id)
+  }
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteSubcategoryId) return
     try {
-      await deleteSubcategory.mutateAsync({ id, channelId })
+      await deleteSubcategory.mutateAsync({ id: deleteSubcategoryId, channelId })
+      setDeleteSubcategoryId(null)
     } catch (error) {
       console.error('Failed to delete subcategory:', error)
       alert('Failed to delete subcategory')
@@ -154,6 +160,15 @@ export default function SubcategoryManagement({ channelId, onBack }: Subcategory
           onClose={() => setEditingSubcategoryId(null)}
         />
       )}
+
+      <ConfirmDeleteModal
+        isOpen={!!deleteSubcategoryId}
+        onClose={() => setDeleteSubcategoryId(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Subcategory"
+        message="Are you sure you want to permanently delete this subcategory? This action cannot be undone."
+        isDeleting={deleteSubcategory.isPending}
+      />
     </div>
   )
 }

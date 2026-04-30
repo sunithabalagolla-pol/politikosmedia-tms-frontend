@@ -40,7 +40,7 @@ export default function Progress() {
   const [activeTab, setActiveTab] = useState<'skills' | 'history'>('skills')
   const [period, setPeriod] = useState(PERIOD_OPTIONS[0].value)
   const [isEditing, setIsEditing] = useState(false)
-  const [scores, setScores] = useState<Record<string, number>>({})
+  const [scores, setScores] = useState<Record<string, number | ''>>({})
   const [orgExpects, setOrgExpects] = useState('')
   const [empDelivered, setEmpDelivered] = useState('')
   const [saveSuccess, setSaveSuccess] = useState(false)
@@ -95,7 +95,7 @@ export default function Progress() {
 
   const handleSave = async () => {
     setSaveError(null)
-    const skills = Object.entries(scores).map(([skill_id, score]) => ({ skill_id, score }))
+    const skills = Object.entries(scores).filter(([, score]) => score !== '').map(([skill_id, score]) => ({ skill_id, score: score as number }))
     if (skills.length === 0) { setSaveError('Rate at least one skill before saving.'); return }
     try {
       await saveProgress.mutateAsync({
@@ -247,7 +247,7 @@ export default function Progress() {
                               const existing = existingCat?.skills.find(s => s.skill_id === skill.skill_id)
                               const editScore = isEditing
                                 ? (scores[skill.skill_id] !== undefined ? scores[skill.skill_id] : (existing?.score ?? ''))
-                                : null
+                                : ''
                               const viewScore = existing?.score ?? null
                               return (
                                 <div key={skill.skill_id} className="flex items-center gap-2">
@@ -259,15 +259,15 @@ export default function Progress() {
                                         value={editScore}
                                         onChange={e => {
                                           const raw = e.target.value
-                                          if (raw === '') { setScores(prev => { const n = { ...prev }; delete n[skill.skill_id]; return n }); return }
+                                          if (raw === '') { setScores(prev => ({ ...prev, [skill.skill_id]: '' })); return }
                                           const v = Math.min(100, Math.max(0, parseInt(raw)))
                                           if (!isNaN(v)) setScores(prev => ({ ...prev, [skill.skill_id]: v }))
                                         }}
                                         placeholder="0–100"
                                         className="w-12 px-1.5 py-0.5 border border-gray-200 dark:border-gray-600 rounded text-[10px] text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-[#b23a48]/20 focus:border-[#b23a48]" />
-                                      {scores[skill.skill_id] !== undefined && (
+                                      {scores[skill.skill_id] !== undefined && scores[skill.skill_id] !== '' && (
                                         <div className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-full h-1 overflow-hidden">
-                                          <div className={`h-full rounded-full transition-all ${scoreColor(scores[skill.skill_id])}`}
+                                          <div className={`h-full rounded-full transition-all ${scoreColor(scores[skill.skill_id] as number)}`}
                                             style={{ width: `${scores[skill.skill_id]}%` }} />
                                         </div>
                                       )}

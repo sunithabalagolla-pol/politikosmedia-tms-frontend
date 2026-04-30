@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useDepartments, useCreateDepartment, useUpdateDepartment, useDeleteDepartment } from '../../hooks/api/useDepartments'
 import { usePermission } from '../../hooks/usePermission'
+import ConfirmDeleteModal from '../../components/ConfirmDeleteModal'
 
 export default function Departments() {
   // Permission checks
@@ -21,7 +22,6 @@ export default function Departments() {
   const createDept = useCreateDepartment()
   const updateDept = useUpdateDepartment()
   const deleteDept = useDeleteDepartment()
-  const [deleteError, setDeleteError] = useState('')
 
   const departments = deptData?.departments || []
   const stats = deptData?.stats || { totalDepartments: 0, totalTasks: 0, totalMembers: 0 }
@@ -63,11 +63,10 @@ export default function Departments() {
 
   const handleDelete = async (id: string) => {
     try {
-      setDeleteError('')
       await deleteDept.mutateAsync(id)
       setShowDeleteConfirm(null)
     } catch (err: any) {
-      setDeleteError(err.response?.data?.message || 'Cannot delete this department')
+      alert(err.response?.data?.message || 'Cannot delete this department')
     }
   }
 
@@ -107,23 +106,14 @@ export default function Departments() {
       )}
 
       {/* Delete Confirm */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-sm mx-4 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center"><Trash2 className="w-5 h-5 text-red-600" /></div>
-              <div><h3 className="text-sm font-bold text-gray-900 dark:text-white">Delete Department</h3><p className="text-xs text-gray-500">This cannot be undone.</p></div>
-            </div>
-            {deleteError && <p className="text-xs text-red-600 mb-3 p-2 bg-red-50 rounded-lg">{deleteError}</p>}
-            <div className="flex gap-3">
-              <button onClick={() => { setShowDeleteConfirm(null); setDeleteError('') }} className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-50">Cancel</button>
-              <button onClick={() => handleDelete(showDeleteConfirm)} disabled={deleteDept.isPending} className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-medium hover:bg-red-700 disabled:opacity-70">
-                {deleteDept.isPending ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Delete'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDeleteModal
+        isOpen={!!showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(null)}
+        onConfirm={() => showDeleteConfirm && handleDelete(showDeleteConfirm)}
+        title="Delete Department"
+        message="Are you sure you want to permanently delete this department? This action cannot be undone."
+        isDeleting={deleteDept.isPending}
+      />
 
       {/* Main Content */}
       <div className="h-full flex flex-col overflow-y-auto bg-gray-50 dark:bg-gray-900">

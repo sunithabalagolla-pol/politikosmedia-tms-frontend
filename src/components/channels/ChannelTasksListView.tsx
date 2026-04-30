@@ -6,6 +6,7 @@ import { usePermission } from '../../hooks/usePermission'
 import { Breadcrumb } from '../tasks/Breadcrumb'
 import CreateChannelTaskModal from './CreateChannelTaskModal'
 import ChannelTaskDetailPanel from './ChannelTaskDetailPanel'
+import ConfirmDeleteModal from '../ConfirmDeleteModal'
 
 export default function ChannelTasksListView() {
   const [searchParams] = useSearchParams()
@@ -18,6 +19,7 @@ export default function ChannelTasksListView() {
   const [editTaskId, setEditTaskId] = useState<string | null>(null)
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null)
 
   const { data: channel } = useChannel(channelId)
   const { data: subcategories } = useSubcategories(channelId)
@@ -37,9 +39,14 @@ export default function ChannelTasksListView() {
 
   const handleDelete = async (e: React.MouseEvent, taskId: string) => {
     e.stopPropagation()
-    if (!confirm('Are you sure you want to delete this task?')) return
+    setDeleteTaskId(taskId)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTaskId) return
     try {
-      await deleteTask.mutateAsync(taskId)
+      await deleteTask.mutateAsync(deleteTaskId)
+      setDeleteTaskId(null)
     } catch (error) {
       console.error('Failed to delete task:', error)
       alert('Failed to delete task')
@@ -310,6 +317,16 @@ export default function ChannelTasksListView() {
         onClose={() => setSelectedTaskId(null)}
         taskId={selectedTaskId}
         readOnly
+      />
+
+      {/* Delete Confirm Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!deleteTaskId}
+        onClose={() => setDeleteTaskId(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Task"
+        message="Are you sure you want to permanently delete this task? All subtasks, attachments, and comments will be removed."
+        isDeleting={deleteTask.isPending}
       />
     </>
   )

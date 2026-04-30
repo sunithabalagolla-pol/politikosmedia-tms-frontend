@@ -129,7 +129,7 @@ export default function CategoriesView() {
           </p>
           {isAdmin() && (
             <button
-              onClick={() => navigate(basePath.replace('/tasks', '/settings'))}
+              onClick={() => navigate(basePath.replace('/tasks', '/settings?section=categories'))}
               className="inline-flex items-center gap-2 px-4 py-2 bg-[#b23a48] hover:bg-[#8f2e3a] text-white rounded-lg text-xs font-medium transition-colors"
             >
               Go to Settings

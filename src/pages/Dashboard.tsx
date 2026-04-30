@@ -29,6 +29,7 @@ import CreateTaskModal from '../components/CreateTaskModal'
 import { useTheme } from '../hooks/useTheme'
 import { useAuth } from '../context/AuthContext'
 import { usePermission } from '../hooks/usePermission'
+import { useRole } from '../hooks/useRole'
 import SearchBar from '../components/SearchBar'
 
 export default function Dashboard() {
@@ -43,6 +44,7 @@ export default function Dashboard() {
   // Permission checks
   const canViewDepartments = usePermission('dept:view')
   const canViewChannels = usePermission('channel:view')
+  const { isAdmin } = useRole()
   
   // Admin always sees departments menu if they have permission (not affected by role toggles)
   const shouldShowDepartments = canViewDepartments
@@ -266,6 +268,7 @@ export default function Dashboard() {
           {/* Personal Section */}
           <div className={`transition-all duration-300 ${collapsed ? 'lg:p-0' : 'p-0'}`}>
             <ul className="space-y-0.5">
+              {!isAdmin() && (
               <li>
                 <Link
                   to="/dashboard/my-tasks"
@@ -283,6 +286,7 @@ export default function Dashboard() {
                   )}
                 </Link>
               </li>
+              )}
               <li>
                 <Link
                   to="/dashboard/calendar"
