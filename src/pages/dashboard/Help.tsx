@@ -30,7 +30,6 @@ export default function Help() {
   const canViewTickets = usePermission('ticket:view')
   const canDeleteTicket = usePermission('ticket:delete')
   
-  // Get user role and ID for UI visibility settings and ownership checks
   const { data: authData } = useUserPermissions()
   const userRole = authData?.user?.role
   const currentUserId = authData?.user?.id
@@ -43,8 +42,8 @@ export default function Help() {
       ? publicSettings?.show_tickets_create_manager 
       : userRole === 'employee' 
         ? publicSettings?.show_tickets_create_employee 
-        : true // fallback
-  const shouldShowCreateButton = canCreateTicket && (isAdmin() || showCreateForRole)
+        : true
+  const shouldShowCreateButton = canCreateTicket && !isAdmin() && showCreateForRole
   
   const showUpdateForRole = userRole === 'admin'
     ? publicSettings?.show_tickets_update_admin ?? true
@@ -52,7 +51,7 @@ export default function Help() {
       ? publicSettings?.show_tickets_update_manager
       : userRole === 'employee'
         ? publicSettings?.show_tickets_update_employee
-        : true // fallback
+        : true
   const shouldShowUpdateButton = canUpdateTicket && (isAdmin() || showUpdateForRole)
   
   const showViewForRole = userRole === 'admin'
@@ -61,7 +60,7 @@ export default function Help() {
       ? publicSettings?.show_tickets_view_manager
       : userRole === 'employee'
         ? publicSettings?.show_tickets_view_employee
-        : true // fallback
+        : true
   const shouldShowTickets = canViewTickets && (isAdmin() || showViewForRole)
   
   const showDeleteForRole = userRole === 'admin'
@@ -70,18 +69,16 @@ export default function Help() {
       ? publicSettings?.show_tickets_delete_manager
       : userRole === 'employee'
         ? publicSettings?.show_tickets_delete_employee
-        : true // fallback
+        : true
 
   // Category/Phase filters
   const [selectedCategory, setSelectedCategory] = useState<string>()
   const [selectedPhase, setSelectedPhase] = useState<string>()
   
-  // Categories: Admin/Manager see all, Employee sees only assigned
   const { data: allCategories } = useCategories()
   const { data: assignedCategories } = useAssignedCategories()
   const categories = user?.role === 'user' ? assignedCategories : allCategories
   
-  // Phases: Admin/Manager see all for category, Employee sees only assigned
   const { data: allPhases } = usePhases(selectedCategory || null)
   const { data: assignedPhases } = useAssignedPhases(selectedCategory)
   const phases = user?.role === 'user' ? assignedPhases : allPhases
@@ -114,12 +111,12 @@ export default function Help() {
   
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId || undefined)
-    setSelectedPhase(undefined) // Reset phase when category changes
+    setSelectedPhase(undefined)
   }
   
   const handleTicketCategoryChange = (categoryId: string) => {
     setTicketCategory(categoryId || undefined)
-    setTicketPhase(undefined) // Reset phase when category changes
+    setTicketPhase(undefined)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -168,17 +165,21 @@ export default function Help() {
 
   return (
     <div className="h-full flex overflow-hidden bg-gray-50 dark:bg-gray-900">
-      <main className="flex-1 overflow-auto p-6 lg:p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <main className="flex-1 overflow-auto p-6">
+        <div className="space-y-6">
 
-          {/* FAQ Section */}
+          {/* ═══ FAQ Section (read-only accordion) ═══ */}
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
             <div className="flex items-start gap-4 mb-6">
               <svg className="w-6 h-6 text-gray-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <div><h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Frequently Asked Questions</h2><p className="text-xs text-gray-500">Find answers to common questions</p></div>
+              <div>
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Frequently Asked Questions</h2>
+                <p className="text-xs text-gray-500">Find answers to common questions</p>
+              </div>
             </div>
-            {faqsLoading ? <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 text-[#b23a48] animate-spin" /></div>
-            : faqs && faqs.length > 0 ? (
+            {faqsLoading ? (
+              <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 text-[#b23a48] animate-spin" /></div>
+            ) : faqs && faqs.length > 0 ? (
               <div className="space-y-0 divide-y divide-gray-200 dark:divide-gray-700">
                 {faqs.map((faq: any) => (
                   <div key={faq.id} className="py-4">
@@ -190,10 +191,12 @@ export default function Help() {
                   </div>
                 ))}
               </div>
-            ) : <div className="text-center py-8"><p className="text-xs text-gray-400">No FAQs available yet.</p></div>}
+            ) : (
+              <div className="text-center py-8"><p className="text-xs text-gray-400">No FAQs available yet.</p></div>
+            )}
           </div>
 
-          {/* Submit Ticket */}
+          {/* ═══ Submit Ticket (not for admin) ═══ */}
           {shouldShowCreateButton && (
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
               <div className="flex items-start gap-4 mb-6">
@@ -212,42 +215,22 @@ export default function Help() {
                   <div><label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Subject <span className="text-red-500">*</span></label>
                     <input type="text" value={subject} onChange={e => setSubject(e.target.value)} placeholder="Brief description of your issue"
                       className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700" /></div>
-                  
-                  {/* Category Selection */}
                   <div>
                     <label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Category (Optional)</label>
-                    <select
-                      value={ticketCategory || ''}
-                      onChange={(e) => handleTicketCategoryChange(e.target.value)}
-                      className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700"
-                    >
+                    <select value={ticketCategory || ''} onChange={(e) => handleTicketCategoryChange(e.target.value)}
+                      className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700">
                       <option value="">Select a category</option>
-                      {categories?.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
+                      {categories?.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </select>
                   </div>
-                  
-                  {/* Phase Selection */}
                   <div>
                     <label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Phase (Optional)</label>
-                    <select
-                      value={ticketPhase || ''}
-                      onChange={(e) => setTicketPhase(e.target.value || undefined)}
-                      disabled={!ticketCategory}
-                      className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700"
-                    >
+                    <select value={ticketPhase || ''} onChange={(e) => setTicketPhase(e.target.value || undefined)} disabled={!ticketCategory}
+                      className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700">
                       <option value="">Select a phase</option>
-                      {phases?.map((phase) => (
-                        <option key={phase.id} value={phase.id}>
-                          {phase.name}
-                        </option>
-                      ))}
+                      {phases?.map((phase) => <option key={phase.id} value={phase.id}>{phase.name}</option>)}
                     </select>
                   </div>
-                  
                   <div><label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Description <span className="text-red-500">*</span></label>
                     <textarea rows={5} value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe your issue in detail..."
                       className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] resize-none dark:bg-gray-700" /></div>
@@ -261,10 +244,9 @@ export default function Help() {
             </div>
           )}
 
-          {/* Tickets Section */}
+          {/* ═══ Tickets Section ═══ */}
           {shouldShowTickets && (
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
-              {/* Header with Filters */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -272,10 +254,7 @@ export default function Help() {
                     <p className="text-xs text-gray-500">{isAdminOrManager() ? 'Support tickets from all users' : 'Your submitted support tickets'}</p>
                   </div>
                 </div>
-                
-                {/* Filters Row */}
                 <div className="flex items-center gap-3 flex-wrap">
-                  {/* Status Filter */}
                   {isAdminOrManager() && (
                     <select value={ticketFilter} onChange={e => setTicketFilter(e.target.value)}
                       className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] min-w-[120px]">
@@ -285,54 +264,28 @@ export default function Help() {
                       <option value="closed">🟢 Closed</option>
                     </select>
                   )}
-                  
-                  {/* Category Filter */}
                   <div className="flex items-center gap-2">
                     <FolderTree className="w-4 h-4 text-gray-400" />
-                    <select
-                      value={selectedCategory || ''}
-                      onChange={(e) => handleCategoryChange(e.target.value)}
-                      className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] min-w-[150px]"
-                    >
+                    <select value={selectedCategory || ''} onChange={(e) => handleCategoryChange(e.target.value)}
+                      className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] min-w-[150px]">
                       <option value="">All Categories</option>
-                      {categories?.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
+                      {categories?.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </select>
                   </div>
-
-                  {/* Phase Filter */}
                   <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4 text-gray-400" />
-                    <select
-                      value={selectedPhase || ''}
-                      onChange={(e) => setSelectedPhase(e.target.value || undefined)}
-                      disabled={!selectedCategory}
-                      className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] disabled:opacity-50 disabled:cursor-not-allowed min-w-[150px]"
-                    >
+                    <select value={selectedPhase || ''} onChange={(e) => setSelectedPhase(e.target.value || undefined)} disabled={!selectedCategory}
+                      className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] disabled:opacity-50 disabled:cursor-not-allowed min-w-[150px]">
                       <option value="">All Phases</option>
-                      {phases?.map((phase) => (
-                        <option key={phase.id} value={phase.id}>
-                          {phase.name}
-                        </option>
-                      ))}
+                      {phases?.map((phase) => <option key={phase.id} value={phase.id}>{phase.name}</option>)}
                     </select>
                   </div>
-
-                  {/* Clear Filters Button */}
                   {(selectedCategory || selectedPhase || ticketFilter) && (
-                    <button
-                      onClick={handleClearFilters}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                      Clear Filters
+                    <button onClick={handleClearFilters}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                      <X className="w-3 h-3" /> Clear Filters
                     </button>
                   )}
-
-                  {/* Active Filter Indicator */}
                   {(selectedCategory || selectedPhase) && (
                     <div className="ml-auto flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                       <span className="font-medium">Filtered:</span>
@@ -357,7 +310,6 @@ export default function Help() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  {/* Excel-like Table */}
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="bg-gray-50 dark:bg-gray-900 border-b-2 border-gray-200 dark:border-gray-700">
@@ -376,32 +328,14 @@ export default function Help() {
                       {tickets.map((ticket: any) => {
                         const isOwnTicket = ticket.user_id === currentUserId
                         const shouldShowDeleteButton = canDeleteTicket && (isAdmin() || showDeleteForRole) && (userRole !== 'employee' || isOwnTicket)
-                        
                         return (
-                          <tr 
-                            key={ticket.id}
-                            className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                          >
-                            <td className="px-4 py-2 text-[11px] text-gray-900 dark:text-white font-medium max-w-xs">
-                              <div className="truncate">{ticket.subject}</div>
+                          <tr key={ticket.id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                            <td className="px-4 py-2 text-[11px] text-gray-900 dark:text-white font-medium max-w-xs"><div className="truncate">{ticket.subject}</div></td>
+                            <td className="px-4 py-3 text-[11px]">
+                              {ticket.category_name ? <span className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded text-[11px] font-medium">{ticket.category_name}</span> : <span className="text-gray-400">—</span>}
                             </td>
                             <td className="px-4 py-3 text-[11px]">
-                              {ticket.category_name ? (
-                                <span className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded text-[11px] font-medium">
-                                  {ticket.category_name}
-                                </span>
-                              ) : (
-                                <span className="text-gray-400">—</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3 text-[11px]">
-                              {ticket.phase_name ? (
-                                <span className="px-1.5 py-0.5 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 rounded text-[11px] font-medium">
-                                  {ticket.phase_name}
-                                </span>
-                              ) : (
-                                <span className="text-gray-400">—</span>
-                              )}
+                              {ticket.phase_name ? <span className="px-1.5 py-0.5 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 rounded text-[11px] font-medium">{ticket.phase_name}</span> : <span className="text-gray-400">—</span>}
                             </td>
                             <td className="px-4 py-3 text-[11px]">
                               <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium ${STATUS_COLORS[ticket.status] || 'bg-gray-100 text-gray-700'}`}>
@@ -409,32 +343,16 @@ export default function Help() {
                               </span>
                             </td>
                             {isAdminOrManager() && (
-                              <td className="px-4 py-2 text-[11px] text-gray-600 dark:text-gray-400">
-                                <div className="truncate max-w-[150px]">{ticket.submitted_by || '—'}</div>
-                              </td>
+                              <td className="px-4 py-2 text-[11px] text-gray-600 dark:text-gray-400"><div className="truncate max-w-[150px]">{ticket.submitted_by || '—'}</div></td>
                             )}
-                            <td className="px-4 py-2 text-[11px] text-gray-600 dark:text-gray-400">
-                              {formatDate(ticket.created_at?.split('T')[0] || '')}
-                            </td>
+                            <td className="px-4 py-2 text-[11px] text-gray-600 dark:text-gray-400">{formatDate(ticket.created_at?.split('T')[0] || '')}</td>
                             <td className="px-4 py-2 text-center">
                               <div className="flex items-center justify-center gap-2">
-                                <button
-                                  onClick={() => setSelectedTicketId(ticket.id)}
-                                  className="px-1.5 py-0.5 text-[11px] font-medium text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
-                                >
-                                  View
-                                </button>
+                                <button onClick={() => setSelectedTicketId(ticket.id)} className="px-1.5 py-0.5 text-[11px] font-medium text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors">View</button>
                                 {shouldShowDeleteButton && (
-                                  <button
-                                    onClick={() => handleDeleteTicket(ticket.id)}
-                                    disabled={deletingId === ticket.id}
-                                    className="px-1.5 py-0.5 text-[11px] font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors disabled:opacity-50"
-                                  >
-                                    {deletingId === ticket.id ? (
-                                      <Loader2 className="w-3 h-3 animate-spin" />
-                                    ) : (
-                                      'Delete'
-                                    )}
+                                  <button onClick={() => handleDeleteTicket(ticket.id)} disabled={deletingId === ticket.id}
+                                    className="px-1.5 py-0.5 text-[11px] font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors disabled:opacity-50">
+                                    {deletingId === ticket.id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Delete'}
                                   </button>
                                 )}
                               </div>
@@ -446,18 +364,13 @@ export default function Help() {
                   </table>
                 </div>
               )}
-              
-              {/* Modal Popup - Fixed Overlay */}
+
+              {/* Ticket Detail Modal */}
               {selectedTicketId && tickets.find((t: any) => t.id === selectedTicketId) && (() => {
                 const ticket = tickets.find((t: any) => t.id === selectedTicketId)
-                const isOwnTicket = ticket.user_id === currentUserId
-                const shouldShowDeleteButton = canDeleteTicket && (isAdmin() || showDeleteForRole) && (userRole !== 'employee' || isOwnTicket)
-                
                 return (
                   <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedTicketId(null)}>
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full max-h-[88vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
-
-                      {/* Header */}
                       <div className="px-5 pt-5 pb-4 border-b border-gray-100 dark:border-gray-800 flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <p className="text-[11px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Support Ticket</p>
@@ -474,16 +387,10 @@ export default function Help() {
                           </button>
                         </div>
                       </div>
-
-                      {/* Scrollable body */}
                       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-
-                        {/* Description */}
                         {ticket.description && (
                           <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">{ticket.description}</p>
                         )}
-
-                        {/* Meta grid */}
                         <div className="grid grid-cols-2 gap-2">
                           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
                             <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Category</p>
@@ -505,37 +412,22 @@ export default function Help() {
                             <p className="text-[11px] font-semibold text-gray-900 dark:text-white">{formatDate(ticket.created_at?.split('T')[0] || '')}</p>
                           </div>
                         </div>
-
-                        {/* Timeline */}
                         {ticket.status_history && ticket.status_history.length > 0 && (
                           <div>
                             <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">Activity</p>
                             <div className="space-y-2">
                               {ticket.status_history.map((entry: any, idx: number) => (
                                 <div key={entry.id} className="flex gap-3">
-                                  {/* Timeline dot + line */}
                                   <div className="flex flex-col items-center">
-                                    <div className={`w-2 h-2 rounded-full mt-1 shrink-0 ${
-                                      entry.status === 'closed' ? 'bg-green-500' :
-                                      entry.status === 'in-progress' ? 'bg-amber-500' : 'bg-red-400'
-                                    }`} />
-                                    {idx < ticket.status_history.length - 1 && (
-                                      <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700 mt-1" />
-                                    )}
+                                    <div className={`w-2 h-2 rounded-full mt-1 shrink-0 ${entry.status === 'closed' ? 'bg-green-500' : entry.status === 'in-progress' ? 'bg-amber-500' : 'bg-red-400'}`} />
+                                    {idx < ticket.status_history.length - 1 && <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700 mt-1" />}
                                   </div>
-                                  {/* Content */}
                                   <div className="pb-3 flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-0.5">
-                                      <span className={`text-[11px] font-semibold ${
-                                        entry.status === 'closed' ? 'text-green-600 dark:text-green-400' :
-                                        entry.status === 'in-progress' ? 'text-amber-600 dark:text-amber-400' :
-                                        'text-red-600 dark:text-red-400'
-                                      }`}>{getStatusLabel(entry.status)}</span>
+                                      <span className={`text-[11px] font-semibold ${entry.status === 'closed' ? 'text-green-600 dark:text-green-400' : entry.status === 'in-progress' ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}`}>{getStatusLabel(entry.status)}</span>
                                       <span className="text-[10px] text-gray-400">{formatDate(entry.changed_at?.split('T')[0] || '')}</span>
                                     </div>
-                                    {entry.note && (
-                                      <p className="text-[11px] text-gray-600 dark:text-gray-400 italic mb-0.5">"{entry.note}"</p>
-                                    )}
+                                    {entry.note && <p className="text-[11px] text-gray-600 dark:text-gray-400 italic mb-0.5">"{entry.note}"</p>}
                                     <p className="text-[10px] text-gray-400">by {entry.changed_by_name} · {entry.changed_by_role}</p>
                                   </div>
                                 </div>
@@ -543,8 +435,6 @@ export default function Help() {
                             </div>
                           </div>
                         )}
-
-                        {/* Update Status */}
                         {shouldShowUpdateButton && isAdminOrManager() && (
                           <div className="border-t border-gray-100 dark:border-gray-800 pt-4">
                             {updatingId === ticket.id ? (
@@ -587,7 +477,7 @@ export default function Help() {
             </div>
           )}
 
-          {/* Quick Links */}
+          {/* ═══ Quick Links ═══ */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <a href="#" className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-[#b23a48] hover:shadow-md transition-all group">
               <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 mb-3 group-hover:bg-blue-100 transition-colors">

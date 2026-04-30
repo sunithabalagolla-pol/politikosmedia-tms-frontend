@@ -29,7 +29,7 @@ export { useSettings, useUpdateSettings } from './useSettings'
 export { useProfile, useUpdateProfile, useUploadAvatar, useDeleteAvatar, useProfileActivity, type ProfileData, type ActivityItem } from './useProfile'
 
 // Help
-export { useFaqs, useSubmitTicket } from './useHelp'
+export { useFaqs, useAllFaqs, useCreateFaq, useUpdateFaq, useDeleteFaq, useSubmitTicket } from './useHelp'
 
 // Search
 export { useSearch } from './useSearch'
