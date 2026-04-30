@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
-import { Save, Loader2, CheckCircle2, Shield, X, Check, Wrench, Lock, FolderTree, Bell, User, Video, TrendingUp } from 'lucide-react'
+import { Save, Loader2, CheckCircle2, Shield, X, Check, Wrench, Lock, FolderTree, Bell, User, Video, TrendingUp, HelpCircle } from 'lucide-react'
 import { useSettings, useUpdateSettings, usePublicSettings, useUpdateDepartmentsMenuManagerSetting, useUpdateDepartmentsMenuEmployeeSetting, useUpdateTicketsCreateManagerSetting, useUpdateTicketsCreateEmployeeSetting, useUpdateTicketsUpdateManagerSetting, useUpdateTicketsUpdateEmployeeSetting, useUpdateTicketsViewManagerSetting, useUpdateTicketsViewEmployeeSetting, useUpdateTicketsDeleteManagerSetting, useUpdateTicketsDeleteEmployeeSetting, useUpdateTeamAddManagerSetting, useUpdateTeamAddEmployeeSetting, useUpdateTeamEditManagerSetting, useUpdateTeamEditEmployeeSetting, useUpdateTeamDeactivateManagerSetting, useUpdateTeamDeactivateEmployeeSetting } from '../../hooks/api/useSettings'
 import { usePermissions, useUpdatePermissions } from '../../hooks/api/usePermissions'
 import { useRole } from '../../hooks/useRole'
@@ -9,6 +9,7 @@ import axiosInstance from '../../api/axiosInstance'
 import CategoriesPhasesSettings from '../../components/settings/CategoriesPhasesSettings'
 import ChannelSettings from '../../components/settings/ChannelSettings'
 import ProgressSettings from '../../components/settings/ProgressSettings'
+import FaqSettings from '../../components/settings/FaqSettings'
 
 export default function Settings() {
   const { isAdmin, isAdminOrManager } = useRole()
@@ -32,7 +33,7 @@ export default function Settings() {
   const updateTeamEditEmployee = useUpdateTeamEditEmployeeSetting()
   const updateTeamDeactivateManager = useUpdateTeamDeactivateManagerSetting()
   const updateTeamDeactivateEmployee = useUpdateTeamDeactivateEmployeeSetting()
-  const [activeTab, setActiveTab] = useState<'notifications' | 'app' | 'permissions' | 'categories' | 'channels' | 'progress'>('notifications')
+  const [activeTab, setActiveTab] = useState<'notifications' | 'app' | 'permissions' | 'categories' | 'channels' | 'progress' | 'faqs'>('notifications')
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [pushNotifications, setPushNotifications] = useState(true)
   const [saved, setSaved] = useState(false)
@@ -88,7 +89,7 @@ export default function Settings() {
   const [searchParams, setSearchParams] = useSearchParams()
   useEffect(() => {
     const section = searchParams.get('section')
-    if (section && ['notifications', 'categories', 'channels', 'app', 'permissions', 'progress'].includes(section)) {
+    if (section && ['notifications', 'categories', 'channels', 'app', 'permissions', 'progress', 'faqs'].includes(section)) {
       setActiveTab(section as any)
     }
   }, [])
@@ -491,6 +492,10 @@ export default function Settings() {
               <button onClick={() => handleSectionChange('progress')}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${activeTab === 'progress' ? 'bg-[#b23a48]/10 text-[#b23a48]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
                 <TrendingUp className="w-3.5 h-3.5" /> Progress
+              </button>
+              <button onClick={() => handleSectionChange('faqs')}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${activeTab === 'faqs' ? 'bg-[#b23a48]/10 text-[#b23a48]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}>
+                <HelpCircle className="w-3.5 h-3.5" /> FAQs
               </button>
             </nav>
           </div>
@@ -934,6 +939,11 @@ export default function Settings() {
           {/* ═══════ TAB: Progress (Admin & Manager) ═══════ */}
           {activeTab === 'progress' && isAdminOrManager() && (
             <ProgressSettings />
+          )}
+
+          {/* ═══════ TAB: FAQs (Admin & Manager) ═══════ */}
+          {activeTab === 'faqs' && isAdminOrManager() && (
+            <FaqSettings />
           )}
 
         </div>

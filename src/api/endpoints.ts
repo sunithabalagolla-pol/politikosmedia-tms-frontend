@@ -80,6 +80,8 @@ const API = {
 
   // Help
   HELP_FAQS: '/api/v1/help/faqs',
+  HELP_FAQS_ALL: '/api/v1/help/faqs/all',
+  HELP_FAQ_BY_ID: (id: string | number) => `/api/v1/help/faqs/${id}`,
   HELP_TICKETS: '/api/v1/help/tickets',
 
   // Search
