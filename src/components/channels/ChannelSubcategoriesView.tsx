@@ -105,7 +105,7 @@ export default function ChannelSubcategoriesView() {
             Subcategories help organize tasks within this channel
           </p>
           <button
-            onClick={() => navigate(basePath.replace('/channels', '/settings'))}
+            onClick={() => navigate(`${basePath.replace('/channels', '/settings')}?section=channels`)}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#b23a48] hover:bg-[#8f2e3a] text-white rounded-lg text-xs font-medium transition-colors"
           >
             Go to Settings
