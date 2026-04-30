@@ -52,7 +52,6 @@ function App() {
             <Route path="team" element={<TeamMembers />} />
             <Route path="departments" element={<Departments />} />
             <Route path="reports" element={<Reports />} />
-            <Route path="my-tasks" element={<MyTasks />} />
             <Route path="calendar" element={<Calendar />} />
             <Route path="channels" element={<ChannelPlatform />} />
             <Route path="shows" element={<Shows />} />

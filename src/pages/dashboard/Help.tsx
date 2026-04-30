@@ -8,6 +8,7 @@ import { usePermission, useUserPermissions } from '../../hooks/usePermission'
 import { usePublicSettings } from '../../hooks/api/useSettings'
 import { useAuth } from '../../context/AuthContext'
 import { formatDate } from '../../lib/dateUtils'
+import ConfirmDeleteModal from '../../components/ConfirmDeleteModal'
 
 const STATUS_COLORS: Record<string, string> = {
   open: 'bg-red-100 text-red-700',
@@ -98,6 +99,7 @@ export default function Help() {
   const [updateForm, setUpdateForm] = useState({ status: 'open', admin_note: '' })
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
+  const [deleteTicketId, setDeleteTicketId] = useState<string | null>(null)
 
   const { data: ticketsData, isLoading: ticketsLoading } = useTickets({
     status: ticketFilter || undefined,
@@ -147,12 +149,18 @@ export default function Help() {
   }
 
   const handleDeleteTicket = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this ticket? This action cannot be undone.')) return
+    setDeleteTicketId(id)
+  }
+
+  const handleDeleteTicketConfirm = async () => {
+    if (!deleteTicketId) return
     try {
-      await deleteTicket.mutateAsync(id)
+      await deleteTicket.mutateAsync(deleteTicketId)
       setDeletingId(null)
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to delete ticket')
+    } finally {
+      setDeleteTicketId(null)
     }
   }
 
@@ -606,6 +614,16 @@ export default function Help() {
           </div>
         </div>
       </main>
+
+      {/* Delete Ticket Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!deleteTicketId}
+        onClose={() => setDeleteTicketId(null)}
+        onConfirm={handleDeleteTicketConfirm}
+        title="Delete Ticket"
+        message="Are you sure you want to permanently delete this ticket? This action cannot be undone."
+        isDeleting={deleteTicket.isPending}
+      />
     </div>
   )
 }

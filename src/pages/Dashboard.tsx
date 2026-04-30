@@ -7,17 +7,13 @@ import {
   Users,
   Building2,
   FileText,
-  ClipboardCheck,
   Bell,
   Settings,
   HelpCircle,
-  User,
   LogOut,
   ChevronsLeft,
   Menu,
   X,
-  Search,
-  Plus,
   Calendar,
   Sun,
   Moon,
@@ -268,23 +264,6 @@ export default function Dashboard() {
             <ul className="space-y-0.5">
               <li>
                 <Link
-                  to="/dashboard/my-tasks"
-                  className={`group flex items-center gap-3 rounded-lg transition-all duration-200 relative ${
-                    isActive('/dashboard/my-tasks') ? 'bg-[#d4515f] shadow-lg' : 'hover:bg-white/10'
-                  } ${collapsed ? 'lg:justify-center lg:px-2 lg:py-2.5' : 'px-4 py-2'}`}
-                  title={collapsed ? 'My Tasks' : ''}
-                >
-                  <ClipboardCheck className="w-4 h-4 shrink-0" />
-                  <span className={`transition-all duration-300 whitespace-nowrap font-medium text-xs ${collapsed ? 'lg:opacity-0 lg:w-0 lg:overflow-hidden' : 'opacity-100'}`}>My Tasks</span>
-                  {collapsed && (
-                    <span className="hidden lg:block absolute left-full ml-6 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
-                      My Tasks
-                    </span>
-                  )}
-                </Link>
-              </li>
-              <li>
-                <Link
                   to="/dashboard/calendar"
                   className={`group flex items-center gap-3 rounded-lg transition-all duration-200 relative ${
                     isActive('/dashboard/calendar') ? 'bg-[#d4515f] shadow-lg' : 'hover:bg-white/10'
@@ -381,7 +360,6 @@ export default function Dashboard() {
                 {location.pathname === '/dashboard/team' && 'Workforce'}
                 {location.pathname === '/dashboard/departments' && 'Departments'}
                 {location.pathname === '/dashboard/reports' && 'Reports'}
-                {location.pathname === '/dashboard/my-tasks' && 'My Tasks'}
                 {location.pathname === '/dashboard/calendar' && 'Calendar'}
                 {location.pathname === '/dashboard/channels' && 'Channel & Platform'}
                 {location.pathname === '/dashboard/shows' && 'Shows'}

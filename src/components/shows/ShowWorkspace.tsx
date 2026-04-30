@@ -6,6 +6,7 @@ import {
   useAddAsset, useRemoveAsset, useToggleAsset, useApproveEpisode, useDeleteEpisode,
   useUpdateEpisode, useRenameAsset, ShowEpisode
 } from '../../hooks/api/useShows'
+import ConfirmDeleteModal from '../ConfirmDeleteModal'
 
 const ASSET_ICONS: Record<string, any> = { Script: FileText, Visuals: Image, 'Voice Over': Mic, Video: Video }
 
@@ -26,6 +27,9 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   const [editEpDuration, setEditEpDuration] = useState('')
   const [renamingAssetId, setRenamingAssetId] = useState<string | null>(null)
   const [renameAssetValue, setRenameAssetValue] = useState('')
+  const [deleteEpisodeId, setDeleteEpisodeId] = useState<string | null>(null)
+  const [showDeleteShowModal, setShowDeleteShowModal] = useState(false)
+  const [deleteAssetTarget, setDeleteAssetTarget] = useState<{ id: string; name: string } | null>(null)
 
   const { data: show } = useShow(showId)
   const { data: episodes = [], isLoading } = useShowEpisodes(showId)
@@ -71,11 +75,16 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   }
 
   const handleDeleteEpisode = async (epId: string) => {
-    if (!confirm('Delete this episode?')) return
+    setDeleteEpisodeId(epId)
+  }
+
+  const handleDeleteEpisodeConfirm = async () => {
+    if (!deleteEpisodeId) return
     try {
-      await deleteEpisode.mutateAsync(epId)
-      if (selectedEpisodeId === epId) setSelectedEpisodeId(null)
+      await deleteEpisode.mutateAsync(deleteEpisodeId)
+      if (selectedEpisodeId === deleteEpisodeId) setSelectedEpisodeId(null)
     } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete') }
+    finally { setDeleteEpisodeId(null) }
   }
 
   const handleStartRenameAsset = (assetId: string, currentName: string) => {
@@ -147,11 +156,15 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
   }
 
   const handleDeleteShowAction = async () => {
-    if (!confirm(`Are you sure you want to delete "${showName}"?\n\nThis action cannot be undone.`)) return
+    setShowDeleteShowModal(true)
+  }
+
+  const handleDeleteShowConfirm = async () => {
     try {
       await deleteShowMut.mutateAsync(showId)
       navigate(basePath)
     } catch (e: any) { alert(e?.response?.data?.message || 'Failed to delete show') }
+    finally { setShowDeleteShowModal(false) }
   }
 
   if (isLoading) return <div className="h-full flex items-center justify-center"><Loader2 className="w-6 h-6 text-[#b23a48] animate-spin" /></div>
@@ -269,11 +282,7 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
                               className="p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors" title="Rename asset">
                               <Pencil className="w-3 h-3" />
                             </button>
-                            <button onClick={async () => {
-                              if (!confirm(`Are you sure you want to remove "${asset.name}"?`)) return
-                              try { await removeAsset.mutateAsync(asset.id) }
-                              catch (e: any) { alert(e?.response?.data?.message || 'Failed to remove asset') }
-                            }}
+                            <button onClick={() => setDeleteAssetTarget({ id: asset.id, name: asset.name })}
                               className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors" title="Delete asset">
                               <Trash2 className="w-3 h-3" />
                             </button>
@@ -464,6 +473,41 @@ export default function ShowWorkspace({ showId }: { showId: string }) {
           </div>
         </div>
       )}
+
+      {/* Delete Show Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={showDeleteShowModal}
+        onClose={() => setShowDeleteShowModal(false)}
+        onConfirm={handleDeleteShowConfirm}
+        title="Delete Show"
+        message={`Are you sure you want to permanently delete "${showName}"? All episodes and data will be removed.`}
+        isDeleting={deleteShowMut.isPending}
+      />
+
+      {/* Delete Episode Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!deleteEpisodeId}
+        onClose={() => setDeleteEpisodeId(null)}
+        onConfirm={handleDeleteEpisodeConfirm}
+        title="Delete Episode"
+        message="Are you sure you want to permanently delete this episode? This action cannot be undone."
+        isDeleting={deleteEpisode.isPending}
+      />
+
+      {/* Delete Asset Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!deleteAssetTarget}
+        onClose={() => setDeleteAssetTarget(null)}
+        onConfirm={async () => {
+          if (!deleteAssetTarget) return
+          try { await removeAsset.mutateAsync(deleteAssetTarget.id) }
+          catch (e: any) { alert(e?.response?.data?.message || 'Failed to remove asset') }
+          finally { setDeleteAssetTarget(null) }
+        }}
+        title="Delete Asset"
+        message={`Are you sure you want to remove "${deleteAssetTarget?.name || ''}"? This action cannot be undone.`}
+        isDeleting={removeAsset.isPending}
+      />
     </div>
   )
 }

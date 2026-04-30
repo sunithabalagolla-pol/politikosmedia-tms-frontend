@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { Eye, Pencil, Trash2 } from 'lucide-react'
 import { ChannelTask } from '../../hooks/api'
 import { usePermission } from '../../hooks/usePermission'
 import { useDeleteChannelTask } from '../../hooks/api'
 import { formatDistanceToNow } from 'date-fns'
+import ConfirmDeleteModal from '../ConfirmDeleteModal'
 
 interface ChannelTaskCardProps {
   task: ChannelTask
@@ -14,15 +16,16 @@ export default function ChannelTaskCard({ task, onViewDetails, onEdit }: Channel
   const canDelete = usePermission('channel:delete')
   const canEdit = usePermission('channel:edit')
   const deleteTask = useDeleteChannelTask()
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this task?')) return
-    
     try {
       await deleteTask.mutateAsync(task.id)
     } catch (error) {
       console.error('Failed to delete task:', error)
       alert('Failed to delete task')
+    } finally {
+      setShowDeleteModal(false)
     }
   }
 
@@ -114,7 +117,7 @@ export default function ChannelTaskCard({ task, onViewDetails, onEdit }: Channel
         )}
         {canDelete && (
           <button
-            onClick={handleDelete}
+            onClick={() => setShowDeleteModal(true)}
             disabled={deleteTask.isPending}
             className="flex items-center gap-2 px-3 py-1.5 text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50"
           >
@@ -123,6 +126,16 @@ export default function ChannelTaskCard({ task, onViewDetails, onEdit }: Channel
           </button>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Task"
+        message="Are you sure you want to permanently delete this task? This action cannot be undone."
+        isDeleting={deleteTask.isPending}
+      />
     </div>
   )
 }
