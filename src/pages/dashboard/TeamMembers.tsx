@@ -40,29 +40,6 @@ export default function TeamMembers() {
   const showDeactivateForRole = userRole === 'admin' ? settings?.show_team_deactivate_admin ?? true : userRole === 'manager' ? settings?.show_team_deactivate_manager : settings?.show_team_deactivate_employee
   const shouldShowDeactivateButton = canDeactivateMember && showDeactivateForRole
 
-  // Debug logging
-  console.log('🔍 Team Management Debug (Admin Dashboard):', {
-    userRole,
-    isAdmin: isAdmin(),
-    canAddMember,
-    showAddForRole,
-    shouldShowAddButton,
-    canEditMember,
-    showEditForRole,
-    shouldShowEditButton,
-    canDeactivateMember,
-    showDeactivateForRole,
-    shouldShowDeactivateButton,
-    settings: {
-      show_team_add_manager: settings?.show_team_add_manager,
-      show_team_add_employee: settings?.show_team_add_employee,
-      show_team_edit_manager: settings?.show_team_edit_manager,
-      show_team_edit_employee: settings?.show_team_edit_employee,
-      show_team_deactivate_manager: settings?.show_team_deactivate_manager,
-      show_team_deactivate_employee: settings?.show_team_deactivate_employee,
-    }
-  })
-
   // Admin can toggle anyone except themselves
   const canToggleStatus = (member: any) => member.email !== user?.email
 

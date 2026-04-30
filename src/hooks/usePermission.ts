@@ -29,16 +29,10 @@ export function usePermission(permissionKey: string): boolean {
   const { data } = useUserPermissions()
   
   if (!data?.permissions) {
-    console.log(`❌ usePermission('${permissionKey}'): No permissions data`)
     return false
   }
   
   const hasPermission = data.permissions.includes(permissionKey)
-  console.log(`🔑 usePermission('${permissionKey}'):`, {
-    hasPermission,
-    allPermissions: data.permissions,
-    userRole: data.user?.role
-  })
   
   return hasPermission
 }

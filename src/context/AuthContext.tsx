@@ -239,7 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem('deactivated_message')
         setError(msg)
       } else {
-        setError(msg || 'Dev login failed. Is the backend running on localhost:5000?')
+        setError(msg || 'Dev login failed. Is the backend server running?')
       }
     } finally {
       setIsLoading(false)

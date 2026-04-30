@@ -101,8 +101,6 @@ function TaskListContent({ phaseId }: { phaseId: string }) {
     try {
       const { data } = await axiosInstance.get(`/api/v1/tasks/${task.id}`)
       const fullTask = data.data || data
-      console.log('📋 Full task data:', fullTask)
-      console.log('📋 Subtasks:', fullTask.subtasks)
       
       // Check if user can edit this task (backend provides can_edit flag)
       if (fullTask.can_edit === false) {
@@ -120,7 +118,7 @@ function TaskListContent({ phaseId }: { phaseId: string }) {
       })
       setShowEditModal(true)
     } catch (err: any) {
-      console.error('❌ Error fetching task details:', err)
+      console.error('Error fetching task details:', err)
       // Show error message if user cannot edit this task
       const message = err?.response?.data?.message || err?.message || 'Failed to load task details'
       setErrorMessage(message)

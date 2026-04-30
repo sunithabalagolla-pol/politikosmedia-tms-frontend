@@ -39,29 +39,6 @@ export default function ManagerTeamMembers() {
   const showDeactivateForRole = userRole === 'admin' ? settings?.show_team_deactivate_admin ?? true : userRole === 'manager' ? settings?.show_team_deactivate_manager : settings?.show_team_deactivate_employee
   const shouldShowDeactivateButton = canDeactivateMember && showDeactivateForRole
 
-  // Debug logging
-  console.log('🔍 Team Management Debug:', {
-    userRole,
-    isAdmin: isAdmin(),
-    canAddMember,
-    showAddForRole,
-    shouldShowAddButton,
-    canEditMember,
-    showEditForRole,
-    shouldShowEditButton,
-    canDeactivateMember,
-    showDeactivateForRole,
-    shouldShowDeactivateButton,
-    settings: {
-      show_team_add_manager: settings?.show_team_add_manager,
-      show_team_add_employee: settings?.show_team_add_employee,
-      show_team_edit_manager: settings?.show_team_edit_manager,
-      show_team_edit_employee: settings?.show_team_edit_employee,
-      show_team_deactivate_manager: settings?.show_team_deactivate_manager,
-      show_team_deactivate_employee: settings?.show_team_deactivate_employee,
-    }
-  })
-
   const members = teamData?.members || []
   const pagination = teamData?.pagination || { total: 0, page: 1, limit: 20, totalPages: 1 }
 

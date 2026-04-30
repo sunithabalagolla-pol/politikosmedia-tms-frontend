@@ -102,25 +102,8 @@ export default function Settings() {
     }
   }
 
-  // Debug logging
-  useEffect(() => {
-    console.log('🔍 Permissions Debug:', {
-      isAdmin: isAdmin(),
-      permissionsData,
-      permissionsLoading,
-      permissionsState: permissions,
-      permissionsLength: permissions.length,
-      groupedPermissions: permissions.length > 0 ? permissions.reduce((acc: any, perm: any) => {
-        if (!acc[perm.group_name]) acc[perm.group_name] = []
-        acc[perm.group_name].push(perm)
-        return acc
-      }, {}) : {}
-    })
-  }, [permissionsData, permissionsLoading, permissions])
-
   useEffect(() => {
     if (permissionsData) {
-      console.log('✅ Setting permissions from data:', permissionsData)
       setPermissions(permissionsData)
       setOriginalPermissions(JSON.parse(JSON.stringify(permissionsData)))
     }
@@ -164,7 +147,6 @@ export default function Settings() {
   // Load show_departments_menu and ticket settings from public settings
   useEffect(() => {
     if (publicSettings) {
-      console.log('📦 Loading public settings:', publicSettings)
       setShowDepartmentsMenuManager(publicSettings.show_departments_menu_manager ?? true)
       setShowDepartmentsMenuEmployee(publicSettings.show_departments_menu_employee ?? true)
       setShowTicketsCreateManager(publicSettings.show_tickets_create_manager ?? true)
@@ -181,14 +163,6 @@ export default function Settings() {
       setShowTeamEditEmployee(publicSettings.show_team_edit_employee ?? true)
       setShowTeamDeactivateManager(publicSettings.show_team_deactivate_manager ?? true)
       setShowTeamDeactivateEmployee(publicSettings.show_team_deactivate_employee ?? true)
-      console.log('✅ Team settings loaded:', {
-        show_team_add_manager: publicSettings.show_team_add_manager,
-        show_team_add_employee: publicSettings.show_team_add_employee,
-        show_team_edit_manager: publicSettings.show_team_edit_manager,
-        show_team_edit_employee: publicSettings.show_team_edit_employee,
-        show_team_deactivate_manager: publicSettings.show_team_deactivate_manager,
-        show_team_deactivate_employee: publicSettings.show_team_deactivate_employee,
-      })
     }
   }, [publicSettings])
 
@@ -345,6 +319,7 @@ export default function Settings() {
       setTestStatus('success')
       setTestMessage(res.data?.message || 'Azure connection successful')
       await fetchAdminSettings()
+      qc.invalidateQueries({ queryKey: ['public-settings'] })
     } catch (err: any) {
       setTestStatus('error')
       setTestMessage(err.response?.data?.message || 'Connection failed. Check your credentials.')
@@ -370,6 +345,8 @@ export default function Settings() {
         setTestMessage('Credentials saved but connection test failed. Please verify your Client ID and Tenant ID.')
       }
       await fetchAdminSettings()
+      // Invalidate public-settings cache so azure_verified propagates immediately
+      qc.invalidateQueries({ queryKey: ['public-settings'] })
       setAzureSaved(true)
       setTimeout(() => setAzureSaved(false), 2000)
     } catch (err: any) {

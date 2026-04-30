@@ -74,8 +74,6 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
   // Initialize form with edit data when editTask is provided
   useEffect(() => {
     if (editTask) {
-      console.log('🔧 Initializing edit form with task:', editTask)
-      console.log('🔧 Subtasks to load:', editTask.subtasks)
       setTaskForms([{
         id: editTask.id.toString(),
         title: editTask.title,
@@ -180,20 +178,16 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
     if (!subtaskToDelete) return
     
     const { taskId, subtaskId } = subtaskToDelete
-    console.log('🗑️ Attempting to delete subtask:', { taskId, subtaskId, editTask })
     
     // Check if this is an existing subtask (UUID from backend) or a new one (timestamp string)
     // Existing subtasks have UUID format, new ones have timestamp IDs like "1234567890"
     const isExistingSubtask = editTask && subtaskId.includes('-') // UUIDs contain dashes
-    console.log('🗑️ Is existing subtask?', isExistingSubtask)
     
     if (isExistingSubtask) {
       // Delete from backend
       setIsDeletingSubtask(true)
       try {
-        console.log('🗑️ Calling DELETE API for subtask:', subtaskId)
         await axiosInstance.delete(`/api/v1/subtasks/${subtaskId}`)
-        console.log('✅ Subtask deleted successfully')
         
         // Remove from local state after successful deletion
         setTaskForms(taskForms.map(form => {
@@ -209,8 +203,6 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
         setShowDeleteSubtaskConfirm(false)
         setSubtaskToDelete(null)
       } catch (err: any) {
-        console.error('❌ Failed to delete subtask:', err)
-        console.error('❌ Error response:', err?.response?.data)
         if (err?.response?.status === 403) {
           alert(`Cannot delete subtask: ${err?.response?.data?.message || 'Permission denied'}`)
         } else {
@@ -221,7 +213,6 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
       }
     } else {
       // Just remove from local state (new subtask not yet saved)
-      console.log('🗑️ Removing new subtask from local state')
       setTaskForms(taskForms.map(form => {
         if (form.id === taskId) {
           return {

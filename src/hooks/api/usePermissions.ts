@@ -22,13 +22,9 @@ export function usePermissions() {
   return useQuery({
     queryKey: ['permissions'],
     queryFn: async () => {
-      console.log('🔄 Fetching permissions from API...')
       const { data } = await axiosInstance.get('/api/v1/permissions')
-      console.log('📦 Raw API response:', data)
       
       const result = data.data || data
-      console.log('📦 Extracted result:', result)
-      console.log('📦 Result type:', typeof result, 'Is array?', Array.isArray(result))
       
       // Backend returns grouped object: { "Task Management": [...], "Team Management": [...] }
       // Convert to flat array while preserving group_name
@@ -39,11 +35,9 @@ export function usePermissions() {
             group_name: groupName
           }))
         ) as Permission[]
-        console.log('✅ Converted to flat array with group_name:', flattened)
         return flattened
       }
       
-      console.log('✅ Returning as-is (already array):', result)
       return result as Permission[]
     },
     staleTime: 1000, // 1 second - refresh quickly to show permission changes

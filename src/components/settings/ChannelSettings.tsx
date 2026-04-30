@@ -73,7 +73,7 @@ export default function ChannelSettings() {
             The backend channel API endpoints may not be implemented yet. Please ensure:
           </p>
           <ul className="text-xs text-red-600 dark:text-red-500 list-disc list-inside mt-2 space-y-1">
-            <li>Backend server is running at http://localhost:5000</li>
+            <li>Backend server is running and accessible</li>
             <li>Channel endpoints are implemented at /api/v1/channels</li>
             <li>Database migrations for channels table are complete</li>
             <li>Check backend console for error details</li>

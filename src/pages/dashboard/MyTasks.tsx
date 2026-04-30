@@ -76,7 +76,6 @@ export default function MyTasks() {
     try {
       const { data } = await axiosInstance.get(`/api/v1/tasks/${task.id}`)
       const fullTask = data.data || data
-      console.log('📋 Full task data:', fullTask)
       
       // Check if user can edit this task (backend provides can_edit flag)
       if (fullTask.can_edit === false) {

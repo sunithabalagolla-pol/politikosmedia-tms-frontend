@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { X, Calendar, Flag, Upload, Check, ChevronDown, Download, Trash2, Loader2, Eye, Send, MessageSquare, AlertCircle } from 'lucide-react'
 import { useDeleteAttachment, useUploadAttachment } from '../hooks/api/useAttachments'
+import ConfirmDeleteModal from './ConfirmDeleteModal'
 import { useAddComment, useTask, useUpdateTaskStatus, useUpdateTaskPriority } from '../hooks/api/useTasks'
 import { useToggleSubtask } from '../hooks/api/useSubtasks'
 import { usePermission, useUserPermissions } from '../hooks/usePermission'
@@ -106,6 +107,7 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
   const [selectedSubtaskId, setSelectedSubtaskId] = useState<number | null>(null)
   const [showHoldModal, setShowHoldModal] = useState(false)
   const [holdNote, setHoldNote] = useState('')
+  const [attachmentToDelete, setAttachmentToDelete] = useState<{ id: any; name: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const statusRef = useRef<HTMLDivElement>(null)
   const priorityRef = useRef<HTMLDivElement>(null)
@@ -469,7 +471,7 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
                           {att.url && previewable && <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700 shrink-0"><Eye className="w-2.5 h-2.5" /></a>}
                           {att.url && <button onClick={() => triggerDownload(att.url!, att.name)} className="text-[#b23a48] hover:text-[#8f2e3a] shrink-0"><Download className="w-2.5 h-2.5" /></button>}
                           {canDeleteThisAttachment && (
-                            <button onClick={() => deleteAttachment.mutate(att.id)} disabled={deleteAttachment.isPending} className="text-red-500 hover:text-red-700 shrink-0 disabled:opacity-50">
+                            <button onClick={() => setAttachmentToDelete({ id: att.id, name: att.name })} disabled={deleteAttachment.isPending} className="text-red-500 hover:text-red-700 shrink-0 disabled:opacity-50">
                               {deleteAttachment.isPending ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Trash2 className="w-2.5 h-2.5" />}
                             </button>
                           )}
@@ -604,6 +606,21 @@ export default function TaskDetailPanel({ isOpen, onClose, taskId, hideStatusDro
           </div>
         </>
       )}
+      {/* Attachment Delete Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!attachmentToDelete}
+        onClose={() => setAttachmentToDelete(null)}
+        onConfirm={() => {
+          if (attachmentToDelete) {
+            deleteAttachment.mutate(attachmentToDelete.id, {
+              onSettled: () => setAttachmentToDelete(null),
+            })
+          }
+        }}
+        title="Delete Attachment"
+        message={`Are you sure you want to delete "${attachmentToDelete?.name ?? 'this file'}"? This file will be permanently removed and cannot be recovered.`}
+        isDeleting={deleteAttachment.isPending}
+      />
     </>
   )
 }
