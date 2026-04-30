@@ -57,12 +57,22 @@ export default function Settings() {
   // Azure AD state (admin only)
   const [azureClientId, setAzureClientId] = useState('')
   const [azureTenantId, setAzureTenantId] = useState('')
+  const [azureClientSecret, setAzureClientSecret] = useState('')
+  const [azureClientSecretChanged, setAzureClientSecretChanged] = useState(false)
+  const [azureClientSecretSaved, setAzureClientSecretSaved] = useState(false)
+  const [azureRedirectUri, setAzureRedirectUri] = useState(`${window.location.origin}/oidc/callback`)
+  const [oidcDiscoveryUrl, setOidcDiscoveryUrl] = useState('')
+  const [discoveryUrlManuallyEdited, setDiscoveryUrlManuallyEdited] = useState(false)
   const [azureSaving, setAzureSaving] = useState(false)
   const [azureSaved, setAzureSaved] = useState(false)
   const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [testMessage, setTestMessage] = useState('')
+  const [testDetails, setTestDetails] = useState('')
+  const [showTestDetails, setShowTestDetails] = useState(false)
+  const [testPassed, setTestPassed] = useState(false)
   const [azureSettingsLoading, setAzureSettingsLoading] = useState(false)
   const [azureVerified, setAzureVerified] = useState(false)
+  const [showSsoConfirm, setShowSsoConfirm] = useState(false)
 
   // R2 Storage state (admin only)
   const [r2AccountId, setR2AccountId] = useState('')
@@ -118,6 +128,18 @@ export default function Settings() {
       setAzureClientId(find('azure_client_id')?.value || '')
       setAzureTenantId(find('azure_tenant_id')?.value || '')
       setAzureVerified(find('azure_client_id')?.is_verified === true || find('azure_tenant_id')?.is_verified === true)
+      // Client secret — never show actual value, just check if saved
+      const secretSetting = find('azure_client_secret')
+      setAzureClientSecretSaved(!!secretSetting?.value)
+      setAzureClientSecret(secretSetting?.value ? '••••••••' : '')
+      setAzureClientSecretChanged(false)
+      // Redirect URI
+      setAzureRedirectUri(find('azure_redirect_uri')?.value || `${window.location.origin}/oidc/callback`)
+      // Discovery URL
+      const savedDiscovery = find('oidc_discovery_url')?.value || ''
+      setOidcDiscoveryUrl(savedDiscovery)
+      if (savedDiscovery) setDiscoveryUrlManuallyEdited(true)
+      // R2 settings
       const r2AccKey = find('r2_access_key_id')
       const r2SecKey = find('r2_secret_access_key')
       setR2AccountId(find('r2_account_id')?.value || '')
@@ -126,7 +148,6 @@ export default function Settings() {
       setR2BucketName(find('r2_bucket_name')?.value || '')
       setR2PublicUrl(find('r2_public_url')?.value || '')
       setR2Verified(find('r2_account_id')?.is_verified === true)
-      // Reset change flags — fields are now showing masked placeholders, not real values
       setR2AccessKeyChanged(false)
       setR2SecretKeyChanged(false)
     } catch {}
@@ -315,35 +336,61 @@ export default function Settings() {
   const handleTestConnection = async () => {
     setTestStatus('loading')
     setTestMessage('')
+    setTestDetails('')
+    setShowTestDetails(false)
     try {
       const res = await axiosInstance.post('/api/settings/azure/test')
       setTestStatus('success')
       setTestMessage(res.data?.message || 'Azure connection successful')
+      setTestPassed(true)
       await fetchAdminSettings()
       qc.invalidateQueries({ queryKey: ['public-settings'] })
     } catch (err: any) {
       setTestStatus('error')
-      setTestMessage(err.response?.data?.message || 'Connection failed. Check your credentials.')
+      const msg = err.response?.data?.message || 'Connection failed. Check your credentials.'
+      setTestMessage(msg)
+      setTestDetails(err.response?.data?.details || err.response?.data?.error || JSON.stringify(err.response?.data || {}, null, 2))
+      setTestPassed(false)
       await fetchAdminSettings()
     }
   }
 
   const handleSaveAzure = async () => {
+    // Task 3: If SSO is not yet verified, show confirmation dialog first
+    if (!azureVerified && !showSsoConfirm) {
+      setShowSsoConfirm(true)
+      return
+    }
+    setShowSsoConfirm(false)
     setAzureSaving(true)
     setTestStatus('idle')
     setTestMessage('')
+    setTestDetails('')
     setAzureVerified(false)
+    setTestPassed(false)
     try {
-      await axiosInstance.put('/api/settings/azure/bulk', { azure_client_id: azureClientId, azure_tenant_id: azureTenantId })
+      const body: Record<string, string> = {
+        azure_client_id: azureClientId,
+        azure_tenant_id: azureTenantId,
+        azure_redirect_uri: azureRedirectUri,
+        oidc_discovery_url: oidcDiscoveryUrl,
+      }
+      // Only send client secret if it was actually changed
+      if (azureClientSecretChanged && azureClientSecret !== '••••••••') {
+        body.azure_client_secret = azureClientSecret
+      }
+      await axiosInstance.put('/api/settings/azure/bulk', body)
       setTestStatus('loading')
       setTestMessage('Saved. Verifying connection...')
       try {
         const res = await axiosInstance.post('/api/settings/azure/test')
         setTestStatus('success')
         setTestMessage(res.data?.message || 'Credentials saved and verified ✅')
+        setTestPassed(true)
       } catch {
         setTestStatus('error')
-        setTestMessage('Credentials saved but connection test failed. Please verify your Client ID and Tenant ID.')
+        setTestMessage('Credentials saved but connection test failed. Please verify your settings.')
+        setTestPassed(false)
       }
       await fetchAdminSettings()
       // Invalidate public-settings cache so azure_verified propagates immediately
@@ -353,9 +400,28 @@ export default function Settings() {
     } catch (err: any) {
       setTestStatus('error')
       setTestMessage(err.response?.data?.message || 'Failed to save credentials. Please try again.')
+      setTestPassed(false)
     } finally {
       setAzureSaving(false)
     }
+  }
+
+  // Auto-populate discovery URL when tenant ID changes
+  const handleTenantIdChange = (value: string) => {
+    setAzureTenantId(value)
+    setTestStatus('idle')
+    setAzureVerified(false)
+    setTestPassed(false)
+    if (value && !discoveryUrlManuallyEdited) {
+      setOidcDiscoveryUrl(`https://login.microsoftonline.com/${value}/v2.0/.well-known/openid-configuration`)
+    }
+  }
+
+  // Reset testPassed when any credential field changes
+  const handleCredentialFieldChange = () => {
+    setTestPassed(false)
+    setTestStatus('idle')
+    setAzureVerified(false)
   }
 
   const handleSaveR2 = async () => {
@@ -590,42 +656,186 @@ export default function Settings() {
                 {azureSettingsLoading ? (
                   <div className="flex items-center justify-center py-6"><Loader2 className="w-5 h-5 text-[#b23a48] animate-spin" /></div>
                 ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Azure Client ID</label>
-                      <input type="text" value={azureClientId} onChange={e => { setAzureClientId(e.target.value); setTestStatus('idle'); setAzureVerified(false) }}
-                        placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 font-mono placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Azure Tenant ID</label>
-                      <input type="text" value={azureTenantId} onChange={e => { setAzureTenantId(e.target.value); setTestStatus('idle'); setAzureVerified(false) }}
-                        placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 font-mono placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700" />
-                    </div>
-                    {testStatus !== 'idle' && (
-                      <div className={`flex items-center gap-2 p-3 rounded-lg border text-xs font-medium ${testStatus === 'success' ? 'bg-green-50 border-green-200 text-green-700' : testStatus === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-gray-50 border-gray-200 text-gray-600'}`}>
-                        {testStatus === 'loading' && <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />}
-                        {testStatus === 'success' && <Check className="w-3.5 h-3.5 shrink-0" />}
-                        {testStatus === 'error' && <X className="w-3.5 h-3.5 shrink-0" />}
-                        {testStatus === 'loading' ? 'Testing connection...' : testMessage}
+                  <div className="flex gap-6">
+                    {/* SSO Form */}
+                    <div className="flex-1 space-y-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Azure Client ID</label>
+                        <input type="text" value={azureClientId} onChange={e => { setAzureClientId(e.target.value); handleCredentialFieldChange() }}
+                          placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 font-mono placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700" />
                       </div>
-                    )}
-                    <div className="flex items-center gap-3 pt-2">
-                      <button onClick={handleSaveAzure} disabled={azureSaving || !azureClientId || !azureTenantId}
-                        className={`flex items-center gap-2 px-4 py-2 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${azureSaved ? 'bg-green-500' : 'bg-[#b23a48] hover:bg-[#8f2e3a]'}`}>
-                        {azureSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : azureSaved ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
-                        {azureSaved ? 'Saved!' : 'Save'}
-                      </button>
-                      <button onClick={handleTestConnection} disabled={testStatus === 'loading' || !azureClientId || !azureTenantId}
-                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        {testStatus === 'loading' ? <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" /> : 'Test Connection'}
-                      </button>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">Auto-tests after save</p>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Azure Tenant ID</label>
+                        <input type="text" value={azureTenantId} onChange={e => handleTenantIdChange(e.target.value)}
+                          placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 font-mono placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Client Secret</label>
+                        <input type="password" value={azureClientSecret}
+                          onChange={e => {
+                            const val = e.target.value
+                            if (azureClientSecret === '••••••••') { setAzureClientSecret(val.slice(-1)); setAzureClientSecretChanged(true) }
+                            else { setAzureClientSecret(val); setAzureClientSecretChanged(true) }
+                            handleCredentialFieldChange()
+                          }}
+                          placeholder={azureClientSecretSaved ? '••••••••' : 'Enter client secret'}
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 font-mono placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Redirect URI</label>
+                        <input type="text" value={azureRedirectUri} onChange={e => { setAzureRedirectUri(e.target.value); handleCredentialFieldChange() }}
+                          placeholder={`${window.location.origin}/oidc/callback`}
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 font-mono placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700" />
+                        <p className="text-[10px] text-gray-400 mt-1">Must match the Redirect URI in your Azure App Registration</p>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-900 dark:text-white mb-2">Discovery URL</label>
+                        <input type="text" value={oidcDiscoveryUrl}
+                          onChange={e => { setOidcDiscoveryUrl(e.target.value); setDiscoveryUrlManuallyEdited(true); handleCredentialFieldChange() }}
+                          placeholder="https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration"
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-900 dark:text-gray-200 font-mono placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] dark:bg-gray-700" />
+                        <p className="text-[10px] text-gray-400 mt-1">Auto-populated from Tenant ID. Edit only for custom setups.</p>
+                      </div>
+
+                      {/* Test Connection Feedback — Task 7 */}
+                      {testStatus !== 'idle' && (
+                        <div className={`p-3 rounded-lg border text-xs font-medium ${testStatus === 'success' ? 'bg-green-50 border-green-200 text-green-700' : testStatus === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-gray-50 border-gray-200 text-gray-600'}`}>
+                          <div className="flex items-center gap-2">
+                            {testStatus === 'loading' && <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />}
+                            {testStatus === 'success' && <Check className="w-3.5 h-3.5 shrink-0" />}
+                            {testStatus === 'error' && <X className="w-3.5 h-3.5 shrink-0" />}
+                            <span>{testStatus === 'loading' ? 'Testing connection...' : testMessage}</span>
+                          </div>
+                          {testStatus === 'error' && (
+                            <div className="mt-2">
+                              <p className="text-[10px] text-red-600 mb-1">Check that your Tenant ID is correct, the application exists in your Azure tenant, and the Discovery URL is reachable.</p>
+                              {testDetails && (
+                                <>
+                                  <button onClick={() => setShowTestDetails(!showTestDetails)} className="text-[10px] text-red-500 underline hover:text-red-700">
+                                    {showTestDetails ? 'Hide details ▴' : 'View details ▾'}
+                                  </button>
+                                  {showTestDetails && (
+                                    <pre className="mt-1 p-2 bg-red-100 dark:bg-red-900/30 rounded text-[10px] text-red-800 dark:text-red-300 overflow-x-auto whitespace-pre-wrap">{testDetails}</pre>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-3 pt-2">
+                        <button onClick={handleSaveAzure} disabled={azureSaving || !azureClientId || !azureTenantId || (!testPassed && !azureVerified)}
+                          className={`flex items-center gap-2 px-4 py-2 text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${azureSaved ? 'bg-green-500' : 'bg-[#b23a48] hover:bg-[#8f2e3a]'}`}>
+                          {azureSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : azureSaved ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
+                          {azureSaved ? 'Saved!' : azureVerified ? 'Update SSO' : 'Save & Enable SSO'}
+                        </button>
+                        <button onClick={handleTestConnection} disabled={testStatus === 'loading' || !azureClientId || !azureTenantId}
+                          className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                          {testStatus === 'loading' ? <Loader2 className="w-3.5 h-3.5 animate-spin mx-auto" /> : 'Test Connection'}
+                        </button>
+                        {!testPassed && !azureVerified && (
+                          <p className="text-[10px] text-amber-600">Test connection before saving</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Task 6: Setup Checklist Panel */}
+                    <div className="w-64 shrink-0 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                      <h3 className="text-xs font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-1.5">
+                        📋 Setup Checklist
+                      </h3>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-3">In Azure Portal → Entra ID:</p>
+                      <ol className="space-y-2 text-[10px] text-gray-600 dark:text-gray-400">
+                        <li className="flex items-start gap-2">
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 ${azureClientId ? 'bg-green-100 border-green-400 text-green-600' : 'border-gray-300'}`}>
+                            {azureClientId && <Check className="w-2.5 h-2.5" />}
+                          </span>
+                          <span>Register a new application</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 ${azureClientId ? 'bg-green-100 border-green-400 text-green-600' : 'border-gray-300'}`}>
+                            {azureClientId && <Check className="w-2.5 h-2.5" />}
+                          </span>
+                          <span>Copy the Application (Client) ID</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 ${azureTenantId ? 'bg-green-100 border-green-400 text-green-600' : 'border-gray-300'}`}>
+                            {azureTenantId && <Check className="w-2.5 h-2.5" />}
+                          </span>
+                          <span>Copy the Directory (Tenant) ID</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 ${azureClientSecretSaved || azureClientSecretChanged ? 'bg-green-100 border-green-400 text-green-600' : 'border-gray-300'}`}>
+                            {(azureClientSecretSaved || azureClientSecretChanged) && <Check className="w-2.5 h-2.5" />}
+                          </span>
+                          <span>Create a Client Secret under Certificates & Secrets</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 ${azureRedirectUri ? 'bg-green-100 border-green-400 text-green-600' : 'border-gray-300'}`}>
+                            {azureRedirectUri && <Check className="w-2.5 h-2.5" />}
+                          </span>
+                          <div>
+                            <span>Add Redirect URI:</span>
+                            <code className="block text-[9px] text-[#b23a48] mt-0.5 break-all">{azureRedirectUri || `${window.location.origin}/oidc/callback`}</code>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 ${testPassed || azureVerified ? 'bg-green-100 border-green-400 text-green-600' : 'border-gray-300'}`}>
+                            {(testPassed || azureVerified) && <Check className="w-2.5 h-2.5" />}
+                          </span>
+                          <span>Test Connection before saving</span>
+                        </li>
+                      </ol>
                     </div>
                   </div>
                 )}
               </div>
+
+              {/* SSO Enable Confirmation Modal — Task 3 */}
+              {showSsoConfirm && (
+                <div className="fixed inset-0 bg-gray-900/50 dark:bg-black/60 z-50 flex items-center justify-center p-4">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">Enable SSO for all users?</h3>
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-600 dark:text-gray-300 space-y-2 mb-6">
+                      <p className="font-medium">Once enabled:</p>
+                      <ul className="space-y-1.5 ml-1">
+                        <li className="flex items-start gap-2">
+                          <span className="text-amber-500 mt-0.5">•</span>
+                          <span>Local login will be disabled for everyone including you</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-amber-500 mt-0.5">•</span>
+                          <span>All users must sign in via Microsoft</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-amber-500 mt-0.5">•</span>
+                          <span>Make sure your Microsoft account has access to this Azure application</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => setShowSsoConfirm(false)}
+                        className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
+                        Cancel
+                      </button>
+                      <button onClick={handleSaveAzure}
+                        className="flex-1 px-4 py-2 bg-[#b23a48] text-white rounded-lg text-xs font-medium hover:bg-[#8f2e3a]">
+                        Yes, Enable SSO
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* R2 Storage Configuration */}
               <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">

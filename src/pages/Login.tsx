@@ -1,29 +1,65 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Key, Loader2, AlertCircle, Check, ArrowRight, Shield, Users, Clock } from 'lucide-react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Key, Loader2, AlertCircle, Info, Users, Clock } from 'lucide-react'
 import { useAuth, type UserRole } from '../context/AuthContext'
+import { usePublicSettings } from '../hooks/api/useSettings'
+import axiosInstance from '../api/axiosInstance'
+
+function MicrosoftIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="9" height="9" fill="#F25022" />
+      <rect x="11" y="1" width="9" height="9" fill="#7FBA00" />
+      <rect x="1" y="11" width="9" height="9" fill="#00A4EF" />
+      <rect x="11" y="11" width="9" height="9" fill="#FFB900" />
+    </svg>
+  )
+}
 
 export default function Login() {
   const navigate = useNavigate()
-  const { user, isAuthenticated, isLoading, isDevMode, login, devLogin, error } = useAuth()
-  const [selectedRole, setSelectedRole] = useState<UserRole>('user')
-  const [devLoading, setDevLoading] = useState(false)
-  const [devSuccess, setDevSuccess] = useState(false)
-  const [useCustomEmail, setUseCustomEmail] = useState(false)
-  const [customEmail, setCustomEmail] = useState('')
-  const [customName, setCustomName] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { user, isAuthenticated, setUserFromResponse } = useAuth()
+
+  // Public settings — drives what UI to show
+  const { data: publicSettings, isLoading: settingsLoading } = usePublicSettings()
+  const azureVerified = publicSettings?.azure_verified === true
+  // admin_email may not be in public settings yet — fall back to the known default
+  const adminEmail = publicSettings?.admin_email || 'admin@politikos.in'
+
+  // Page-level messages
+  const [authMessage, setAuthMessage] = useState<string | null>(null)
+  const [ssoError, setSsoError] = useState<string | null>(null)
   const [deactivatedMessage, setDeactivatedMessage] = useState<string | null>(null)
 
-  // Check for deactivation message on mount
+  // Admin card state
+  const [adminLoading, setAdminLoading] = useState(false)
+  const [adminError, setAdminError] = useState<string | null>(null)
+
+  // Read messages left in localStorage by other flows (session expiry, deactivation)
   useEffect(() => {
-    const msg = localStorage.getItem('deactivated_message')
-    if (msg) {
-      setDeactivatedMessage(msg)
-      localStorage.removeItem('deactivated_message')
-    }
+    const msg = localStorage.getItem('auth_message')
+    if (msg) { setAuthMessage(msg); localStorage.removeItem('auth_message') }
+
+    const deact = localStorage.getItem('deactivated_message')
+    if (deact) { setDeactivatedMessage(deact); localStorage.removeItem('deactivated_message') }
   }, [])
 
-  // If already logged in, redirect to correct dashboard
+  // Handle ?error= param from SSO callback redirect
+  useEffect(() => {
+    const errorParam = searchParams.get('error')
+    if (errorParam) {
+      setSsoError(
+        errorParam === 'sso_failed'
+          ? 'Sign in failed. Please try again or contact your administrator.'
+          : `Sign in failed: ${decodeURIComponent(errorParam)}`
+      )
+      searchParams.delete('error')
+      setSearchParams(searchParams, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
+
+  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
       const redirects: Record<UserRole, string> = {
@@ -35,43 +71,61 @@ export default function Login() {
     }
   }, [isAuthenticated, user, navigate])
 
-  const handleSSO = async () => {
-    await login()
+  // SSO — full page redirect to backend OIDC flow
+  const handleSsoLogin = () => {
+    setSsoError(null)
+    window.location.href = '/api/auth/oidc/redirect'
   }
 
-  const handleDevLogin = async () => {
-    setDevLoading(true)
-    setDevSuccess(false)
-    if (useCustomEmail && customEmail) {
-      await devLogin(selectedRole, customEmail, customName || customEmail.split('@')[0])
-    } else {
-      await devLogin(selectedRole)
+  // Admin one-click login
+  const handleAdminLogin = async () => {
+    if (adminLoading) return
+    setAdminLoading(true)
+    setAdminError(null)
+
+    try {
+      const res = await axiosInstance.post('/api/auth/admin-login', { email: adminEmail })
+      const userData = res.data.data?.user || res.data.user
+
+      // Hydrate AuthContext — no second /api/auth/me call needed
+      setUserFromResponse(userData, 'admin')
+
+      const role = userData.role === 'employee' ? 'user' : userData.role
+      const redirects: Record<string, string> = {
+        admin: '/dashboard/overview',
+        manager: '/manager/overview',
+        user: '/user/overview',
+      }
+      window.location.href = redirects[role] || '/dashboard/overview'
+    } catch (err: any) {
+      const status = err?.response?.status
+      const msg = err?.response?.data?.message
+      if (status === 429) {
+        setAdminError(msg || 'Too many admin login attempts. Try again in 15 minutes.')
+      } else if (status === 401) {
+        setAdminError(msg || 'Not authorized for admin access.')
+      } else if (status === 400) {
+        setAdminError(msg || 'Email is required.')
+      } else {
+        setAdminError('Something went wrong. Please try again.')
+      }
+    } finally {
+      setAdminLoading(false)
     }
-    setDevLoading(false)
-    setDevSuccess(true)
   }
-
-  const roleOptions: { value: UserRole; label: string; email: string; icon: React.ReactNode }[] = [
-    { value: 'user', label: 'Employee', email: 'employee@politikos.in', icon: <Users className="w-4 h-4" /> },
-    { value: 'manager', label: 'Manager', email: 'manager@politikos.in', icon: <Shield className="w-4 h-4" /> },
-    { value: 'admin', label: 'Admin', email: 'admin@politikos.in', icon: <Key className="w-4 h-4" /> },
-  ]
 
   return (
     <div className="bg-gradient-to-br from-gray-50 via-red-50 to-rose-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 h-screen flex items-center justify-center p-4 overflow-hidden">
-      <div className="w-full max-w-5xl h-[600px] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-0">
+      <div className="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 gap-0">
 
-        {/* ── Branding Section ── */}
-        <section className="hidden lg:flex flex-col items-center justify-center bg-gradient-to-br from-[#b23a48] via-[#a33542] to-[#c75563] relative overflow-hidden">
-          {/* Decorative background shapes */}
+        {/* ── Branding ── */}
+        <section className="hidden lg:flex flex-col items-center justify-center bg-gradient-to-br from-[#b23a48] via-[#a33542] to-[#c75563] relative overflow-hidden min-h-[600px]">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-20 -left-20 w-80 h-80 bg-white/5 rounded-full"></div>
-            <div className="absolute -bottom-16 -right-16 w-72 h-72 bg-white/5 rounded-full"></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/[0.03] rounded-full"></div>
+            <div className="absolute -top-20 -left-20 w-80 h-80 bg-white/5 rounded-full" />
+            <div className="absolute -bottom-16 -right-16 w-72 h-72 bg-white/5 rounded-full" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/[0.03] rounded-full" />
           </div>
-
           <div className="relative z-10 flex flex-col items-center px-10">
-            {/* Logo — larger and properly fitted */}
             <div className="w-56 h-56 mb-6 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm p-5 ring-2 ring-white/30 shadow-lg">
               <img
                 alt="Politikos Logo"
@@ -79,15 +133,10 @@ export default function Login() {
                 className="w-full h-full object-contain drop-shadow-xl"
               />
             </div>
-
-            <h1 className="text-3xl font-extrabold text-white tracking-widest uppercase mb-2">
-              Politikos
-            </h1>
+            <h1 className="text-3xl font-extrabold text-white tracking-widest uppercase mb-2">Politikos</h1>
             <p className="text-sm text-red-100/90 max-w-[260px] text-center leading-relaxed">
               Secure access to your political engagement platform
             </p>
-
-            {/* Stats row */}
             <div className="mt-8 flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
@@ -98,7 +147,7 @@ export default function Login() {
                   <div className="text-[11px] text-red-200">Active Users</div>
                 </div>
               </div>
-              <div className="w-px h-10 bg-white/20"></div>
+              <div className="w-px h-10 bg-white/20" />
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
                   <Clock className="w-4 h-4 text-white" />
@@ -112,9 +161,9 @@ export default function Login() {
           </div>
         </section>
 
-        {/* ── Login Section ── */}
-        <section className="flex flex-col items-center justify-center px-8 py-6 overflow-y-auto">
-          {/* Mobile Logo */}
+        {/* ── Login Panel ── */}
+        <section className="flex flex-col items-center justify-center px-8 py-8 overflow-y-auto">
+          {/* Mobile logo */}
           <div className="lg:hidden flex flex-col items-center gap-2 mb-5">
             <img
               alt="Politikos Logo"
@@ -124,185 +173,114 @@ export default function Login() {
             <h2 className="text-lg font-bold text-dark dark:text-white uppercase tracking-wide">Politikos</h2>
           </div>
 
-          <div className="w-full max-w-sm">
+          <div className="w-full max-w-sm space-y-4">
+
             {/* Header */}
-            <div className="mb-5 text-center lg:text-left">
+            <div className="text-center lg:text-left">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Welcome Back</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {isDevMode ? 'Development mode — select a role to continue' : 'Sign in with your @politikos.in account'}
-              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Sign in to continue</p>
             </div>
 
-            {/* Deactivation Message */}
+            {/* Session / auth messages */}
+            {authMessage && (
+              <div className="flex items-center gap-2.5 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <Info className="w-4 h-4 text-blue-500 shrink-0" />
+                <p className="text-xs text-blue-700 dark:text-blue-400">{authMessage}</p>
+              </div>
+            )}
+            {ssoError && (
+              <div className="flex items-center gap-2.5 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                <p className="text-xs text-red-700 dark:text-red-400">{ssoError}</p>
+              </div>
+            )}
             {deactivatedMessage && (
-              <div className="mb-4 flex items-start gap-2.5 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <div className="flex items-start gap-2.5 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                 <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                 <p className="text-xs font-semibold text-red-700 dark:text-red-400">{deactivatedMessage}</p>
               </div>
             )}
 
-            {/* Error Message */}
-            {error && (
-              <div className="mb-4 flex items-center gap-2.5 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-                <p className="text-xs text-red-700 dark:text-red-400">{error}</p>
-              </div>
-            )}
-
-            {/* Dev Mode Banner */}
-            {isDevMode && (
-              <div className="mb-4 flex items-center gap-2.5 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0"></div>
-                <p className="text-xs text-amber-700 dark:text-amber-400">
-                  Dev Mode — Azure SSO not configured. Using local role selector.
-                </p>
-              </div>
-            )}
-
-            {isDevMode ? (
-              <div className="space-y-4">
-                {/* Role Selector */}
-                <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                    Login As
-                  </label>
-                  <div className="grid grid-cols-3 gap-2.5">
-                    {roleOptions.map((opt) => {
-                      const isSelected = selectedRole === opt.value
-                      return (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          onClick={() => setSelectedRole(opt.value)}
-                          className={`relative rounded-xl border-2 px-2 py-3 transition-all duration-200 flex flex-col items-center gap-1.5 text-center ${
-                            isSelected
-                              ? 'border-[#b23a48] bg-[#b23a48]/5 shadow-sm'
-                              : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
-                          }`}
-                        >
-                          {/* Selection indicator */}
-                          {isSelected && (
-                            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#b23a48] rounded-full flex items-center justify-center shadow-sm">
-                              <Check className="w-3 h-3 text-white" />
-                            </span>
-                          )}
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            isSelected ? 'bg-[#b23a48]/10 text-[#b23a48]' : 'bg-gray-100 dark:bg-gray-600 text-gray-400 dark:text-gray-300'
-                          }`}>
-                            {opt.icon}
-                          </div>
-                          <span className={`text-xs font-semibold leading-tight ${
-                            isSelected ? 'text-[#b23a48]' : 'text-gray-700 dark:text-gray-300'
-                          }`}>
-                            {opt.label}
-                          </span>
-                          <span className={`text-[10px] leading-tight truncate w-full ${
-                            isSelected ? 'text-[#b23a48]/60' : 'text-gray-400 dark:text-gray-500'
-                          }`}>
-                            {opt.email}
-                          </span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                {/* Custom Email Toggle */}
-                <label htmlFor="customEmail" className="flex items-center gap-2.5 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    id="customEmail"
-                    checked={useCustomEmail}
-                    onChange={(e) => setUseCustomEmail(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded border-gray-300 text-[#b23a48] focus:ring-[#b23a48] cursor-pointer"
-                  />
-                  <span className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-                    Login as a specific user (custom email)
-                  </span>
-                </label>
-
-                {/* Custom Email Fields */}
-                {useCustomEmail && (
-                  <div className="space-y-2.5 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                    <div>
-                      <label className="block text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Email</label>
-                      <input
-                        type="email"
-                        value={customEmail}
-                        onChange={(e) => setCustomEmail(e.target.value)}
-                        placeholder="test@politikos.in"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] placeholder-gray-400 transition-shadow"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">Name (optional)</label>
-                      <input
-                        type="text"
-                        value={customName}
-                        onChange={(e) => setCustomName(e.target.value)}
-                        placeholder="Test Employee"
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-[#b23a48]/20 focus:border-[#b23a48] placeholder-gray-400 transition-shadow"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Sign In Button */}
-                <button
-                  type="button"
-                  onClick={handleDevLogin}
-                  disabled={devLoading}
-                  className={`w-full ${
-                    devSuccess ? 'bg-green-500 hover:bg-green-600' : 'bg-[#b23a48] hover:bg-[#8f2e3a]'
-                  } text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg shadow-[#b23a48]/25 hover:shadow-xl hover:shadow-[#b23a48]/30 relative overflow-hidden flex items-center justify-center group disabled:opacity-70 disabled:cursor-not-allowed text-sm`}
-                >
-                  {devLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : devSuccess ? (
-                    <>
-                      <Check className="w-4 h-4 mr-2" />
-                      Success!
-                    </>
-                  ) : (
-                    <>
-                      Sign In (Dev)
-                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
-                </button>
+            {/* Loading skeleton while settings fetch */}
+            {settingsLoading ? (
+              <div className="space-y-3">
+                <div className="h-14 bg-gray-100 dark:bg-gray-700 rounded-xl animate-pulse" />
+                <div className="h-px bg-gray-200 dark:bg-gray-700" />
+                <div className="h-14 bg-gray-100 dark:bg-gray-700 rounded-xl animate-pulse" />
               </div>
             ) : (
               <>
-                {/* Production: SSO Only */}
+                {/* Sign in with Microsoft — only when azure_verified */}
+                {azureVerified && (
+                  <button
+                    type="button"
+                    onClick={handleSsoLogin}
+                    className="w-full flex items-center gap-3 px-4 py-3.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all shadow-sm hover:shadow-md"
+                  >
+                    <MicrosoftIcon />
+                    <div className="flex flex-col items-start">
+                      <span className="text-sm font-semibold text-gray-800 dark:text-white leading-tight">
+                        Sign in with Microsoft
+                      </span>
+                      <span className="text-[11px] text-gray-400 leading-tight">
+                        For employees and managers
+                      </span>
+                    </div>
+                  </button>
+                )}
+
+                {/* Divider — shown when both options are visible */}
+                {azureVerified && (
+                  <div className="relative flex items-center gap-3">
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                    <span className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">
+                      or
+                    </span>
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  </div>
+                )}
+
+                {/* Admin card — always visible */}
                 <button
                   type="button"
-                  onClick={handleSSO}
-                  disabled={isLoading}
-                  className="w-full flex items-center justify-center gap-2.5 px-4 py-3 bg-[#b23a48] rounded-xl hover:bg-[#8f2e3a] transition-all text-sm font-semibold text-white shadow-lg shadow-[#b23a48]/25 hover:shadow-xl hover:shadow-[#b23a48]/30 disabled:opacity-70 disabled:cursor-not-allowed"
+                  onClick={handleAdminLogin}
+                  disabled={adminLoading}
+                  className={`w-full flex items-center gap-3 px-4 py-3.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl transition-all shadow-sm text-left
+                    ${adminLoading
+                      ? 'opacity-70 cursor-not-allowed'
+                      : 'hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md active:scale-[0.99] cursor-pointer'
+                    }`}
                 >
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                  {adminLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-[#b23a48] shrink-0" />
                   ) : (
-                    <>
-                      <Key className="w-4 h-4" />
-                      Sign in with Microsoft SSO
-                    </>
+                    <div className="w-9 h-9 rounded-lg bg-[#b23a48]/10 dark:bg-[#b23a48]/20 flex items-center justify-center shrink-0">
+                      <Key className="w-4 h-4 text-[#b23a48]" />
+                    </div>
                   )}
+                  <div className="flex flex-col items-start min-w-0">
+                    <span className="text-sm font-semibold text-gray-800 dark:text-white leading-tight">Admin</span>
+                    <span className="text-[11px] text-gray-400 leading-tight truncate max-w-[200px]">
+                      {adminEmail}
+                    </span>
+                  </div>
                 </button>
 
-                <div className="mt-4 p-3.5 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center leading-relaxed">
-                    Use your <span className="font-semibold text-gray-700 dark:text-gray-300">@politikos.in</span> Microsoft account to sign in.
-                    Your role and permissions are assigned by your administrator.
-                  </p>
-                </div>
+                {/* Admin error */}
+                {adminError && (
+                  <div className="flex items-center gap-2.5 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                    <p className="text-xs text-red-700 dark:text-red-400">{adminError}</p>
+                  </div>
+                )}
               </>
             )}
 
             {/* Terms */}
-            <p className="mt-5 text-center text-xs text-gray-400 dark:text-gray-500 leading-relaxed">
+            <p className="text-center text-xs text-gray-400 dark:text-gray-500 leading-relaxed pt-1">
               By signing in, you agree to our{' '}
-              <a href="#" className="text-[#b23a48] hover:underline font-medium">Terms of Service</a> and{' '}
+              <a href="#" className="text-[#b23a48] hover:underline font-medium">Terms of Service</a>{' '}
+              and{' '}
               <a href="#" className="text-[#b23a48] hover:underline font-medium">Privacy Policy</a>.
             </p>
           </div>

@@ -33,6 +33,7 @@ import ChannelPlatform from './pages/dashboard/ChannelPlatform'
 import Shows from './pages/dashboard/Shows'
 import Progress from './pages/dashboard/Progress'
 import ProtectedRoute from './components/ProtectedRoute'
+import OidcCallback from './pages/OidcCallback'
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Routes>
           {/* Public */}
           <Route path="/" element={<Login />} />
+          <Route path="/auth/callback" element={<OidcCallback />} />
 
           {/* Admin Dashboard */}
           <Route path="/dashboard" element={<ProtectedRoute allowedRole="admin"><Dashboard /></ProtectedRoute>}>
