@@ -188,7 +188,7 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
       setIsDeletingSubtask(true)
       try {
         await axiosInstance.delete(`/api/v1/subtasks/${subtaskId}`)
-        
+
         // Remove from local state after successful deletion
         setTaskForms(taskForms.map(form => {
           if (form.id === taskId) {
@@ -199,7 +199,7 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
           }
           return form
         }))
-        
+
         setShowDeleteSubtaskConfirm(false)
         setSubtaskToDelete(null)
       } catch (err: any) {
@@ -988,16 +988,12 @@ export default function CreateTaskModal({ isOpen, onClose, editTask, prefilledCa
         </div>
       </div>
 
-      {/* Delete Subtask Confirmation Modal */}
       <ConfirmDeleteModal
         isOpen={showDeleteSubtaskConfirm}
-        onClose={() => {
-          setShowDeleteSubtaskConfirm(false)
-          setSubtaskToDelete(null)
-        }}
+        onClose={() => { setShowDeleteSubtaskConfirm(false); setSubtaskToDelete(null) }}
         onConfirm={removeSubtask}
         title="Delete Subtask"
-        message={`Are you sure you want to delete "${subtaskToDelete?.title}"? This action cannot be undone.`}
+        message={`Are you sure you want to delete "${subtaskToDelete?.title}"? This cannot be undone.`}
         isDeleting={isDeletingSubtask}
       />
 

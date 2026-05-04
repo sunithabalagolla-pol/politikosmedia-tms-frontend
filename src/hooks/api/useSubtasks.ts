@@ -51,12 +51,14 @@ export function useAddSubtask() {
   })
 }
 
-// Delete subtask
+// Delete subtask with optional deletion reason
 export function useDeleteSubtask() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (subtaskId: string | number) => {
-      const { data } = await axiosInstance.delete(API.SUBTASK_DELETE(subtaskId))
+    mutationFn: async ({ subtaskId, deletionNote }: { subtaskId: string | number; deletionNote?: string }) => {
+      const { data } = await axiosInstance.delete(API.SUBTASK_DELETE(subtaskId), {
+        data: deletionNote?.trim() ? { deletion_note: deletionNote.trim() } : undefined,
+      })
       return data
     },
     onSuccess: () => {
