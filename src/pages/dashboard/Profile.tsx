@@ -3,6 +3,7 @@ import { Upload, Save, Clock, Mail, Briefcase, MapPin, Building2, User, Loader2,
 import { useProfile, useUpdateProfile, useUploadAvatar, useProfileActivity } from '../../hooks/api/useProfile'
 import { useQuery } from '@tanstack/react-query'
 import axiosInstance from '../../api/axiosInstance'
+import { resolveFileUrl } from '../../lib/fileUrl'
 
 function timeAgo(dateStr: string): string {
   const now = new Date()
@@ -131,7 +132,7 @@ export default function Profile() {
                   <Loader2 className="w-4 h-4 text-[#b23a48] animate-spin" />
                 </div>
               ) : profile.avatar_url ? (
-                <img src={profile.avatar_url} alt="Profile" className="w-12 h-12 rounded-full object-cover border-3 border-gray-100 dark:border-gray-700" />
+                <img src={resolveFileUrl(profile.avatar_url)} alt="Profile" className="w-12 h-12 rounded-full object-cover border-3 border-gray-100 dark:border-gray-700" />
               ) : (
                 <div className="w-12 h-12 rounded-full bg-[#b23a48] flex items-center justify-center border-3 border-gray-100 dark:border-gray-700">
                   <span className="text-white font-bold text-sm">{profile.name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?'}</span>
